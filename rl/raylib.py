@@ -5,7 +5,10 @@ import re
 tab = '    '
 
 def conv(t: str) -> str:
+    while 'const' in t:
+        t = t.replace('const', '')
     n = 0
+    t = t.strip()
     while t[-1] == '*':
         if t == 'char *':
             break
@@ -13,8 +16,6 @@ def conv(t: str) -> str:
             break
         t = t[:-1]
         n += 1
-    while 'const' in t:
-        t = t.replace('const', '')
     t = t.strip()
     match t:
         case 'bool':
@@ -78,8 +79,20 @@ def main() -> None:
                     pass
                 case _:
                     print(dtype)
+        for enum in raylib_json['enums']:
+            name = enum['name']
+            desc = enum['description']
+            out_file.write(f'\n// {name}\n')
+            for value in enum['values']:
+                value_name = value['name']
+                value_value = value['value']
+                value_desc = value['description']
+                out_file.write(f'export let {value_name} = {value_value}; // {value_desc}\n')
 
     with open('rl/types.temper', 'w') as out_file:
+        for enum in raylib_json['enums']:
+            name = enum['name']
+            out_file.write(f'export let {name} = Int;')
         for struct in raylib_json['structs']:
             name = struct['name']
             desc = struct['description']
@@ -119,7 +132,7 @@ def main() -> None:
     
     with open('rl/functions.temper', 'w') as out_file:
         out_file.write('let {...} = import("./types.temper");\n')
-        out_file.write(f'export interface Raylib' + '{\n')
+        out_file.write('export interface Raylib {\n')
         for func in raylib_json['functions']:
             name = func['name']
             desc = func['description']
