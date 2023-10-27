@@ -1,0 +1,4 @@
+temper.out
+__pycache__
+.DS_Store
+rl/*.temper
