@@ -7,8 +7,13 @@ Based on the json version of the C header for raylib.
 
 To build temper-raylib, make sure you have both python3 and temper on your path.
 
+First generate the raylib bindings for temper.
 ```sh
 python3 -m rl.raylib
+```
+
+Then Build the temper files into a library.
+```
 temper build
 ```
 
