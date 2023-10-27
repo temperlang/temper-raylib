@@ -1,0 +1,21 @@
+{
+  "name": "rapture",
+  "version": "0.0.1",
+  "description": "Raylib in Temper",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "./"
+  },
+  "type": "module",
+  "author": "Shaw Summa",
+  "license": "MIT",
+  "dependencies": {
+    "@temperlang/core": "file:temper.out/js/temper-core",
+    "raylib": "^0.14.0",
+    "temper-raylib": "file:temper.out/js/temper-raylib"
+  }
+}

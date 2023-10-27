@@ -1,10 +1,13 @@
 
 let {Raylib} = import("./rl/functions.temper");
+let {...} = import("./rl/types.temper");
+let {...} = import("./rl/constants.temper");
 
 export let start(rl: Raylib): Void {
   rl.InitWindow(640, 480, "Hello From Temper");
   while (!rl.WindowShouldClose()) {
     rl.BeginDrawing();
+    rl.ClearBackground(RAYWHITE);
     rl.EndDrawing();
   }
 }

@@ -1,6 +1,6 @@
-# Rapture
+# Raylib
 
-    export let name = "rapture";
+    export let name = "temper-raylib";
     import("./start.temper");
     import("./rl/constants.temper");
     import("./rl/types.temper");
