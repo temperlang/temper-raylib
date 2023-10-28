@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./temper.out/py/temper-core",
+        "./temper.out/py/temper-raylib"
+    ]
+}
