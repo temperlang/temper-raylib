@@ -1,7 +1,7 @@
 # temper-raylib
 Raylib Bindings for Temper
 
-Based on the json version of the C header for raylib.
+Based on the json version of the C header for [raylib].
 
 # Building
 
@@ -30,3 +30,5 @@ python3 main.py
 npm i
 node main.js
 ```
+
+[raylib]: https://www.raylib.com/
