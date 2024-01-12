@@ -1,6 +1,8 @@
 
 import raylib from 'raylib';
 
-import {start} from 'temper-raylib/start.js';
+import {use} from 'temper-raylib/rl/raylib.js'
 
-start(raylib);
+use(raylib);
+
+import('temper-raylib/app.js');

@@ -1,0 +1,3992 @@
+
+export interface Raylib {
+    // Initialize window and OpenGL context
+    public InitWindow(width: Int, height: Int, title: String): Void;
+    // Check if KEY_ESCAPE pressed or Close icon pressed
+    public WindowShouldClose(): Boolean;
+    // Close window and unload OpenGL context
+    public CloseWindow(): Void;
+    // Check if window has been initialized successfully
+    public IsWindowReady(): Boolean;
+    // Check if window is currently fullscreen
+    public IsWindowFullscreen(): Boolean;
+    // Check if window is currently hidden (only PLATFORM_DESKTOP)
+    public IsWindowHidden(): Boolean;
+    // Check if window is currently minimized (only PLATFORM_DESKTOP)
+    public IsWindowMinimized(): Boolean;
+    // Check if window is currently maximized (only PLATFORM_DESKTOP)
+    public IsWindowMaximized(): Boolean;
+    // Check if window is currently focused (only PLATFORM_DESKTOP)
+    public IsWindowFocused(): Boolean;
+    // Check if window has been resized last frame
+    public IsWindowResized(): Boolean;
+    // Check if one specific window flag is enabled
+    public IsWindowState(flag: Int): Boolean;
+    // Set window configuration state using flags (only PLATFORM_DESKTOP)
+    public SetWindowState(flags: Int): Void;
+    // Clear window configuration state flags
+    public ClearWindowState(flags: Int): Void;
+    // Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
+    public ToggleFullscreen(): Void;
+    // Toggle window state: borderless windowed (only PLATFORM_DESKTOP)
+    public ToggleBorderlessWindowed(): Void;
+    // Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
+    public MaximizeWindow(): Void;
+    // Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
+    public MinimizeWindow(): Void;
+    // Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
+    public RestoreWindow(): Void;
+    // Set icon for window (single image, RGBA 32bit, only PLATFORM_DESKTOP)
+    public SetWindowIcon(image: Image): Void;
+    // Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
+    public SetWindowIcons(images: Listed<Image>, count: Int): Void;
+    // Set title for window (only PLATFORM_DESKTOP and PLATFORM_WEB)
+    public SetWindowTitle(title: String): Void;
+    // Set window position on screen (only PLATFORM_DESKTOP)
+    public SetWindowPosition(x: Int, y: Int): Void;
+    // Set monitor for the current window
+    public SetWindowMonitor(monitor: Int): Void;
+    // Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+    public SetWindowMinSize(width: Int, height: Int): Void;
+    // Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
+    public SetWindowMaxSize(width: Int, height: Int): Void;
+    // Set window dimensions
+    public SetWindowSize(width: Int, height: Int): Void;
+    // Set window opacity [0.0f..1.0f] (only PLATFORM_DESKTOP)
+    public SetWindowOpacity(opacity: Float64): Void;
+    // Set window focused (only PLATFORM_DESKTOP)
+    public SetWindowFocused(): Void;
+    // Get native window handle
+    public GetWindowHandle(): DenseBitVector;
+    // Get current screen width
+    public GetScreenWidth(): Int;
+    // Get current screen height
+    public GetScreenHeight(): Int;
+    // Get current render width (it considers HiDPI)
+    public GetRenderWidth(): Int;
+    // Get current render height (it considers HiDPI)
+    public GetRenderHeight(): Int;
+    // Get number of connected monitors
+    public GetMonitorCount(): Int;
+    // Get current connected monitor
+    public GetCurrentMonitor(): Int;
+    // Get specified monitor position
+    public GetMonitorPosition(monitor: Int): Vector2;
+    // Get specified monitor width (current video mode used by monitor)
+    public GetMonitorWidth(monitor: Int): Int;
+    // Get specified monitor height (current video mode used by monitor)
+    public GetMonitorHeight(monitor: Int): Int;
+    // Get specified monitor physical width in millimetres
+    public GetMonitorPhysicalWidth(monitor: Int): Int;
+    // Get specified monitor physical height in millimetres
+    public GetMonitorPhysicalHeight(monitor: Int): Int;
+    // Get specified monitor refresh rate
+    public GetMonitorRefreshRate(monitor: Int): Int;
+    // Get window position XY on monitor
+    public GetWindowPosition(): Vector2;
+    // Get window scale DPI factor
+    public GetWindowScaleDPI(): Vector2;
+    // Get the human-readable, UTF-8 encoded name of the specified monitor
+    public GetMonitorName(monitor: Int): String;
+    // Set clipboard text content
+    public SetClipboardText(text: String): Void;
+    // Get clipboard text content
+    public GetClipboardText(): String;
+    // Enable waiting for events on EndDrawing(), no automatic event polling
+    public EnableEventWaiting(): Void;
+    // Disable waiting for events on EndDrawing(), automatic events polling
+    public DisableEventWaiting(): Void;
+    // Swap back buffer with front buffer (screen drawing)
+    public SwapScreenBuffer(): Void;
+    // Register all input events
+    public PollInputEvents(): Void;
+    // Wait for some time (halt program execution)
+    public WaitTime(seconds: Float64): Void;
+    // Shows cursor
+    public ShowCursor(): Void;
+    // Hides cursor
+    public HideCursor(): Void;
+    // Check if cursor is not visible
+    public IsCursorHidden(): Boolean;
+    // Enables cursor (unlock cursor)
+    public EnableCursor(): Void;
+    // Disables cursor (lock cursor)
+    public DisableCursor(): Void;
+    // Check if cursor is on the screen
+    public IsCursorOnScreen(): Boolean;
+    // Set background color (framebuffer clear color)
+    public ClearBackground(color: Color): Void;
+    // Setup canvas (framebuffer) to start drawing
+    public BeginDrawing(): Void;
+    // End canvas drawing and swap buffers (double buffering)
+    public EndDrawing(): Void;
+    // Begin 2D mode with custom camera (2D)
+    public BeginMode2D(camera: Camera2D): Void;
+    // Ends 2D mode with custom camera
+    public EndMode2D(): Void;
+    // Begin 3D mode with custom camera (3D)
+    public BeginMode3D(camera: Camera3D): Void;
+    // Ends 3D mode and returns to default 2D orthographic mode
+    public EndMode3D(): Void;
+    // Begin drawing to render texture
+    public BeginTextureMode(target: RenderTexture2D): Void;
+    // Ends drawing to render texture
+    public EndTextureMode(): Void;
+    // Begin custom shader drawing
+    public BeginShaderMode(shader: Shader): Void;
+    // End custom shader drawing (use default shader)
+    public EndShaderMode(): Void;
+    // Begin blending mode (alpha, additive, multiplied, subtract, custom)
+    public BeginBlendMode(mode: Int): Void;
+    // End blending mode (reset to default: alpha blending)
+    public EndBlendMode(): Void;
+    // Begin scissor mode (define screen area for following drawing)
+    public BeginScissorMode(x: Int, y: Int, width: Int, height: Int): Void;
+    // End scissor mode
+    public EndScissorMode(): Void;
+    // Begin stereo rendering (requires VR simulator)
+    public BeginVrStereoMode(config: VrStereoConfig): Void;
+    // End stereo rendering (requires VR simulator)
+    public EndVrStereoMode(): Void;
+    // Load VR stereo config for VR simulator device parameters
+    public LoadVrStereoConfig(device: VrDeviceInfo): VrStereoConfig;
+    // Unload VR stereo config
+    public UnloadVrStereoConfig(config: VrStereoConfig): Void;
+    // Load shader from files and bind default locations
+    public LoadShader(vsFileName: String, fsFileName: String): Shader;
+    // Load shader from code strings and bind default locations
+    public LoadShaderFromMemory(vsCode: String, fsCode: String): Shader;
+    // Check if a shader is ready
+    public IsShaderReady(shader: Shader): Boolean;
+    // Get shader uniform location
+    public GetShaderLocation(shader: Shader, uniformName: String): Int;
+    // Get shader attribute location
+    public GetShaderLocationAttrib(shader: Shader, attribName: String): Int;
+    // Set shader uniform value
+    public SetShaderValue(shader: Shader, locIndex: Int, value: DenseBitVector, uniformType: Int): Void;
+    // Set shader uniform value vector
+    public SetShaderValueV(shader: Shader, locIndex: Int, value: DenseBitVector, uniformType: Int, count: Int): Void;
+    // Set shader uniform value (matrix 4x4)
+    public SetShaderValueMatrix(shader: Shader, locIndex: Int, mat: Matrix): Void;
+    // Set shader uniform value for texture (sampler2d)
+    public SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture2D): Void;
+    // Unload shader from GPU memory (VRAM)
+    public UnloadShader(shader: Shader): Void;
+    // Get a ray trace from mouse position
+    public GetMouseRay(mousePosition: Vector2, camera: Camera): Ray;
+    // Get camera transform matrix (view matrix)
+    public GetCameraMatrix(camera: Camera): Matrix;
+    // Get camera 2d transform matrix
+    public GetCameraMatrix2D(camera: Camera2D): Matrix;
+    // Get the screen space position for a 3d world space position
+    public GetWorldToScreen(position: Vector3, camera: Camera): Vector2;
+    // Get the world space position for a 2d camera screen space position
+    public GetScreenToWorld2D(position: Vector2, camera: Camera2D): Vector2;
+    // Get size position for a 3d world space position
+    public GetWorldToScreenEx(position: Vector3, camera: Camera, width: Int, height: Int): Vector2;
+    // Get the screen space position for a 2d camera world space position
+    public GetWorldToScreen2D(position: Vector2, camera: Camera2D): Vector2;
+    // Set target FPS (maximum)
+    public SetTargetFPS(fps: Int): Void;
+    // Get current FPS
+    public GetFPS(): Int;
+    // Get time in seconds for last frame drawn (delta time)
+    public GetFrameTime(): Float64;
+    // Get elapsed time in seconds since InitWindow()
+    public GetTime(): Float64;
+    // Get a random value between min and max (both included)
+    public GetRandomValue(min: Int, max: Int): Int;
+    // Set the seed for the random number generator
+    public SetRandomSeed(seed: Int): Void;
+    // Takes a screenshot of current screen (filename extension defines format)
+    public TakeScreenshot(fileName: String): Void;
+    // Setup init configuration flags (view FLAGS)
+    public SetConfigFlags(flags: Int): Void;
+    // Set the current threshold (minimum) log level
+    public SetTraceLogLevel(logLevel: Int): Void;
+    // Internal memory allocator
+    public MemAlloc(size: Int): DenseBitVector;
+    // Internal memory reallocator
+    public MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector;
+    // Internal memory free
+    public MemFree(ptr: DenseBitVector): Void;
+    // Open URL with default system browser (if available)
+    public OpenURL(url: String): Void;
+    // Set custom file binary data loader
+    public SetLoadFileDataCallback(callback: LoadFileDataCallback): Void;
+    // Set custom file binary data saver
+    public SetSaveFileDataCallback(callback: SaveFileDataCallback): Void;
+    // Set custom file text data loader
+    public SetLoadFileTextCallback(callback: LoadFileTextCallback): Void;
+    // Set custom file text data saver
+    public SetSaveFileTextCallback(callback: SaveFileTextCallback): Void;
+    // Load file data as byte array (read)
+    public LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int>;
+    // Unload file data allocated by LoadFileData()
+    public UnloadFileData(data: Listed<Int>): Void;
+    // Save data to file from byte array (write), returns true on success
+    public SaveFileData(fileName: String, data: DenseBitVector, dataSize: Int): Boolean;
+    // Export data to code (.h), returns true on success
+    public ExportDataAsCode(data: Listed<Int>, dataSize: Int, fileName: String): Boolean;
+    // Load text data from file (read), returns a '\0' terminated string
+    public LoadFileText(fileName: String): String;
+    // Unload file text data allocated by LoadFileText()
+    public UnloadFileText(text: String): Void;
+    // Save text data to file (write), string must be '\0' terminated, returns true on success
+    public SaveFileText(fileName: String, text: String): Boolean;
+    // Check if file exists
+    public FileExists(fileName: String): Boolean;
+    // Check if a directory path exists
+    public DirectoryExists(dirPath: String): Boolean;
+    // Check file extension (including point: .png, .wav)
+    public IsFileExtension(fileName: String, ext: String): Boolean;
+    // Get file length in bytes (NOTE: GetFileSize() conflicts with windows.h)
+    public GetFileLength(fileName: String): Int;
+    // Get pointer to extension for a filename string (includes dot: '.png')
+    public GetFileExtension(fileName: String): String;
+    // Get pointer to filename for a path string
+    public GetFileName(filePath: String): String;
+    // Get filename string without extension (uses static string)
+    public GetFileNameWithoutExt(filePath: String): String;
+    // Get full path for a given fileName with path (uses static string)
+    public GetDirectoryPath(filePath: String): String;
+    // Get previous directory path for a given path (uses static string)
+    public GetPrevDirectoryPath(dirPath: String): String;
+    // Get current working directory (uses static string)
+    public GetWorkingDirectory(): String;
+    // Get the directory of the running application (uses static string)
+    public GetApplicationDirectory(): String;
+    // Change working directory, return true on success
+    public ChangeDirectory(dir: String): Boolean;
+    // Check if a given path is a file or a directory
+    public IsPathFile(path: String): Boolean;
+    // Load directory filepaths
+    public LoadDirectoryFiles(dirPath: String): FilePathList;
+    // Load directory filepaths with extension filtering and recursive directory scan
+    public LoadDirectoryFilesEx(basePath: String, filter: String, scanSubdirs: Boolean): FilePathList;
+    // Unload filepaths
+    public UnloadDirectoryFiles(files: FilePathList): Void;
+    // Check if a file has been dropped into window
+    public IsFileDropped(): Boolean;
+    // Load dropped filepaths
+    public LoadDroppedFiles(): FilePathList;
+    // Unload dropped filepaths
+    public UnloadDroppedFiles(files: FilePathList): Void;
+    // Get file modification time (last write time)
+    public GetFileModTime(fileName: String): Int;
+    // Compress data (DEFLATE algorithm), memory must be MemFree()
+    public CompressData(data: Listed<Int>, dataSize: Int, compDataSize: Listed<Int>): Listed<Int>;
+    // Decompress data (DEFLATE algorithm), memory must be MemFree()
+    public DecompressData(compData: Listed<Int>, compDataSize: Int, dataSize: Listed<Int>): Listed<Int>;
+    // Encode data to Base64 string, memory must be MemFree()
+    public EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed<Int>): String;
+    // Decode Base64 string data, memory must be MemFree()
+    public DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int>;
+    // Check if a key has been pressed once
+    public IsKeyPressed(key: Int): Boolean;
+    // Check if a key has been pressed again (Only PLATFORM_DESKTOP)
+    public IsKeyPressedRepeat(key: Int): Boolean;
+    // Check if a key is being pressed
+    public IsKeyDown(key: Int): Boolean;
+    // Check if a key has been released once
+    public IsKeyReleased(key: Int): Boolean;
+    // Check if a key is NOT being pressed
+    public IsKeyUp(key: Int): Boolean;
+    // Set a custom key to exit program (default is ESC)
+    public SetExitKey(key: Int): Void;
+    // Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
+    public GetKeyPressed(): Int;
+    // Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
+    public GetCharPressed(): Int;
+    // Check if a gamepad is available
+    public IsGamepadAvailable(gamepad: Int): Boolean;
+    // Get gamepad internal name id
+    public GetGamepadName(gamepad: Int): String;
+    // Check if a gamepad button has been pressed once
+    public IsGamepadButtonPressed(gamepad: Int, button: Int): Boolean;
+    // Check if a gamepad button is being pressed
+    public IsGamepadButtonDown(gamepad: Int, button: Int): Boolean;
+    // Check if a gamepad button has been released once
+    public IsGamepadButtonReleased(gamepad: Int, button: Int): Boolean;
+    // Check if a gamepad button is NOT being pressed
+    public IsGamepadButtonUp(gamepad: Int, button: Int): Boolean;
+    // Get the last gamepad button pressed
+    public GetGamepadButtonPressed(): Int;
+    // Get gamepad axis count for a gamepad
+    public GetGamepadAxisCount(gamepad: Int): Int;
+    // Get axis movement value for a gamepad axis
+    public GetGamepadAxisMovement(gamepad: Int, axis: Int): Float64;
+    // Set internal gamepad mappings (SDL_GameControllerDB)
+    public SetGamepadMappings(mappings: String): Int;
+    // Check if a mouse button has been pressed once
+    public IsMouseButtonPressed(button: Int): Boolean;
+    // Check if a mouse button is being pressed
+    public IsMouseButtonDown(button: Int): Boolean;
+    // Check if a mouse button has been released once
+    public IsMouseButtonReleased(button: Int): Boolean;
+    // Check if a mouse button is NOT being pressed
+    public IsMouseButtonUp(button: Int): Boolean;
+    // Get mouse position X
+    public GetMouseX(): Int;
+    // Get mouse position Y
+    public GetMouseY(): Int;
+    // Get mouse position XY
+    public GetMousePosition(): Vector2;
+    // Get mouse delta between frames
+    public GetMouseDelta(): Vector2;
+    // Set mouse position XY
+    public SetMousePosition(x: Int, y: Int): Void;
+    // Set mouse offset
+    public SetMouseOffset(offsetX: Int, offsetY: Int): Void;
+    // Set mouse scaling
+    public SetMouseScale(scaleX: Float64, scaleY: Float64): Void;
+    // Get mouse wheel movement for X or Y, whichever is larger
+    public GetMouseWheelMove(): Float64;
+    // Get mouse wheel movement for both X and Y
+    public GetMouseWheelMoveV(): Vector2;
+    // Set mouse cursor
+    public SetMouseCursor(cursor: Int): Void;
+    // Get touch position X for touch point 0 (relative to screen size)
+    public GetTouchX(): Int;
+    // Get touch position Y for touch point 0 (relative to screen size)
+    public GetTouchY(): Int;
+    // Get touch position XY for a touch point index (relative to screen size)
+    public GetTouchPosition(index: Int): Vector2;
+    // Get touch point identifier for given index
+    public GetTouchPointId(index: Int): Int;
+    // Get number of touch points
+    public GetTouchPointCount(): Int;
+    // Enable a set of gestures using flags
+    public SetGesturesEnabled(flags: Int): Void;
+    // Check if a gesture have been detected
+    public IsGestureDetected(gesture: Int): Boolean;
+    // Get latest detected gesture
+    public GetGestureDetected(): Int;
+    // Get gesture hold time in milliseconds
+    public GetGestureHoldDuration(): Float64;
+    // Get gesture drag vector
+    public GetGestureDragVector(): Vector2;
+    // Get gesture drag angle
+    public GetGestureDragAngle(): Float64;
+    // Get gesture pinch delta
+    public GetGesturePinchVector(): Vector2;
+    // Get gesture pinch angle
+    public GetGesturePinchAngle(): Float64;
+    // Update camera position for selected mode
+    public UpdateCamera(camera: Listed<Camera>, mode: Int): Void;
+    // Update camera movement/rotation
+    public UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: Vector3, zoom: Float64): Void;
+    // Set texture and rectangle to be used on shapes drawing
+    public SetShapesTexture(texture: Texture2D, source: Rectangle): Void;
+    // Draw a pixel
+    public DrawPixel(posX: Int, posY: Int, color: Color): Void;
+    // Draw a pixel (Vector version)
+    public DrawPixelV(position: Vector2, color: Color): Void;
+    // Draw a line
+    public DrawLine(startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void;
+    // Draw a line (Vector version)
+    public DrawLineV(startPos: Vector2, endPos: Vector2, color: Color): Void;
+    // Draw a line defining thickness
+    public DrawLineEx(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void;
+    // Draw a line using cubic-bezier curves in-out
+    public DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void;
+    // Draw line using quadratic bezier curves with a control point
+    public DrawLineBezierQuad(startPos: Vector2, endPos: Vector2, controlPos: Vector2, thick: Float64, color: Color): Void;
+    // Draw line using cubic bezier curves with 2 control points
+    public DrawLineBezierCubic(startPos: Vector2, endPos: Vector2, startControlPos: Vector2, endControlPos: Vector2, thick: Float64, color: Color): Void;
+    // Draw a B-Spline line, minimum 4 points
+    public DrawLineBSpline(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw a Catmull Rom spline line, minimum 4 points
+    public DrawLineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw lines sequence
+    public DrawLineStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void;
+    // Draw a color-filled circle
+    public DrawCircle(centerX: Int, centerY: Int, radius: Float64, color: Color): Void;
+    // Draw a piece of a circle
+    public DrawCircleSector(center: Vector2, radius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void;
+    // Draw circle sector outline
+    public DrawCircleSectorLines(center: Vector2, radius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void;
+    // Draw a gradient-filled circle
+    public DrawCircleGradient(centerX: Int, centerY: Int, radius: Float64, color1: Color, color2: Color): Void;
+    // Draw a color-filled circle (Vector version)
+    public DrawCircleV(center: Vector2, radius: Float64, color: Color): Void;
+    // Draw circle outline
+    public DrawCircleLines(centerX: Int, centerY: Int, radius: Float64, color: Color): Void;
+    // Draw ellipse
+    public DrawEllipse(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void;
+    // Draw ellipse outline
+    public DrawEllipseLines(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void;
+    // Draw ring
+    public DrawRing(center: Vector2, innerRadius: Float64, outerRadius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void;
+    // Draw ring outline
+    public DrawRingLines(center: Vector2, innerRadius: Float64, outerRadius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void;
+    // Draw a color-filled rectangle
+    public DrawRectangle(posX: Int, posY: Int, width: Int, height: Int, color: Color): Void;
+    // Draw a color-filled rectangle (Vector version)
+    public DrawRectangleV(position: Vector2, size: Vector2, color: Color): Void;
+    // Draw a color-filled rectangle
+    public DrawRectangleRec(rec: Rectangle, color: Color): Void;
+    // Draw a color-filled rectangle with pro parameters
+    public DrawRectanglePro(rec: Rectangle, origin: Vector2, rotation: Float64, color: Color): Void;
+    // Draw a vertical-gradient-filled rectangle
+    public DrawRectangleGradientV(posX: Int, posY: Int, width: Int, height: Int, color1: Color, color2: Color): Void;
+    // Draw a horizontal-gradient-filled rectangle
+    public DrawRectangleGradientH(posX: Int, posY: Int, width: Int, height: Int, color1: Color, color2: Color): Void;
+    // Draw a gradient-filled rectangle with custom vertex colors
+    public DrawRectangleGradientEx(rec: Rectangle, col1: Color, col2: Color, col3: Color, col4: Color): Void;
+    // Draw rectangle outline
+    public DrawRectangleLines(posX: Int, posY: Int, width: Int, height: Int, color: Color): Void;
+    // Draw rectangle outline with extended parameters
+    public DrawRectangleLinesEx(rec: Rectangle, lineThick: Float64, color: Color): Void;
+    // Draw rectangle with rounded edges
+    public DrawRectangleRounded(rec: Rectangle, roundness: Float64, segments: Int, color: Color): Void;
+    // Draw rectangle with rounded edges outline
+    public DrawRectangleRoundedLines(rec: Rectangle, roundness: Float64, segments: Int, lineThick: Float64, color: Color): Void;
+    // Draw a color-filled triangle (vertex in counter-clockwise order!)
+    public DrawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color): Void;
+    // Draw triangle outline (vertex in counter-clockwise order!)
+    public DrawTriangleLines(v1: Vector2, v2: Vector2, v3: Vector2, color: Color): Void;
+    // Draw a triangle fan defined by points (first vertex is the center)
+    public DrawTriangleFan(points: Listed<Vector2>, pointCount: Int, color: Color): Void;
+    // Draw a triangle strip defined by points
+    public DrawTriangleStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void;
+    // Draw a regular polygon (Vector version)
+    public DrawPoly(center: Vector2, sides: Int, radius: Float64, rotation: Float64, color: Color): Void;
+    // Draw a polygon outline of n sides
+    public DrawPolyLines(center: Vector2, sides: Int, radius: Float64, rotation: Float64, color: Color): Void;
+    // Draw a polygon outline of n sides with extended parameters
+    public DrawPolyLinesEx(center: Vector2, sides: Int, radius: Float64, rotation: Float64, lineThick: Float64, color: Color): Void;
+    // Check collision between two rectangles
+    public CheckCollisionRecs(rec1: Rectangle, rec2: Rectangle): Boolean;
+    // Check collision between two circles
+    public CheckCollisionCircles(center1: Vector2, radius1: Float64, center2: Vector2, radius2: Float64): Boolean;
+    // Check collision between circle and rectangle
+    public CheckCollisionCircleRec(center: Vector2, radius: Float64, rec: Rectangle): Boolean;
+    // Check if point is inside rectangle
+    public CheckCollisionPointRec(point: Vector2, rec: Rectangle): Boolean;
+    // Check if point is inside circle
+    public CheckCollisionPointCircle(point: Vector2, center: Vector2, radius: Float64): Boolean;
+    // Check if point is inside a triangle
+    public CheckCollisionPointTriangle(point: Vector2, p1: Vector2, p2: Vector2, p3: Vector2): Boolean;
+    // Check if point is within a polygon described by array of vertices
+    public CheckCollisionPointPoly(point: Vector2, points: Listed<Vector2>, pointCount: Int): Boolean;
+    // Check the collision between two lines defined by two points each, returns collision point by reference
+    public CheckCollisionLines(startPos1: Vector2, endPos1: Vector2, startPos2: Vector2, endPos2: Vector2, collisionPoint: Listed<Vector2>): Boolean;
+    // Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
+    public CheckCollisionPointLine(point: Vector2, p1: Vector2, p2: Vector2, threshold: Int): Boolean;
+    // Get collision rectangle for two rectangles collision
+    public GetCollisionRec(rec1: Rectangle, rec2: Rectangle): Rectangle;
+    // Load image from file into CPU memory (RAM)
+    public LoadImage(fileName: String): Image;
+    // Load image from RAW file data
+    public LoadImageRaw(fileName: String, width: Int, height: Int, format: Int, headerSize: Int): Image;
+    // Load image from SVG file data or string with specified size
+    public LoadImageSvg(fileNameOrString: String, width: Int, height: Int): Image;
+    // Load image sequence from file (frames appended to image.data)
+    public LoadImageAnim(fileName: String, frames: Listed<Int>): Image;
+    // Load image from memory buffer, fileType refers to extension: i.e. '.png'
+    public LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image;
+    // Load image from GPU texture data
+    public LoadImageFromTexture(texture: Texture2D): Image;
+    // Load image from screen buffer and (screenshot)
+    public LoadImageFromScreen(): Image;
+    // Check if an image is ready
+    public IsImageReady(image: Image): Boolean;
+    // Unload image from CPU memory (RAM)
+    public UnloadImage(image: Image): Void;
+    // Export image data to file, returns true on success
+    public ExportImage(image: Image, fileName: String): Boolean;
+    // Export image to memory buffer
+    public ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): Listed<Int>;
+    // Export image as code file defining an array of bytes, returns true on success
+    public ExportImageAsCode(image: Image, fileName: String): Boolean;
+    // Generate image: plain color
+    public GenImageColor(width: Int, height: Int, color: Color): Image;
+    // Generate image: linear gradient, direction in degrees [0..360], 0=Vertical gradient
+    public GenImageGradientLinear(width: Int, height: Int, direction: Int, start: Color, end: Color): Image;
+    // Generate image: radial gradient
+    public GenImageGradientRadial(width: Int, height: Int, density: Float64, inner: Color, outer: Color): Image;
+    // Generate image: square gradient
+    public GenImageGradientSquare(width: Int, height: Int, density: Float64, inner: Color, outer: Color): Image;
+    // Generate image: checked
+    public GenImageChecked(width: Int, height: Int, checksX: Int, checksY: Int, col1: Color, col2: Color): Image;
+    // Generate image: white noise
+    public GenImageWhiteNoise(width: Int, height: Int, factor: Float64): Image;
+    // Generate image: perlin noise
+    public GenImagePerlinNoise(width: Int, height: Int, offsetX: Int, offsetY: Int, scale: Float64): Image;
+    // Generate image: cellular algorithm, bigger tileSize means bigger cells
+    public GenImageCellular(width: Int, height: Int, tileSize: Int): Image;
+    // Generate image: grayscale image from text data
+    public GenImageText(width: Int, height: Int, text: String): Image;
+    // Create an image duplicate (useful for transformations)
+    public ImageCopy(image: Image): Image;
+    // Create an image from another image piece
+    public ImageFromImage(image: Image, rec: Rectangle): Image;
+    // Create an image from text (default font)
+    public ImageText(text: String, fontSize: Int, color: Color): Image;
+    // Create an image from text (custom sprite font)
+    public ImageTextEx(font: Font, text: String, fontSize: Float64, spacing: Float64, tint: Color): Image;
+    // Convert image data to desired format
+    public ImageFormat(image: Listed<Image>, newFormat: Int): Void;
+    // Convert image to POT (power-of-two)
+    public ImageToPOT(image: Listed<Image>, fill: Color): Void;
+    // Crop an image to a defined rectangle
+    public ImageCrop(image: Listed<Image>, crop: Rectangle): Void;
+    // Crop image depending on alpha value
+    public ImageAlphaCrop(image: Listed<Image>, threshold: Float64): Void;
+    // Clear alpha channel to desired color
+    public ImageAlphaClear(image: Listed<Image>, color: Color, threshold: Float64): Void;
+    // Apply alpha mask to image
+    public ImageAlphaMask(image: Listed<Image>, alphaMask: Image): Void;
+    // Premultiply alpha channel
+    public ImageAlphaPremultiply(image: Listed<Image>): Void;
+    // Apply Gaussian blur using a box blur approximation
+    public ImageBlurGaussian(image: Listed<Image>, blurSize: Int): Void;
+    // Resize image (Bicubic scaling algorithm)
+    public ImageResize(image: Listed<Image>, newWidth: Int, newHeight: Int): Void;
+    // Resize image (Nearest-Neighbor scaling algorithm)
+    public ImageResizeNN(image: Listed<Image>, newWidth: Int, newHeight: Int): Void;
+    // Resize canvas and fill with color
+    public ImageResizeCanvas(image: Listed<Image>, newWidth: Int, newHeight: Int, offsetX: Int, offsetY: Int, fill: Color): Void;
+    // Compute all mipmap levels for a provided image
+    public ImageMipmaps(image: Listed<Image>): Void;
+    // Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
+    public ImageDither(image: Listed<Image>, rBpp: Int, gBpp: Int, bBpp: Int, aBpp: Int): Void;
+    // Flip image vertically
+    public ImageFlipVertical(image: Listed<Image>): Void;
+    // Flip image horizontally
+    public ImageFlipHorizontal(image: Listed<Image>): Void;
+    // Rotate image by input angle in degrees (-359 to 359)
+    public ImageRotate(image: Listed<Image>, degrees: Int): Void;
+    // Rotate image clockwise 90deg
+    public ImageRotateCW(image: Listed<Image>): Void;
+    // Rotate image counter-clockwise 90deg
+    public ImageRotateCCW(image: Listed<Image>): Void;
+    // Modify image color: tint
+    public ImageColorTint(image: Listed<Image>, color: Color): Void;
+    // Modify image color: invert
+    public ImageColorInvert(image: Listed<Image>): Void;
+    // Modify image color: grayscale
+    public ImageColorGrayscale(image: Listed<Image>): Void;
+    // Modify image color: contrast (-100 to 100)
+    public ImageColorContrast(image: Listed<Image>, contrast: Float64): Void;
+    // Modify image color: brightness (-255 to 255)
+    public ImageColorBrightness(image: Listed<Image>, brightness: Int): Void;
+    // Modify image color: replace color
+    public ImageColorReplace(image: Listed<Image>, color: Color, replace: Color): Void;
+    // Load color data from image as a Color array (RGBA - 32bit)
+    public LoadImageColors(image: Image): Listed<Color>;
+    // Load colors palette from image as a Color array (RGBA - 32bit)
+    public LoadImagePalette(image: Image, maxPaletteSize: Int, colorCount: Listed<Int>): Listed<Color>;
+    // Unload color data loaded with LoadImageColors()
+    public UnloadImageColors(colors: Listed<Color>): Void;
+    // Unload colors palette loaded with LoadImagePalette()
+    public UnloadImagePalette(colors: Listed<Color>): Void;
+    // Get image alpha border rectangle
+    public GetImageAlphaBorder(image: Image, threshold: Float64): Rectangle;
+    // Get image pixel color at (x, y) position
+    public GetImageColor(image: Image, x: Int, y: Int): Color;
+    // Clear image background with given color
+    public ImageClearBackground(dst: Listed<Image>, color: Color): Void;
+    // Draw pixel within an image
+    public ImageDrawPixel(dst: Listed<Image>, posX: Int, posY: Int, color: Color): Void;
+    // Draw pixel within an image (Vector version)
+    public ImageDrawPixelV(dst: Listed<Image>, position: Vector2, color: Color): Void;
+    // Draw line within an image
+    public ImageDrawLine(dst: Listed<Image>, startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void;
+    // Draw line within an image (Vector version)
+    public ImageDrawLineV(dst: Listed<Image>, start: Vector2, end: Vector2, color: Color): Void;
+    // Draw a filled circle within an image
+    public ImageDrawCircle(dst: Listed<Image>, centerX: Int, centerY: Int, radius: Int, color: Color): Void;
+    // Draw a filled circle within an image (Vector version)
+    public ImageDrawCircleV(dst: Listed<Image>, center: Vector2, radius: Int, color: Color): Void;
+    // Draw circle outline within an image
+    public ImageDrawCircleLines(dst: Listed<Image>, centerX: Int, centerY: Int, radius: Int, color: Color): Void;
+    // Draw circle outline within an image (Vector version)
+    public ImageDrawCircleLinesV(dst: Listed<Image>, center: Vector2, radius: Int, color: Color): Void;
+    // Draw rectangle within an image
+    public ImageDrawRectangle(dst: Listed<Image>, posX: Int, posY: Int, width: Int, height: Int, color: Color): Void;
+    // Draw rectangle within an image (Vector version)
+    public ImageDrawRectangleV(dst: Listed<Image>, position: Vector2, size: Vector2, color: Color): Void;
+    // Draw rectangle within an image
+    public ImageDrawRectangleRec(dst: Listed<Image>, rec: Rectangle, color: Color): Void;
+    // Draw rectangle lines within an image
+    public ImageDrawRectangleLines(dst: Listed<Image>, rec: Rectangle, thick: Int, color: Color): Void;
+    // Draw a source image within a destination image (tint applied to source)
+    public ImageDraw(dst: Listed<Image>, src: Image, srcRec: Rectangle, dstRec: Rectangle, tint: Color): Void;
+    // Draw text (using default font) within an image (destination)
+    public ImageDrawText(dst: Listed<Image>, text: String, posX: Int, posY: Int, fontSize: Int, color: Color): Void;
+    // Draw text (custom sprite font) within an image (destination)
+    public ImageDrawTextEx(dst: Listed<Image>, font: Font, text: String, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void;
+    // Load texture from file into GPU memory (VRAM)
+    public LoadTexture(fileName: String): Texture2D;
+    // Load texture from image data
+    public LoadTextureFromImage(image: Image): Texture2D;
+    // Load cubemap from image, multiple image cubemap layouts supported
+    public LoadTextureCubemap(image: Image, layout: Int): TextureCubemap;
+    // Load texture for rendering (framebuffer)
+    public LoadRenderTexture(width: Int, height: Int): RenderTexture2D;
+    // Check if a texture is ready
+    public IsTextureReady(texture: Texture2D): Boolean;
+    // Unload texture from GPU memory (VRAM)
+    public UnloadTexture(texture: Texture2D): Void;
+    // Check if a render texture is ready
+    public IsRenderTextureReady(target: RenderTexture2D): Boolean;
+    // Unload render texture from GPU memory (VRAM)
+    public UnloadRenderTexture(target: RenderTexture2D): Void;
+    // Update GPU texture with new data
+    public UpdateTexture(texture: Texture2D, pixels: DenseBitVector): Void;
+    // Update GPU texture rectangle with new data
+    public UpdateTextureRec(texture: Texture2D, rec: Rectangle, pixels: DenseBitVector): Void;
+    // Generate GPU mipmaps for a texture
+    public GenTextureMipmaps(texture: Listed<Texture2D>): Void;
+    // Set texture scaling filter mode
+    public SetTextureFilter(texture: Texture2D, filter: Int): Void;
+    // Set texture wrapping mode
+    public SetTextureWrap(texture: Texture2D, wrap: Int): Void;
+    // Draw a Texture2D
+    public DrawTexture(texture: Texture2D, posX: Int, posY: Int, tint: Color): Void;
+    // Draw a Texture2D with position defined as Vector2
+    public DrawTextureV(texture: Texture2D, position: Vector2, tint: Color): Void;
+    // Draw a Texture2D with extended parameters
+    public DrawTextureEx(texture: Texture2D, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void;
+    // Draw a part of a texture defined by a rectangle
+    public DrawTextureRec(texture: Texture2D, source: Rectangle, position: Vector2, tint: Color): Void;
+    // Draw a part of a texture defined by a rectangle with 'pro' parameters
+    public DrawTexturePro(texture: Texture2D, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
+    // Draws a texture (or part of it) that stretches or shrinks nicely
+    public DrawTextureNPatch(texture: Texture2D, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
+    // Get color with alpha applied, alpha goes from 0.0f to 1.0f
+    public Fade(color: Color, alpha: Float64): Color;
+    // Get hexadecimal value for a Color
+    public ColorToInt(color: Color): Int;
+    // Get Color normalized as float [0..1]
+    public ColorNormalize(color: Color): Vector4;
+    // Get Color from normalized values [0..1]
+    public ColorFromNormalized(normalized: Vector4): Color;
+    // Get HSV values for a Color, hue [0..360], saturation/value [0..1]
+    public ColorToHSV(color: Color): Vector3;
+    // Get a Color from HSV values, hue [0..360], saturation/value [0..1]
+    public ColorFromHSV(hue: Float64, saturation: Float64, value: Float64): Color;
+    // Get color multiplied with another color
+    public ColorTint(color: Color, tint: Color): Color;
+    // Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
+    public ColorBrightness(color: Color, factor: Float64): Color;
+    // Get color with contrast correction, contrast values between -1.0f and 1.0f
+    public ColorContrast(color: Color, contrast: Float64): Color;
+    // Get color with alpha applied, alpha goes from 0.0f to 1.0f
+    public ColorAlpha(color: Color, alpha: Float64): Color;
+    // Get src alpha-blended into dst color with tint
+    public ColorAlphaBlend(dst: Color, src: Color, tint: Color): Color;
+    // Get Color structure from hexadecimal value
+    public GetColor(hexValue: Int): Color;
+    // Get Color from a source pixel pointer of certain format
+    public GetPixelColor(srcPtr: DenseBitVector, format: Int): Color;
+    // Set color formatted into destination pixel pointer
+    public SetPixelColor(dstPtr: DenseBitVector, color: Color, format: Int): Void;
+    // Get pixel data size in bytes for certain format
+    public GetPixelDataSize(width: Int, height: Int, format: Int): Int;
+    // Get the default Font
+    public GetFontDefault(): Font;
+    // Load font from file into GPU memory (VRAM)
+    public LoadFont(fileName: String): Font;
+    // Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character setFont
+    public LoadFontEx(fileName: String, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font;
+    // Load font from Image (XNA style)
+    public LoadFontFromImage(image: Image, key: Color, firstChar: Int): Font;
+    // Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
+    public LoadFontFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font;
+    // Check if a font is ready
+    public IsFontReady(font: Font): Boolean;
+    // Load font data for further use
+    public LoadFontData(fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo>;
+    // Generate image font atlas using chars info
+    public GenImageFontAtlas(glyphs: Listed<GlyphInfo>, glyphRecs: Listed<Listed<Rectangle>>, glyphCount: Int, fontSize: Int, padding: Int, packMethod: Int): Image;
+    // Unload font chars info data (RAM)
+    public UnloadFontData(glyphs: Listed<GlyphInfo>, glyphCount: Int): Void;
+    // Unload font from GPU memory (VRAM)
+    public UnloadFont(font: Font): Void;
+    // Export font as code file, returns true on success
+    public ExportFontAsCode(font: Font, fileName: String): Boolean;
+    // Draw current FPS
+    public DrawFPS(posX: Int, posY: Int): Void;
+    // Draw text (using default font)
+    public DrawText(text: String, posX: Int, posY: Int, fontSize: Int, color: Color): Void;
+    // Draw text using font and additional parameters
+    public DrawTextEx(font: Font, text: String, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void;
+    // Draw text using Font and pro parameters (rotation)
+    public DrawTextPro(font: Font, text: String, position: Vector2, origin: Vector2, rotation: Float64, fontSize: Float64, spacing: Float64, tint: Color): Void;
+    // Draw one character (codepoint)
+    public DrawTextCodepoint(font: Font, codepoint: Int, position: Vector2, fontSize: Float64, tint: Color): Void;
+    // Draw multiple character (codepoint)
+    public DrawTextCodepoints(font: Font, codepoints: Listed<Int>, codepointCount: Int, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void;
+    // Set vertical line spacing when drawing with line-breaks
+    public SetTextLineSpacing(spacing: Int): Void;
+    // Measure string width for default font
+    public MeasureText(text: String, fontSize: Int): Int;
+    // Measure string size for Font
+    public MeasureTextEx(font: Font, text: String, fontSize: Float64, spacing: Float64): Vector2;
+    // Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
+    public GetGlyphIndex(font: Font, codepoint: Int): Int;
+    // Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
+    public GetGlyphInfo(font: Font, codepoint: Int): GlyphInfo;
+    // Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
+    public GetGlyphAtlasRec(font: Font, codepoint: Int): Rectangle;
+    // Load UTF-8 text encoded from codepoints array
+    public LoadUTF8(codepoints: Listed<Int>, length: Int): String;
+    // Unload UTF-8 text encoded from codepoints array
+    public UnloadUTF8(text: String): Void;
+    // Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
+    public LoadCodepoints(text: String, count: Listed<Int>): Listed<Int>;
+    // Unload codepoints data from memory
+    public UnloadCodepoints(codepoints: Listed<Int>): Void;
+    // Get total number of codepoints in a UTF-8 encoded string
+    public GetCodepointCount(text: String): Int;
+    // Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+    public GetCodepoint(text: String, codepointSize: Listed<Int>): Int;
+    // Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+    public GetCodepointNext(text: String, codepointSize: Listed<Int>): Int;
+    // Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+    public GetCodepointPrevious(text: String, codepointSize: Listed<Int>): Int;
+    // Encode one codepoint into UTF-8 byte array (array length returned as parameter)
+    public CodepointToUTF8(codepoint: Int, utf8Size: Listed<Int>): String;
+    // Copy one string to another, returns bytes copied
+    public TextCopy(dst: String, src: String): Int;
+    // Check if two text string are equal
+    public TextIsEqual(text1: String, text2: String): Boolean;
+    // Get text length, checks for '\0' ending
+    public TextLength(text: String): Int;
+    // Get a piece of a text string
+    public TextSubtext(text: String, position: Int, length: Int): String;
+    // Replace text string (WARNING: memory must be freed!)
+    public TextReplace(text: String, replace: String, by: String): String;
+    // Insert text in a position (WARNING: memory must be freed!)
+    public TextInsert(text: String, insert: String, position: Int): String;
+    // Join text strings with delimiter
+    public TextJoin(textList: Listed<String>, count: Int, delimiter: String): String;
+    // Split text into multiple strings
+    public TextSplit(text: String, delimiter: Int, count: Listed<Int>): Listed<String>;
+    // Append text at specific position and move cursor!
+    public TextAppend(text: String, append: String, position: Listed<Int>): Void;
+    // Find first text occurrence within a string
+    public TextFindIndex(text: String, find: String): Int;
+    // Get upper case version of provided string
+    public TextToUpper(text: String): String;
+    // Get lower case version of provided string
+    public TextToLower(text: String): String;
+    // Get Pascal case notation version of provided string
+    public TextToPascal(text: String): String;
+    // Get integer value from text (negative values not supported)
+    public TextToInteger(text: String): Int;
+    // Draw a line in 3D world space
+    public DrawLine3D(startPos: Vector3, endPos: Vector3, color: Color): Void;
+    // Draw a point in 3D space, actually a small line
+    public DrawPoint3D(position: Vector3, color: Color): Void;
+    // Draw a circle in 3D world space
+    public DrawCircle3D(center: Vector3, radius: Float64, rotationAxis: Vector3, rotationAngle: Float64, color: Color): Void;
+    // Draw a color-filled triangle (vertex in counter-clockwise order!)
+    public DrawTriangle3D(v1: Vector3, v2: Vector3, v3: Vector3, color: Color): Void;
+    // Draw a triangle strip defined by points
+    public DrawTriangleStrip3D(points: Listed<Vector3>, pointCount: Int, color: Color): Void;
+    // Draw cube
+    public DrawCube(position: Vector3, width: Float64, height: Float64, length: Float64, color: Color): Void;
+    // Draw cube (Vector version)
+    public DrawCubeV(position: Vector3, size: Vector3, color: Color): Void;
+    // Draw cube wires
+    public DrawCubeWires(position: Vector3, width: Float64, height: Float64, length: Float64, color: Color): Void;
+    // Draw cube wires (Vector version)
+    public DrawCubeWiresV(position: Vector3, size: Vector3, color: Color): Void;
+    // Draw sphere
+    public DrawSphere(centerPos: Vector3, radius: Float64, color: Color): Void;
+    // Draw sphere with extended parameters
+    public DrawSphereEx(centerPos: Vector3, radius: Float64, rings: Int, slices: Int, color: Color): Void;
+    // Draw sphere wires
+    public DrawSphereWires(centerPos: Vector3, radius: Float64, rings: Int, slices: Int, color: Color): Void;
+    // Draw a cylinder/cone
+    public DrawCylinder(position: Vector3, radiusTop: Float64, radiusBottom: Float64, height: Float64, slices: Int, color: Color): Void;
+    // Draw a cylinder with base at startPos and top at endPos
+    public DrawCylinderEx(startPos: Vector3, endPos: Vector3, startRadius: Float64, endRadius: Float64, sides: Int, color: Color): Void;
+    // Draw a cylinder/cone wires
+    public DrawCylinderWires(position: Vector3, radiusTop: Float64, radiusBottom: Float64, height: Float64, slices: Int, color: Color): Void;
+    // Draw a cylinder wires with base at startPos and top at endPos
+    public DrawCylinderWiresEx(startPos: Vector3, endPos: Vector3, startRadius: Float64, endRadius: Float64, sides: Int, color: Color): Void;
+    // Draw a capsule with the center of its sphere caps at startPos and endPos
+    public DrawCapsule(startPos: Vector3, endPos: Vector3, radius: Float64, slices: Int, rings: Int, color: Color): Void;
+    // Draw capsule wireframe with the center of its sphere caps at startPos and endPos
+    public DrawCapsuleWires(startPos: Vector3, endPos: Vector3, radius: Float64, slices: Int, rings: Int, color: Color): Void;
+    // Draw a plane XZ
+    public DrawPlane(centerPos: Vector3, size: Vector2, color: Color): Void;
+    // Draw a ray line
+    public DrawRay(ray: Ray, color: Color): Void;
+    // Draw a grid (centered at (0, 0, 0))
+    public DrawGrid(slices: Int, spacing: Float64): Void;
+    // Load model from files (meshes and materials)
+    public LoadModel(fileName: String): Model;
+    // Load model from generated mesh (default material)
+    public LoadModelFromMesh(mesh: Mesh): Model;
+    // Check if a model is ready
+    public IsModelReady(model: Model): Boolean;
+    // Unload model (including meshes) from memory (RAM and/or VRAM)
+    public UnloadModel(model: Model): Void;
+    // Compute model bounding box limits (considers all meshes)
+    public GetModelBoundingBox(model: Model): BoundingBox;
+    // Draw a model (with texture if set)
+    public DrawModel(model: Model, position: Vector3, scale: Float64, tint: Color): Void;
+    // Draw a model with extended parameters
+    public DrawModelEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: Float64, scale: Vector3, tint: Color): Void;
+    // Draw a model wires (with texture if set)
+    public DrawModelWires(model: Model, position: Vector3, scale: Float64, tint: Color): Void;
+    // Draw a model wires (with texture if set) with extended parameters
+    public DrawModelWiresEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: Float64, scale: Vector3, tint: Color): Void;
+    // Draw bounding box (wires)
+    public DrawBoundingBox(box: BoundingBox, color: Color): Void;
+    // Draw a billboard texture
+    public DrawBillboard(camera: Camera, texture: Texture2D, position: Vector3, size: Float64, tint: Color): Void;
+    // Draw a billboard texture defined by source
+    public DrawBillboardRec(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void;
+    // Draw a billboard texture defined by source and rotation
+    public DrawBillboardPro(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void;
+    // Upload mesh vertex data in GPU and provide VAO/VBO ids
+    public UploadMesh(mesh: Listed<Mesh>, dynamic: Boolean): Void;
+    // Update mesh vertex data in GPU for a specific buffer index
+    public UpdateMeshBuffer(mesh: Mesh, index: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void;
+    // Unload mesh data from CPU and GPU
+    public UnloadMesh(mesh: Mesh): Void;
+    // Draw a 3d mesh with material and transform
+    public DrawMesh(mesh: Mesh, material: Material, transform: Matrix): Void;
+    // Draw multiple mesh instances with material and different transforms
+    public DrawMeshInstanced(mesh: Mesh, material: Material, transforms: Listed<Matrix>, instances: Int): Void;
+    // Export mesh data to file, returns true on success
+    public ExportMesh(mesh: Mesh, fileName: String): Boolean;
+    // Compute mesh bounding box limits
+    public GetMeshBoundingBox(mesh: Mesh): BoundingBox;
+    // Compute mesh tangents
+    public GenMeshTangents(mesh: Listed<Mesh>): Void;
+    // Generate polygonal mesh
+    public GenMeshPoly(sides: Int, radius: Float64): Mesh;
+    // Generate plane mesh (with subdivisions)
+    public GenMeshPlane(width: Float64, length: Float64, resX: Int, resZ: Int): Mesh;
+    // Generate cuboid mesh
+    public GenMeshCube(width: Float64, height: Float64, length: Float64): Mesh;
+    // Generate sphere mesh (standard sphere)
+    public GenMeshSphere(radius: Float64, rings: Int, slices: Int): Mesh;
+    // Generate half-sphere mesh (no bottom cap)
+    public GenMeshHemiSphere(radius: Float64, rings: Int, slices: Int): Mesh;
+    // Generate cylinder mesh
+    public GenMeshCylinder(radius: Float64, height: Float64, slices: Int): Mesh;
+    // Generate cone/pyramid mesh
+    public GenMeshCone(radius: Float64, height: Float64, slices: Int): Mesh;
+    // Generate torus mesh
+    public GenMeshTorus(radius: Float64, size: Float64, radSeg: Int, sides: Int): Mesh;
+    // Generate trefoil knot mesh
+    public GenMeshKnot(radius: Float64, size: Float64, radSeg: Int, sides: Int): Mesh;
+    // Generate heightmap mesh from image data
+    public GenMeshHeightmap(heightmap: Image, size: Vector3): Mesh;
+    // Generate cubes-based map mesh from image data
+    public GenMeshCubicmap(cubicmap: Image, cubeSize: Vector3): Mesh;
+    // Load materials from model file
+    public LoadMaterials(fileName: String, materialCount: Listed<Int>): Listed<Material>;
+    // Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
+    public LoadMaterialDefault(): Material;
+    // Check if a material is ready
+    public IsMaterialReady(material: Material): Boolean;
+    // Unload material from GPU memory (VRAM)
+    public UnloadMaterial(material: Material): Void;
+    // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
+    public SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture2D): Void;
+    // Set material for a mesh
+    public SetModelMeshMaterial(model: Listed<Model>, meshId: Int, materialId: Int): Void;
+    // Load model animations from file
+    public LoadModelAnimations(fileName: String, animCount: Listed<Int>): Listed<ModelAnimation>;
+    // Update model animation pose
+    public UpdateModelAnimation(model: Model, anim: ModelAnimation, frame: Int): Void;
+    // Unload animation data
+    public UnloadModelAnimation(anim: ModelAnimation): Void;
+    // Unload animation array data
+    public UnloadModelAnimations(animations: Listed<ModelAnimation>, animCount: Int): Void;
+    // Check model animation skeleton match
+    public IsModelAnimationValid(model: Model, anim: ModelAnimation): Boolean;
+    // Check collision between two spheres
+    public CheckCollisionSpheres(center1: Vector3, radius1: Float64, center2: Vector3, radius2: Float64): Boolean;
+    // Check collision between two bounding boxes
+    public CheckCollisionBoxes(box1: BoundingBox, box2: BoundingBox): Boolean;
+    // Check collision between box and sphere
+    public CheckCollisionBoxSphere(box: BoundingBox, center: Vector3, radius: Float64): Boolean;
+    // Get collision info between ray and sphere
+    public GetRayCollisionSphere(ray: Ray, center: Vector3, radius: Float64): RayCollision;
+    // Get collision info between ray and box
+    public GetRayCollisionBox(ray: Ray, box: BoundingBox): RayCollision;
+    // Get collision info between ray and mesh
+    public GetRayCollisionMesh(ray: Ray, mesh: Mesh, transform: Matrix): RayCollision;
+    // Get collision info between ray and triangle
+    public GetRayCollisionTriangle(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3): RayCollision;
+    // Get collision info between ray and quad
+    public GetRayCollisionQuad(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3): RayCollision;
+    // Initialize audio device and context
+    public InitAudioDevice(): Void;
+    // Close the audio device and context
+    public CloseAudioDevice(): Void;
+    // Check if audio device has been initialized successfully
+    public IsAudioDeviceReady(): Boolean;
+    // Set master volume (listener)
+    public SetMasterVolume(volume: Float64): Void;
+    // Load wave data from file
+    public LoadWave(fileName: String): Wave;
+    // Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+    public LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Wave;
+    // Checks if wave data is ready
+    public IsWaveReady(wave: Wave): Boolean;
+    // Load sound from file
+    public LoadSound(fileName: String): Sound;
+    // Load sound from wave data
+    public LoadSoundFromWave(wave: Wave): Sound;
+    // Create a new sound that shares the same sample data as the source sound, does not own the sound data
+    public LoadSoundAlias(source: Sound): Sound;
+    // Checks if a sound is ready
+    public IsSoundReady(sound: Sound): Boolean;
+    // Update sound buffer with new data
+    public UpdateSound(sound: Sound, data: DenseBitVector, sampleCount: Int): Void;
+    // Unload wave data
+    public UnloadWave(wave: Wave): Void;
+    // Unload sound
+    public UnloadSound(sound: Sound): Void;
+    // Unload a sound alias (does not deallocate sample data)
+    public UnloadSoundAlias(alias: Sound): Void;
+    // Export wave data to file, returns true on success
+    public ExportWave(wave: Wave, fileName: String): Boolean;
+    // Export wave sample data to code (.h), returns true on success
+    public ExportWaveAsCode(wave: Wave, fileName: String): Boolean;
+    // Play a sound
+    public PlaySound(sound: Sound): Void;
+    // Stop playing a sound
+    public StopSound(sound: Sound): Void;
+    // Pause a sound
+    public PauseSound(sound: Sound): Void;
+    // Resume a paused sound
+    public ResumeSound(sound: Sound): Void;
+    // Check if a sound is currently playing
+    public IsSoundPlaying(sound: Sound): Boolean;
+    // Set volume for a sound (1.0 is max level)
+    public SetSoundVolume(sound: Sound, volume: Float64): Void;
+    // Set pitch for a sound (1.0 is base level)
+    public SetSoundPitch(sound: Sound, pitch: Float64): Void;
+    // Set pan for a sound (0.5 is center)
+    public SetSoundPan(sound: Sound, pan: Float64): Void;
+    // Copy a wave to a new wave
+    public WaveCopy(wave: Wave): Wave;
+    // Crop a wave to defined samples range
+    public WaveCrop(wave: Listed<Wave>, initSample: Int, finalSample: Int): Void;
+    // Convert wave data to desired format
+    public WaveFormat(wave: Listed<Wave>, sampleRate: Int, sampleSize: Int, channels: Int): Void;
+    // Load samples data from wave as a 32bit float data array
+    public LoadWaveSamples(wave: Wave): Listed<Float64>;
+    // Unload samples data loaded with LoadWaveSamples()
+    public UnloadWaveSamples(samples: Listed<Float64>): Void;
+    // Load music stream from file
+    public LoadMusicStream(fileName: String): Music;
+    // Load music stream from data
+    public LoadMusicStreamFromMemory(fileType: String, data: Listed<Int>, dataSize: Int): Music;
+    // Checks if a music stream is ready
+    public IsMusicReady(music: Music): Boolean;
+    // Unload music stream
+    public UnloadMusicStream(music: Music): Void;
+    // Start music playing
+    public PlayMusicStream(music: Music): Void;
+    // Check if music is playing
+    public IsMusicStreamPlaying(music: Music): Boolean;
+    // Updates buffers for music streaming
+    public UpdateMusicStream(music: Music): Void;
+    // Stop music playing
+    public StopMusicStream(music: Music): Void;
+    // Pause music playing
+    public PauseMusicStream(music: Music): Void;
+    // Resume playing paused music
+    public ResumeMusicStream(music: Music): Void;
+    // Seek music to a position (in seconds)
+    public SeekMusicStream(music: Music, position: Float64): Void;
+    // Set volume for music (1.0 is max level)
+    public SetMusicVolume(music: Music, volume: Float64): Void;
+    // Set pitch for a music (1.0 is base level)
+    public SetMusicPitch(music: Music, pitch: Float64): Void;
+    // Set pan for a music (0.5 is center)
+    public SetMusicPan(music: Music, pan: Float64): Void;
+    // Get music time length (in seconds)
+    public GetMusicTimeLength(music: Music): Float64;
+    // Get current music time played (in seconds)
+    public GetMusicTimePlayed(music: Music): Float64;
+    // Load audio stream (to stream raw audio pcm data)
+    public LoadAudioStream(sampleRate: Int, sampleSize: Int, channels: Int): AudioStream;
+    // Checks if an audio stream is ready
+    public IsAudioStreamReady(stream: AudioStream): Boolean;
+    // Unload audio stream and free memory
+    public UnloadAudioStream(stream: AudioStream): Void;
+    // Update audio stream buffers with data
+    public UpdateAudioStream(stream: AudioStream, data: DenseBitVector, frameCount: Int): Void;
+    // Check if any audio stream buffers requires refill
+    public IsAudioStreamProcessed(stream: AudioStream): Boolean;
+    // Play audio stream
+    public PlayAudioStream(stream: AudioStream): Void;
+    // Pause audio stream
+    public PauseAudioStream(stream: AudioStream): Void;
+    // Resume audio stream
+    public ResumeAudioStream(stream: AudioStream): Void;
+    // Check if audio stream is playing
+    public IsAudioStreamPlaying(stream: AudioStream): Boolean;
+    // Stop audio stream
+    public StopAudioStream(stream: AudioStream): Void;
+    // Set volume for audio stream (1.0 is max level)
+    public SetAudioStreamVolume(stream: AudioStream, volume: Float64): Void;
+    // Set pitch for audio stream (1.0 is base level)
+    public SetAudioStreamPitch(stream: AudioStream, pitch: Float64): Void;
+    // Set pan for audio stream (0.5 is centered)
+    public SetAudioStreamPan(stream: AudioStream, pan: Float64): Void;
+    // Default size for new audio streams
+    public SetAudioStreamBufferSizeDefault(size: Int): Void;
+    // Audio thread callback to request new data
+    public SetAudioStreamCallback(stream: AudioStream, callback: AudioCallback): Void;
+    // Attach audio stream processor to stream, receives the samples as <float>s
+    public AttachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void;
+    // Detach audio stream processor from stream
+    public DetachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void;
+    // Attach audio stream processor to the entire audio pipeline, receives the samples as <float>s
+    public AttachAudioMixedProcessor(processor: AudioCallback): Void;
+    // Detach audio stream processor from the entire audio pipeline
+    public DetachAudioMixedProcessor(processor: AudioCallback): Void;
+}
+
+let rl: Raylib;
+export let use(impl: Raylib): Void { rl = impl; }
+// Initialize window and OpenGL context
+export let InitWindow(width: Int, height: Int, title: String): Void {
+    rl.InitWindow(width, height, title);
+}
+// Check if KEY_ESCAPE pressed or Close icon pressed
+export let WindowShouldClose(): Boolean {
+    return rl.WindowShouldClose();
+}
+// Close window and unload OpenGL context
+export let CloseWindow(): Void {
+    rl.CloseWindow();
+}
+// Check if window has been initialized successfully
+export let IsWindowReady(): Boolean {
+    return rl.IsWindowReady();
+}
+// Check if window is currently fullscreen
+export let IsWindowFullscreen(): Boolean {
+    return rl.IsWindowFullscreen();
+}
+// Check if window is currently hidden (only PLATFORM_DESKTOP)
+export let IsWindowHidden(): Boolean {
+    return rl.IsWindowHidden();
+}
+// Check if window is currently minimized (only PLATFORM_DESKTOP)
+export let IsWindowMinimized(): Boolean {
+    return rl.IsWindowMinimized();
+}
+// Check if window is currently maximized (only PLATFORM_DESKTOP)
+export let IsWindowMaximized(): Boolean {
+    return rl.IsWindowMaximized();
+}
+// Check if window is currently focused (only PLATFORM_DESKTOP)
+export let IsWindowFocused(): Boolean {
+    return rl.IsWindowFocused();
+}
+// Check if window has been resized last frame
+export let IsWindowResized(): Boolean {
+    return rl.IsWindowResized();
+}
+// Check if one specific window flag is enabled
+export let IsWindowState(flag: Int): Boolean {
+    return rl.IsWindowState(flag);
+}
+// Set window configuration state using flags (only PLATFORM_DESKTOP)
+export let SetWindowState(flags: Int): Void {
+    rl.SetWindowState(flags);
+}
+// Clear window configuration state flags
+export let ClearWindowState(flags: Int): Void {
+    rl.ClearWindowState(flags);
+}
+// Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)
+export let ToggleFullscreen(): Void {
+    rl.ToggleFullscreen();
+}
+// Toggle window state: borderless windowed (only PLATFORM_DESKTOP)
+export let ToggleBorderlessWindowed(): Void {
+    rl.ToggleBorderlessWindowed();
+}
+// Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
+export let MaximizeWindow(): Void {
+    rl.MaximizeWindow();
+}
+// Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
+export let MinimizeWindow(): Void {
+    rl.MinimizeWindow();
+}
+// Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
+export let RestoreWindow(): Void {
+    rl.RestoreWindow();
+}
+// Set icon for window (single image, RGBA 32bit, only PLATFORM_DESKTOP)
+export let SetWindowIcon(image: Image): Void {
+    rl.SetWindowIcon(image);
+}
+// Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
+export let SetWindowIcons(images: Listed<Image>, count: Int): Void {
+    rl.SetWindowIcons(images, count);
+}
+// Set title for window (only PLATFORM_DESKTOP and PLATFORM_WEB)
+export let SetWindowTitle(title: String): Void {
+    rl.SetWindowTitle(title);
+}
+// Set window position on screen (only PLATFORM_DESKTOP)
+export let SetWindowPosition(x: Int, y: Int): Void {
+    rl.SetWindowPosition(x, y);
+}
+// Set monitor for the current window
+export let SetWindowMonitor(monitor: Int): Void {
+    rl.SetWindowMonitor(monitor);
+}
+// Set window minimum dimensions (for FLAG_WINDOW_RESIZABLE)
+export let SetWindowMinSize(width: Int, height: Int): Void {
+    rl.SetWindowMinSize(width, height);
+}
+// Set window maximum dimensions (for FLAG_WINDOW_RESIZABLE)
+export let SetWindowMaxSize(width: Int, height: Int): Void {
+    rl.SetWindowMaxSize(width, height);
+}
+// Set window dimensions
+export let SetWindowSize(width: Int, height: Int): Void {
+    rl.SetWindowSize(width, height);
+}
+// Set window opacity [0.0f..1.0f] (only PLATFORM_DESKTOP)
+export let SetWindowOpacity(opacity: Float64): Void {
+    rl.SetWindowOpacity(opacity);
+}
+// Set window focused (only PLATFORM_DESKTOP)
+export let SetWindowFocused(): Void {
+    rl.SetWindowFocused();
+}
+// Get native window handle
+export let GetWindowHandle(): DenseBitVector {
+    return rl.GetWindowHandle();
+}
+// Get current screen width
+export let GetScreenWidth(): Int {
+    return rl.GetScreenWidth();
+}
+// Get current screen height
+export let GetScreenHeight(): Int {
+    return rl.GetScreenHeight();
+}
+// Get current render width (it considers HiDPI)
+export let GetRenderWidth(): Int {
+    return rl.GetRenderWidth();
+}
+// Get current render height (it considers HiDPI)
+export let GetRenderHeight(): Int {
+    return rl.GetRenderHeight();
+}
+// Get number of connected monitors
+export let GetMonitorCount(): Int {
+    return rl.GetMonitorCount();
+}
+// Get current connected monitor
+export let GetCurrentMonitor(): Int {
+    return rl.GetCurrentMonitor();
+}
+// Get specified monitor position
+export let GetMonitorPosition(monitor: Int): Vector2 {
+    return rl.GetMonitorPosition(monitor);
+}
+// Get specified monitor width (current video mode used by monitor)
+export let GetMonitorWidth(monitor: Int): Int {
+    return rl.GetMonitorWidth(monitor);
+}
+// Get specified monitor height (current video mode used by monitor)
+export let GetMonitorHeight(monitor: Int): Int {
+    return rl.GetMonitorHeight(monitor);
+}
+// Get specified monitor physical width in millimetres
+export let GetMonitorPhysicalWidth(monitor: Int): Int {
+    return rl.GetMonitorPhysicalWidth(monitor);
+}
+// Get specified monitor physical height in millimetres
+export let GetMonitorPhysicalHeight(monitor: Int): Int {
+    return rl.GetMonitorPhysicalHeight(monitor);
+}
+// Get specified monitor refresh rate
+export let GetMonitorRefreshRate(monitor: Int): Int {
+    return rl.GetMonitorRefreshRate(monitor);
+}
+// Get window position XY on monitor
+export let GetWindowPosition(): Vector2 {
+    return rl.GetWindowPosition();
+}
+// Get window scale DPI factor
+export let GetWindowScaleDPI(): Vector2 {
+    return rl.GetWindowScaleDPI();
+}
+// Get the human-readable, UTF-8 encoded name of the specified monitor
+export let GetMonitorName(monitor: Int): String {
+    return rl.GetMonitorName(monitor);
+}
+// Set clipboard text content
+export let SetClipboardText(text: String): Void {
+    rl.SetClipboardText(text);
+}
+// Get clipboard text content
+export let GetClipboardText(): String {
+    return rl.GetClipboardText();
+}
+// Enable waiting for events on EndDrawing(), no automatic event polling
+export let EnableEventWaiting(): Void {
+    rl.EnableEventWaiting();
+}
+// Disable waiting for events on EndDrawing(), automatic events polling
+export let DisableEventWaiting(): Void {
+    rl.DisableEventWaiting();
+}
+// Swap back buffer with front buffer (screen drawing)
+export let SwapScreenBuffer(): Void {
+    rl.SwapScreenBuffer();
+}
+// Register all input events
+export let PollInputEvents(): Void {
+    rl.PollInputEvents();
+}
+// Wait for some time (halt program execution)
+export let WaitTime(seconds: Float64): Void {
+    rl.WaitTime(seconds);
+}
+// Shows cursor
+export let ShowCursor(): Void {
+    rl.ShowCursor();
+}
+// Hides cursor
+export let HideCursor(): Void {
+    rl.HideCursor();
+}
+// Check if cursor is not visible
+export let IsCursorHidden(): Boolean {
+    return rl.IsCursorHidden();
+}
+// Enables cursor (unlock cursor)
+export let EnableCursor(): Void {
+    rl.EnableCursor();
+}
+// Disables cursor (lock cursor)
+export let DisableCursor(): Void {
+    rl.DisableCursor();
+}
+// Check if cursor is on the screen
+export let IsCursorOnScreen(): Boolean {
+    return rl.IsCursorOnScreen();
+}
+// Set background color (framebuffer clear color)
+export let ClearBackground(color: Color): Void {
+    rl.ClearBackground(color);
+}
+// Setup canvas (framebuffer) to start drawing
+export let BeginDrawing(): Void {
+    rl.BeginDrawing();
+}
+// End canvas drawing and swap buffers (double buffering)
+export let EndDrawing(): Void {
+    rl.EndDrawing();
+}
+// Begin 2D mode with custom camera (2D)
+export let BeginMode2D(camera: Camera2D): Void {
+    rl.BeginMode2D(camera);
+}
+// Ends 2D mode with custom camera
+export let EndMode2D(): Void {
+    rl.EndMode2D();
+}
+// Begin 3D mode with custom camera (3D)
+export let BeginMode3D(camera: Camera3D): Void {
+    rl.BeginMode3D(camera);
+}
+// Ends 3D mode and returns to default 2D orthographic mode
+export let EndMode3D(): Void {
+    rl.EndMode3D();
+}
+// Begin drawing to render texture
+export let BeginTextureMode(target: RenderTexture2D): Void {
+    rl.BeginTextureMode(target);
+}
+// Ends drawing to render texture
+export let EndTextureMode(): Void {
+    rl.EndTextureMode();
+}
+// Begin custom shader drawing
+export let BeginShaderMode(shader: Shader): Void {
+    rl.BeginShaderMode(shader);
+}
+// End custom shader drawing (use default shader)
+export let EndShaderMode(): Void {
+    rl.EndShaderMode();
+}
+// Begin blending mode (alpha, additive, multiplied, subtract, custom)
+export let BeginBlendMode(mode: Int): Void {
+    rl.BeginBlendMode(mode);
+}
+// End blending mode (reset to default: alpha blending)
+export let EndBlendMode(): Void {
+    rl.EndBlendMode();
+}
+// Begin scissor mode (define screen area for following drawing)
+export let BeginScissorMode(x: Int, y: Int, width: Int, height: Int): Void {
+    rl.BeginScissorMode(x, y, width, height);
+}
+// End scissor mode
+export let EndScissorMode(): Void {
+    rl.EndScissorMode();
+}
+// Begin stereo rendering (requires VR simulator)
+export let BeginVrStereoMode(config: VrStereoConfig): Void {
+    rl.BeginVrStereoMode(config);
+}
+// End stereo rendering (requires VR simulator)
+export let EndVrStereoMode(): Void {
+    rl.EndVrStereoMode();
+}
+// Load VR stereo config for VR simulator device parameters
+export let LoadVrStereoConfig(device: VrDeviceInfo): VrStereoConfig {
+    return rl.LoadVrStereoConfig(device);
+}
+// Unload VR stereo config
+export let UnloadVrStereoConfig(config: VrStereoConfig): Void {
+    rl.UnloadVrStereoConfig(config);
+}
+// Load shader from files and bind default locations
+export let LoadShader(vsFileName: String, fsFileName: String): Shader {
+    return rl.LoadShader(vsFileName, fsFileName);
+}
+// Load shader from code strings and bind default locations
+export let LoadShaderFromMemory(vsCode: String, fsCode: String): Shader {
+    return rl.LoadShaderFromMemory(vsCode, fsCode);
+}
+// Check if a shader is ready
+export let IsShaderReady(shader: Shader): Boolean {
+    return rl.IsShaderReady(shader);
+}
+// Get shader uniform location
+export let GetShaderLocation(shader: Shader, uniformName: String): Int {
+    return rl.GetShaderLocation(shader, uniformName);
+}
+// Get shader attribute location
+export let GetShaderLocationAttrib(shader: Shader, attribName: String): Int {
+    return rl.GetShaderLocationAttrib(shader, attribName);
+}
+// Set shader uniform value
+export let SetShaderValue(shader: Shader, locIndex: Int, value: DenseBitVector, uniformType: Int): Void {
+    rl.SetShaderValue(shader, locIndex, value, uniformType);
+}
+// Set shader uniform value vector
+export let SetShaderValueV(shader: Shader, locIndex: Int, value: DenseBitVector, uniformType: Int, count: Int): Void {
+    rl.SetShaderValueV(shader, locIndex, value, uniformType, count);
+}
+// Set shader uniform value (matrix 4x4)
+export let SetShaderValueMatrix(shader: Shader, locIndex: Int, mat: Matrix): Void {
+    rl.SetShaderValueMatrix(shader, locIndex, mat);
+}
+// Set shader uniform value for texture (sampler2d)
+export let SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture2D): Void {
+    rl.SetShaderValueTexture(shader, locIndex, texture);
+}
+// Unload shader from GPU memory (VRAM)
+export let UnloadShader(shader: Shader): Void {
+    rl.UnloadShader(shader);
+}
+// Get a ray trace from mouse position
+export let GetMouseRay(mousePosition: Vector2, camera: Camera): Ray {
+    return rl.GetMouseRay(mousePosition, camera);
+}
+// Get camera transform matrix (view matrix)
+export let GetCameraMatrix(camera: Camera): Matrix {
+    return rl.GetCameraMatrix(camera);
+}
+// Get camera 2d transform matrix
+export let GetCameraMatrix2D(camera: Camera2D): Matrix {
+    return rl.GetCameraMatrix2D(camera);
+}
+// Get the screen space position for a 3d world space position
+export let GetWorldToScreen(position: Vector3, camera: Camera): Vector2 {
+    return rl.GetWorldToScreen(position, camera);
+}
+// Get the world space position for a 2d camera screen space position
+export let GetScreenToWorld2D(position: Vector2, camera: Camera2D): Vector2 {
+    return rl.GetScreenToWorld2D(position, camera);
+}
+// Get size position for a 3d world space position
+export let GetWorldToScreenEx(position: Vector3, camera: Camera, width: Int, height: Int): Vector2 {
+    return rl.GetWorldToScreenEx(position, camera, width, height);
+}
+// Get the screen space position for a 2d camera world space position
+export let GetWorldToScreen2D(position: Vector2, camera: Camera2D): Vector2 {
+    return rl.GetWorldToScreen2D(position, camera);
+}
+// Set target FPS (maximum)
+export let SetTargetFPS(fps: Int): Void {
+    rl.SetTargetFPS(fps);
+}
+// Get current FPS
+export let GetFPS(): Int {
+    return rl.GetFPS();
+}
+// Get time in seconds for last frame drawn (delta time)
+export let GetFrameTime(): Float64 {
+    return rl.GetFrameTime();
+}
+// Get elapsed time in seconds since InitWindow()
+export let GetTime(): Float64 {
+    return rl.GetTime();
+}
+// Get a random value between min and max (both included)
+export let GetRandomValue(min: Int, max: Int): Int {
+    return rl.GetRandomValue(min, max);
+}
+// Set the seed for the random number generator
+export let SetRandomSeed(seed: Int): Void {
+    rl.SetRandomSeed(seed);
+}
+// Takes a screenshot of current screen (filename extension defines format)
+export let TakeScreenshot(fileName: String): Void {
+    rl.TakeScreenshot(fileName);
+}
+// Setup init configuration flags (view FLAGS)
+export let SetConfigFlags(flags: Int): Void {
+    rl.SetConfigFlags(flags);
+}
+// Set the current threshold (minimum) log level
+export let SetTraceLogLevel(logLevel: Int): Void {
+    rl.SetTraceLogLevel(logLevel);
+}
+// Internal memory allocator
+export let MemAlloc(size: Int): DenseBitVector {
+    return rl.MemAlloc(size);
+}
+// Internal memory reallocator
+export let MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector {
+    return rl.MemRealloc(ptr, size);
+}
+// Internal memory free
+export let MemFree(ptr: DenseBitVector): Void {
+    rl.MemFree(ptr);
+}
+// Open URL with default system browser (if available)
+export let OpenURL(url: String): Void {
+    rl.OpenURL(url);
+}
+// Set custom file binary data loader
+export let SetLoadFileDataCallback(callback: LoadFileDataCallback): Void {
+    rl.SetLoadFileDataCallback(callback);
+}
+// Set custom file binary data saver
+export let SetSaveFileDataCallback(callback: SaveFileDataCallback): Void {
+    rl.SetSaveFileDataCallback(callback);
+}
+// Set custom file text data loader
+export let SetLoadFileTextCallback(callback: LoadFileTextCallback): Void {
+    rl.SetLoadFileTextCallback(callback);
+}
+// Set custom file text data saver
+export let SetSaveFileTextCallback(callback: SaveFileTextCallback): Void {
+    rl.SetSaveFileTextCallback(callback);
+}
+// Load file data as byte array (read)
+export let LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int> {
+    return rl.LoadFileData(fileName, dataSize);
+}
+// Unload file data allocated by LoadFileData()
+export let UnloadFileData(data: Listed<Int>): Void {
+    rl.UnloadFileData(data);
+}
+// Save data to file from byte array (write), returns true on success
+export let SaveFileData(fileName: String, data: DenseBitVector, dataSize: Int): Boolean {
+    return rl.SaveFileData(fileName, data, dataSize);
+}
+// Export data to code (.h), returns true on success
+export let ExportDataAsCode(data: Listed<Int>, dataSize: Int, fileName: String): Boolean {
+    return rl.ExportDataAsCode(data, dataSize, fileName);
+}
+// Load text data from file (read), returns a '\0' terminated string
+export let LoadFileText(fileName: String): String {
+    return rl.LoadFileText(fileName);
+}
+// Unload file text data allocated by LoadFileText()
+export let UnloadFileText(text: String): Void {
+    rl.UnloadFileText(text);
+}
+// Save text data to file (write), string must be '\0' terminated, returns true on success
+export let SaveFileText(fileName: String, text: String): Boolean {
+    return rl.SaveFileText(fileName, text);
+}
+// Check if file exists
+export let FileExists(fileName: String): Boolean {
+    return rl.FileExists(fileName);
+}
+// Check if a directory path exists
+export let DirectoryExists(dirPath: String): Boolean {
+    return rl.DirectoryExists(dirPath);
+}
+// Check file extension (including point: .png, .wav)
+export let IsFileExtension(fileName: String, ext: String): Boolean {
+    return rl.IsFileExtension(fileName, ext);
+}
+// Get file length in bytes (NOTE: GetFileSize() conflicts with windows.h)
+export let GetFileLength(fileName: String): Int {
+    return rl.GetFileLength(fileName);
+}
+// Get pointer to extension for a filename string (includes dot: '.png')
+export let GetFileExtension(fileName: String): String {
+    return rl.GetFileExtension(fileName);
+}
+// Get pointer to filename for a path string
+export let GetFileName(filePath: String): String {
+    return rl.GetFileName(filePath);
+}
+// Get filename string without extension (uses static string)
+export let GetFileNameWithoutExt(filePath: String): String {
+    return rl.GetFileNameWithoutExt(filePath);
+}
+// Get full path for a given fileName with path (uses static string)
+export let GetDirectoryPath(filePath: String): String {
+    return rl.GetDirectoryPath(filePath);
+}
+// Get previous directory path for a given path (uses static string)
+export let GetPrevDirectoryPath(dirPath: String): String {
+    return rl.GetPrevDirectoryPath(dirPath);
+}
+// Get current working directory (uses static string)
+export let GetWorkingDirectory(): String {
+    return rl.GetWorkingDirectory();
+}
+// Get the directory of the running application (uses static string)
+export let GetApplicationDirectory(): String {
+    return rl.GetApplicationDirectory();
+}
+// Change working directory, return true on success
+export let ChangeDirectory(dir: String): Boolean {
+    return rl.ChangeDirectory(dir);
+}
+// Check if a given path is a file or a directory
+export let IsPathFile(path: String): Boolean {
+    return rl.IsPathFile(path);
+}
+// Load directory filepaths
+export let LoadDirectoryFiles(dirPath: String): FilePathList {
+    return rl.LoadDirectoryFiles(dirPath);
+}
+// Load directory filepaths with extension filtering and recursive directory scan
+export let LoadDirectoryFilesEx(basePath: String, filter: String, scanSubdirs: Boolean): FilePathList {
+    return rl.LoadDirectoryFilesEx(basePath, filter, scanSubdirs);
+}
+// Unload filepaths
+export let UnloadDirectoryFiles(files: FilePathList): Void {
+    rl.UnloadDirectoryFiles(files);
+}
+// Check if a file has been dropped into window
+export let IsFileDropped(): Boolean {
+    return rl.IsFileDropped();
+}
+// Load dropped filepaths
+export let LoadDroppedFiles(): FilePathList {
+    return rl.LoadDroppedFiles();
+}
+// Unload dropped filepaths
+export let UnloadDroppedFiles(files: FilePathList): Void {
+    rl.UnloadDroppedFiles(files);
+}
+// Get file modification time (last write time)
+export let GetFileModTime(fileName: String): Int {
+    return rl.GetFileModTime(fileName);
+}
+// Compress data (DEFLATE algorithm), memory must be MemFree()
+export let CompressData(data: Listed<Int>, dataSize: Int, compDataSize: Listed<Int>): Listed<Int> {
+    return rl.CompressData(data, dataSize, compDataSize);
+}
+// Decompress data (DEFLATE algorithm), memory must be MemFree()
+export let DecompressData(compData: Listed<Int>, compDataSize: Int, dataSize: Listed<Int>): Listed<Int> {
+    return rl.DecompressData(compData, compDataSize, dataSize);
+}
+// Encode data to Base64 string, memory must be MemFree()
+export let EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed<Int>): String {
+    return rl.EncodeDataBase64(data, dataSize, outputSize);
+}
+// Decode Base64 string data, memory must be MemFree()
+export let DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int> {
+    return rl.DecodeDataBase64(data, outputSize);
+}
+// Check if a key has been pressed once
+export let IsKeyPressed(key: Int): Boolean {
+    return rl.IsKeyPressed(key);
+}
+// Check if a key has been pressed again (Only PLATFORM_DESKTOP)
+export let IsKeyPressedRepeat(key: Int): Boolean {
+    return rl.IsKeyPressedRepeat(key);
+}
+// Check if a key is being pressed
+export let IsKeyDown(key: Int): Boolean {
+    return rl.IsKeyDown(key);
+}
+// Check if a key has been released once
+export let IsKeyReleased(key: Int): Boolean {
+    return rl.IsKeyReleased(key);
+}
+// Check if a key is NOT being pressed
+export let IsKeyUp(key: Int): Boolean {
+    return rl.IsKeyUp(key);
+}
+// Set a custom key to exit program (default is ESC)
+export let SetExitKey(key: Int): Void {
+    rl.SetExitKey(key);
+}
+// Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
+export let GetKeyPressed(): Int {
+    return rl.GetKeyPressed();
+}
+// Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
+export let GetCharPressed(): Int {
+    return rl.GetCharPressed();
+}
+// Check if a gamepad is available
+export let IsGamepadAvailable(gamepad: Int): Boolean {
+    return rl.IsGamepadAvailable(gamepad);
+}
+// Get gamepad internal name id
+export let GetGamepadName(gamepad: Int): String {
+    return rl.GetGamepadName(gamepad);
+}
+// Check if a gamepad button has been pressed once
+export let IsGamepadButtonPressed(gamepad: Int, button: Int): Boolean {
+    return rl.IsGamepadButtonPressed(gamepad, button);
+}
+// Check if a gamepad button is being pressed
+export let IsGamepadButtonDown(gamepad: Int, button: Int): Boolean {
+    return rl.IsGamepadButtonDown(gamepad, button);
+}
+// Check if a gamepad button has been released once
+export let IsGamepadButtonReleased(gamepad: Int, button: Int): Boolean {
+    return rl.IsGamepadButtonReleased(gamepad, button);
+}
+// Check if a gamepad button is NOT being pressed
+export let IsGamepadButtonUp(gamepad: Int, button: Int): Boolean {
+    return rl.IsGamepadButtonUp(gamepad, button);
+}
+// Get the last gamepad button pressed
+export let GetGamepadButtonPressed(): Int {
+    return rl.GetGamepadButtonPressed();
+}
+// Get gamepad axis count for a gamepad
+export let GetGamepadAxisCount(gamepad: Int): Int {
+    return rl.GetGamepadAxisCount(gamepad);
+}
+// Get axis movement value for a gamepad axis
+export let GetGamepadAxisMovement(gamepad: Int, axis: Int): Float64 {
+    return rl.GetGamepadAxisMovement(gamepad, axis);
+}
+// Set internal gamepad mappings (SDL_GameControllerDB)
+export let SetGamepadMappings(mappings: String): Int {
+    return rl.SetGamepadMappings(mappings);
+}
+// Check if a mouse button has been pressed once
+export let IsMouseButtonPressed(button: Int): Boolean {
+    return rl.IsMouseButtonPressed(button);
+}
+// Check if a mouse button is being pressed
+export let IsMouseButtonDown(button: Int): Boolean {
+    return rl.IsMouseButtonDown(button);
+}
+// Check if a mouse button has been released once
+export let IsMouseButtonReleased(button: Int): Boolean {
+    return rl.IsMouseButtonReleased(button);
+}
+// Check if a mouse button is NOT being pressed
+export let IsMouseButtonUp(button: Int): Boolean {
+    return rl.IsMouseButtonUp(button);
+}
+// Get mouse position X
+export let GetMouseX(): Int {
+    return rl.GetMouseX();
+}
+// Get mouse position Y
+export let GetMouseY(): Int {
+    return rl.GetMouseY();
+}
+// Get mouse position XY
+export let GetMousePosition(): Vector2 {
+    return rl.GetMousePosition();
+}
+// Get mouse delta between frames
+export let GetMouseDelta(): Vector2 {
+    return rl.GetMouseDelta();
+}
+// Set mouse position XY
+export let SetMousePosition(x: Int, y: Int): Void {
+    rl.SetMousePosition(x, y);
+}
+// Set mouse offset
+export let SetMouseOffset(offsetX: Int, offsetY: Int): Void {
+    rl.SetMouseOffset(offsetX, offsetY);
+}
+// Set mouse scaling
+export let SetMouseScale(scaleX: Float64, scaleY: Float64): Void {
+    rl.SetMouseScale(scaleX, scaleY);
+}
+// Get mouse wheel movement for X or Y, whichever is larger
+export let GetMouseWheelMove(): Float64 {
+    return rl.GetMouseWheelMove();
+}
+// Get mouse wheel movement for both X and Y
+export let GetMouseWheelMoveV(): Vector2 {
+    return rl.GetMouseWheelMoveV();
+}
+// Set mouse cursor
+export let SetMouseCursor(cursor: Int): Void {
+    rl.SetMouseCursor(cursor);
+}
+// Get touch position X for touch point 0 (relative to screen size)
+export let GetTouchX(): Int {
+    return rl.GetTouchX();
+}
+// Get touch position Y for touch point 0 (relative to screen size)
+export let GetTouchY(): Int {
+    return rl.GetTouchY();
+}
+// Get touch position XY for a touch point index (relative to screen size)
+export let GetTouchPosition(index: Int): Vector2 {
+    return rl.GetTouchPosition(index);
+}
+// Get touch point identifier for given index
+export let GetTouchPointId(index: Int): Int {
+    return rl.GetTouchPointId(index);
+}
+// Get number of touch points
+export let GetTouchPointCount(): Int {
+    return rl.GetTouchPointCount();
+}
+// Enable a set of gestures using flags
+export let SetGesturesEnabled(flags: Int): Void {
+    rl.SetGesturesEnabled(flags);
+}
+// Check if a gesture have been detected
+export let IsGestureDetected(gesture: Int): Boolean {
+    return rl.IsGestureDetected(gesture);
+}
+// Get latest detected gesture
+export let GetGestureDetected(): Int {
+    return rl.GetGestureDetected();
+}
+// Get gesture hold time in milliseconds
+export let GetGestureHoldDuration(): Float64 {
+    return rl.GetGestureHoldDuration();
+}
+// Get gesture drag vector
+export let GetGestureDragVector(): Vector2 {
+    return rl.GetGestureDragVector();
+}
+// Get gesture drag angle
+export let GetGestureDragAngle(): Float64 {
+    return rl.GetGestureDragAngle();
+}
+// Get gesture pinch delta
+export let GetGesturePinchVector(): Vector2 {
+    return rl.GetGesturePinchVector();
+}
+// Get gesture pinch angle
+export let GetGesturePinchAngle(): Float64 {
+    return rl.GetGesturePinchAngle();
+}
+// Update camera position for selected mode
+export let UpdateCamera(camera: Listed<Camera>, mode: Int): Void {
+    rl.UpdateCamera(camera, mode);
+}
+// Update camera movement/rotation
+export let UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: Vector3, zoom: Float64): Void {
+    rl.UpdateCameraPro(camera, movement, rotation, zoom);
+}
+// Set texture and rectangle to be used on shapes drawing
+export let SetShapesTexture(texture: Texture2D, source: Rectangle): Void {
+    rl.SetShapesTexture(texture, source);
+}
+// Draw a pixel
+export let DrawPixel(posX: Int, posY: Int, color: Color): Void {
+    rl.DrawPixel(posX, posY, color);
+}
+// Draw a pixel (Vector version)
+export let DrawPixelV(position: Vector2, color: Color): Void {
+    rl.DrawPixelV(position, color);
+}
+// Draw a line
+export let DrawLine(startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void {
+    rl.DrawLine(startPosX, startPosY, endPosX, endPosY, color);
+}
+// Draw a line (Vector version)
+export let DrawLineV(startPos: Vector2, endPos: Vector2, color: Color): Void {
+    rl.DrawLineV(startPos, endPos, color);
+}
+// Draw a line defining thickness
+export let DrawLineEx(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawLineEx(startPos, endPos, thick, color);
+}
+// Draw a line using cubic-bezier curves in-out
+export let DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawLineBezier(startPos, endPos, thick, color);
+}
+// Draw line using quadratic bezier curves with a control point
+export let DrawLineBezierQuad(startPos: Vector2, endPos: Vector2, controlPos: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawLineBezierQuad(startPos, endPos, controlPos, thick, color);
+}
+// Draw line using cubic bezier curves with 2 control points
+export let DrawLineBezierCubic(startPos: Vector2, endPos: Vector2, startControlPos: Vector2, endControlPos: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawLineBezierCubic(startPos, endPos, startControlPos, endControlPos, thick, color);
+}
+// Draw a B-Spline line, minimum 4 points
+export let DrawLineBSpline(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawLineBSpline(points, pointCount, thick, color);
+}
+// Draw a Catmull Rom spline line, minimum 4 points
+export let DrawLineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawLineCatmullRom(points, pointCount, thick, color);
+}
+// Draw lines sequence
+export let DrawLineStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void {
+    rl.DrawLineStrip(points, pointCount, color);
+}
+// Draw a color-filled circle
+export let DrawCircle(centerX: Int, centerY: Int, radius: Float64, color: Color): Void {
+    rl.DrawCircle(centerX, centerY, radius, color);
+}
+// Draw a piece of a circle
+export let DrawCircleSector(center: Vector2, radius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void {
+    rl.DrawCircleSector(center, radius, startAngle, endAngle, segments, color);
+}
+// Draw circle sector outline
+export let DrawCircleSectorLines(center: Vector2, radius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void {
+    rl.DrawCircleSectorLines(center, radius, startAngle, endAngle, segments, color);
+}
+// Draw a gradient-filled circle
+export let DrawCircleGradient(centerX: Int, centerY: Int, radius: Float64, color1: Color, color2: Color): Void {
+    rl.DrawCircleGradient(centerX, centerY, radius, color1, color2);
+}
+// Draw a color-filled circle (Vector version)
+export let DrawCircleV(center: Vector2, radius: Float64, color: Color): Void {
+    rl.DrawCircleV(center, radius, color);
+}
+// Draw circle outline
+export let DrawCircleLines(centerX: Int, centerY: Int, radius: Float64, color: Color): Void {
+    rl.DrawCircleLines(centerX, centerY, radius, color);
+}
+// Draw ellipse
+export let DrawEllipse(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void {
+    rl.DrawEllipse(centerX, centerY, radiusH, radiusV, color);
+}
+// Draw ellipse outline
+export let DrawEllipseLines(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void {
+    rl.DrawEllipseLines(centerX, centerY, radiusH, radiusV, color);
+}
+// Draw ring
+export let DrawRing(center: Vector2, innerRadius: Float64, outerRadius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void {
+    rl.DrawRing(center, innerRadius, outerRadius, startAngle, endAngle, segments, color);
+}
+// Draw ring outline
+export let DrawRingLines(center: Vector2, innerRadius: Float64, outerRadius: Float64, startAngle: Float64, endAngle: Float64, segments: Int, color: Color): Void {
+    rl.DrawRingLines(center, innerRadius, outerRadius, startAngle, endAngle, segments, color);
+}
+// Draw a color-filled rectangle
+export let DrawRectangle(posX: Int, posY: Int, width: Int, height: Int, color: Color): Void {
+    rl.DrawRectangle(posX, posY, width, height, color);
+}
+// Draw a color-filled rectangle (Vector version)
+export let DrawRectangleV(position: Vector2, size: Vector2, color: Color): Void {
+    rl.DrawRectangleV(position, size, color);
+}
+// Draw a color-filled rectangle
+export let DrawRectangleRec(rec: Rectangle, color: Color): Void {
+    rl.DrawRectangleRec(rec, color);
+}
+// Draw a color-filled rectangle with pro parameters
+export let DrawRectanglePro(rec: Rectangle, origin: Vector2, rotation: Float64, color: Color): Void {
+    rl.DrawRectanglePro(rec, origin, rotation, color);
+}
+// Draw a vertical-gradient-filled rectangle
+export let DrawRectangleGradientV(posX: Int, posY: Int, width: Int, height: Int, color1: Color, color2: Color): Void {
+    rl.DrawRectangleGradientV(posX, posY, width, height, color1, color2);
+}
+// Draw a horizontal-gradient-filled rectangle
+export let DrawRectangleGradientH(posX: Int, posY: Int, width: Int, height: Int, color1: Color, color2: Color): Void {
+    rl.DrawRectangleGradientH(posX, posY, width, height, color1, color2);
+}
+// Draw a gradient-filled rectangle with custom vertex colors
+export let DrawRectangleGradientEx(rec: Rectangle, col1: Color, col2: Color, col3: Color, col4: Color): Void {
+    rl.DrawRectangleGradientEx(rec, col1, col2, col3, col4);
+}
+// Draw rectangle outline
+export let DrawRectangleLines(posX: Int, posY: Int, width: Int, height: Int, color: Color): Void {
+    rl.DrawRectangleLines(posX, posY, width, height, color);
+}
+// Draw rectangle outline with extended parameters
+export let DrawRectangleLinesEx(rec: Rectangle, lineThick: Float64, color: Color): Void {
+    rl.DrawRectangleLinesEx(rec, lineThick, color);
+}
+// Draw rectangle with rounded edges
+export let DrawRectangleRounded(rec: Rectangle, roundness: Float64, segments: Int, color: Color): Void {
+    rl.DrawRectangleRounded(rec, roundness, segments, color);
+}
+// Draw rectangle with rounded edges outline
+export let DrawRectangleRoundedLines(rec: Rectangle, roundness: Float64, segments: Int, lineThick: Float64, color: Color): Void {
+    rl.DrawRectangleRoundedLines(rec, roundness, segments, lineThick, color);
+}
+// Draw a color-filled triangle (vertex in counter-clockwise order!)
+export let DrawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color): Void {
+    rl.DrawTriangle(v1, v2, v3, color);
+}
+// Draw triangle outline (vertex in counter-clockwise order!)
+export let DrawTriangleLines(v1: Vector2, v2: Vector2, v3: Vector2, color: Color): Void {
+    rl.DrawTriangleLines(v1, v2, v3, color);
+}
+// Draw a triangle fan defined by points (first vertex is the center)
+export let DrawTriangleFan(points: Listed<Vector2>, pointCount: Int, color: Color): Void {
+    rl.DrawTriangleFan(points, pointCount, color);
+}
+// Draw a triangle strip defined by points
+export let DrawTriangleStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void {
+    rl.DrawTriangleStrip(points, pointCount, color);
+}
+// Draw a regular polygon (Vector version)
+export let DrawPoly(center: Vector2, sides: Int, radius: Float64, rotation: Float64, color: Color): Void {
+    rl.DrawPoly(center, sides, radius, rotation, color);
+}
+// Draw a polygon outline of n sides
+export let DrawPolyLines(center: Vector2, sides: Int, radius: Float64, rotation: Float64, color: Color): Void {
+    rl.DrawPolyLines(center, sides, radius, rotation, color);
+}
+// Draw a polygon outline of n sides with extended parameters
+export let DrawPolyLinesEx(center: Vector2, sides: Int, radius: Float64, rotation: Float64, lineThick: Float64, color: Color): Void {
+    rl.DrawPolyLinesEx(center, sides, radius, rotation, lineThick, color);
+}
+// Check collision between two rectangles
+export let CheckCollisionRecs(rec1: Rectangle, rec2: Rectangle): Boolean {
+    return rl.CheckCollisionRecs(rec1, rec2);
+}
+// Check collision between two circles
+export let CheckCollisionCircles(center1: Vector2, radius1: Float64, center2: Vector2, radius2: Float64): Boolean {
+    return rl.CheckCollisionCircles(center1, radius1, center2, radius2);
+}
+// Check collision between circle and rectangle
+export let CheckCollisionCircleRec(center: Vector2, radius: Float64, rec: Rectangle): Boolean {
+    return rl.CheckCollisionCircleRec(center, radius, rec);
+}
+// Check if point is inside rectangle
+export let CheckCollisionPointRec(point: Vector2, rec: Rectangle): Boolean {
+    return rl.CheckCollisionPointRec(point, rec);
+}
+// Check if point is inside circle
+export let CheckCollisionPointCircle(point: Vector2, center: Vector2, radius: Float64): Boolean {
+    return rl.CheckCollisionPointCircle(point, center, radius);
+}
+// Check if point is inside a triangle
+export let CheckCollisionPointTriangle(point: Vector2, p1: Vector2, p2: Vector2, p3: Vector2): Boolean {
+    return rl.CheckCollisionPointTriangle(point, p1, p2, p3);
+}
+// Check if point is within a polygon described by array of vertices
+export let CheckCollisionPointPoly(point: Vector2, points: Listed<Vector2>, pointCount: Int): Boolean {
+    return rl.CheckCollisionPointPoly(point, points, pointCount);
+}
+// Check the collision between two lines defined by two points each, returns collision point by reference
+export let CheckCollisionLines(startPos1: Vector2, endPos1: Vector2, startPos2: Vector2, endPos2: Vector2, collisionPoint: Listed<Vector2>): Boolean {
+    return rl.CheckCollisionLines(startPos1, endPos1, startPos2, endPos2, collisionPoint);
+}
+// Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
+export let CheckCollisionPointLine(point: Vector2, p1: Vector2, p2: Vector2, threshold: Int): Boolean {
+    return rl.CheckCollisionPointLine(point, p1, p2, threshold);
+}
+// Get collision rectangle for two rectangles collision
+export let GetCollisionRec(rec1: Rectangle, rec2: Rectangle): Rectangle {
+    return rl.GetCollisionRec(rec1, rec2);
+}
+// Load image from file into CPU memory (RAM)
+export let LoadImage(fileName: String): Image {
+    return rl.LoadImage(fileName);
+}
+// Load image from RAW file data
+export let LoadImageRaw(fileName: String, width: Int, height: Int, format: Int, headerSize: Int): Image {
+    return rl.LoadImageRaw(fileName, width, height, format, headerSize);
+}
+// Load image from SVG file data or string with specified size
+export let LoadImageSvg(fileNameOrString: String, width: Int, height: Int): Image {
+    return rl.LoadImageSvg(fileNameOrString, width, height);
+}
+// Load image sequence from file (frames appended to image.data)
+export let LoadImageAnim(fileName: String, frames: Listed<Int>): Image {
+    return rl.LoadImageAnim(fileName, frames);
+}
+// Load image from memory buffer, fileType refers to extension: i.e. '.png'
+export let LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image {
+    return rl.LoadImageFromMemory(fileType, fileData, dataSize);
+}
+// Load image from GPU texture data
+export let LoadImageFromTexture(texture: Texture2D): Image {
+    return rl.LoadImageFromTexture(texture);
+}
+// Load image from screen buffer and (screenshot)
+export let LoadImageFromScreen(): Image {
+    return rl.LoadImageFromScreen();
+}
+// Check if an image is ready
+export let IsImageReady(image: Image): Boolean {
+    return rl.IsImageReady(image);
+}
+// Unload image from CPU memory (RAM)
+export let UnloadImage(image: Image): Void {
+    rl.UnloadImage(image);
+}
+// Export image data to file, returns true on success
+export let ExportImage(image: Image, fileName: String): Boolean {
+    return rl.ExportImage(image, fileName);
+}
+// Export image to memory buffer
+export let ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): Listed<Int> {
+    return rl.ExportImageToMemory(image, fileType, fileSize);
+}
+// Export image as code file defining an array of bytes, returns true on success
+export let ExportImageAsCode(image: Image, fileName: String): Boolean {
+    return rl.ExportImageAsCode(image, fileName);
+}
+// Generate image: plain color
+export let GenImageColor(width: Int, height: Int, color: Color): Image {
+    return rl.GenImageColor(width, height, color);
+}
+// Generate image: linear gradient, direction in degrees [0..360], 0=Vertical gradient
+export let GenImageGradientLinear(width: Int, height: Int, direction: Int, start: Color, end: Color): Image {
+    return rl.GenImageGradientLinear(width, height, direction, start, end);
+}
+// Generate image: radial gradient
+export let GenImageGradientRadial(width: Int, height: Int, density: Float64, inner: Color, outer: Color): Image {
+    return rl.GenImageGradientRadial(width, height, density, inner, outer);
+}
+// Generate image: square gradient
+export let GenImageGradientSquare(width: Int, height: Int, density: Float64, inner: Color, outer: Color): Image {
+    return rl.GenImageGradientSquare(width, height, density, inner, outer);
+}
+// Generate image: checked
+export let GenImageChecked(width: Int, height: Int, checksX: Int, checksY: Int, col1: Color, col2: Color): Image {
+    return rl.GenImageChecked(width, height, checksX, checksY, col1, col2);
+}
+// Generate image: white noise
+export let GenImageWhiteNoise(width: Int, height: Int, factor: Float64): Image {
+    return rl.GenImageWhiteNoise(width, height, factor);
+}
+// Generate image: perlin noise
+export let GenImagePerlinNoise(width: Int, height: Int, offsetX: Int, offsetY: Int, scale: Float64): Image {
+    return rl.GenImagePerlinNoise(width, height, offsetX, offsetY, scale);
+}
+// Generate image: cellular algorithm, bigger tileSize means bigger cells
+export let GenImageCellular(width: Int, height: Int, tileSize: Int): Image {
+    return rl.GenImageCellular(width, height, tileSize);
+}
+// Generate image: grayscale image from text data
+export let GenImageText(width: Int, height: Int, text: String): Image {
+    return rl.GenImageText(width, height, text);
+}
+// Create an image duplicate (useful for transformations)
+export let ImageCopy(image: Image): Image {
+    return rl.ImageCopy(image);
+}
+// Create an image from another image piece
+export let ImageFromImage(image: Image, rec: Rectangle): Image {
+    return rl.ImageFromImage(image, rec);
+}
+// Create an image from text (default font)
+export let ImageText(text: String, fontSize: Int, color: Color): Image {
+    return rl.ImageText(text, fontSize, color);
+}
+// Create an image from text (custom sprite font)
+export let ImageTextEx(font: Font, text: String, fontSize: Float64, spacing: Float64, tint: Color): Image {
+    return rl.ImageTextEx(font, text, fontSize, spacing, tint);
+}
+// Convert image data to desired format
+export let ImageFormat(image: Listed<Image>, newFormat: Int): Void {
+    rl.ImageFormat(image, newFormat);
+}
+// Convert image to POT (power-of-two)
+export let ImageToPOT(image: Listed<Image>, fill: Color): Void {
+    rl.ImageToPOT(image, fill);
+}
+// Crop an image to a defined rectangle
+export let ImageCrop(image: Listed<Image>, crop: Rectangle): Void {
+    rl.ImageCrop(image, crop);
+}
+// Crop image depending on alpha value
+export let ImageAlphaCrop(image: Listed<Image>, threshold: Float64): Void {
+    rl.ImageAlphaCrop(image, threshold);
+}
+// Clear alpha channel to desired color
+export let ImageAlphaClear(image: Listed<Image>, color: Color, threshold: Float64): Void {
+    rl.ImageAlphaClear(image, color, threshold);
+}
+// Apply alpha mask to image
+export let ImageAlphaMask(image: Listed<Image>, alphaMask: Image): Void {
+    rl.ImageAlphaMask(image, alphaMask);
+}
+// Premultiply alpha channel
+export let ImageAlphaPremultiply(image: Listed<Image>): Void {
+    rl.ImageAlphaPremultiply(image);
+}
+// Apply Gaussian blur using a box blur approximation
+export let ImageBlurGaussian(image: Listed<Image>, blurSize: Int): Void {
+    rl.ImageBlurGaussian(image, blurSize);
+}
+// Resize image (Bicubic scaling algorithm)
+export let ImageResize(image: Listed<Image>, newWidth: Int, newHeight: Int): Void {
+    rl.ImageResize(image, newWidth, newHeight);
+}
+// Resize image (Nearest-Neighbor scaling algorithm)
+export let ImageResizeNN(image: Listed<Image>, newWidth: Int, newHeight: Int): Void {
+    rl.ImageResizeNN(image, newWidth, newHeight);
+}
+// Resize canvas and fill with color
+export let ImageResizeCanvas(image: Listed<Image>, newWidth: Int, newHeight: Int, offsetX: Int, offsetY: Int, fill: Color): Void {
+    rl.ImageResizeCanvas(image, newWidth, newHeight, offsetX, offsetY, fill);
+}
+// Compute all mipmap levels for a provided image
+export let ImageMipmaps(image: Listed<Image>): Void {
+    rl.ImageMipmaps(image);
+}
+// Dither image data to 16bpp or lower (Floyd-Steinberg dithering)
+export let ImageDither(image: Listed<Image>, rBpp: Int, gBpp: Int, bBpp: Int, aBpp: Int): Void {
+    rl.ImageDither(image, rBpp, gBpp, bBpp, aBpp);
+}
+// Flip image vertically
+export let ImageFlipVertical(image: Listed<Image>): Void {
+    rl.ImageFlipVertical(image);
+}
+// Flip image horizontally
+export let ImageFlipHorizontal(image: Listed<Image>): Void {
+    rl.ImageFlipHorizontal(image);
+}
+// Rotate image by input angle in degrees (-359 to 359)
+export let ImageRotate(image: Listed<Image>, degrees: Int): Void {
+    rl.ImageRotate(image, degrees);
+}
+// Rotate image clockwise 90deg
+export let ImageRotateCW(image: Listed<Image>): Void {
+    rl.ImageRotateCW(image);
+}
+// Rotate image counter-clockwise 90deg
+export let ImageRotateCCW(image: Listed<Image>): Void {
+    rl.ImageRotateCCW(image);
+}
+// Modify image color: tint
+export let ImageColorTint(image: Listed<Image>, color: Color): Void {
+    rl.ImageColorTint(image, color);
+}
+// Modify image color: invert
+export let ImageColorInvert(image: Listed<Image>): Void {
+    rl.ImageColorInvert(image);
+}
+// Modify image color: grayscale
+export let ImageColorGrayscale(image: Listed<Image>): Void {
+    rl.ImageColorGrayscale(image);
+}
+// Modify image color: contrast (-100 to 100)
+export let ImageColorContrast(image: Listed<Image>, contrast: Float64): Void {
+    rl.ImageColorContrast(image, contrast);
+}
+// Modify image color: brightness (-255 to 255)
+export let ImageColorBrightness(image: Listed<Image>, brightness: Int): Void {
+    rl.ImageColorBrightness(image, brightness);
+}
+// Modify image color: replace color
+export let ImageColorReplace(image: Listed<Image>, color: Color, replace: Color): Void {
+    rl.ImageColorReplace(image, color, replace);
+}
+// Load color data from image as a Color array (RGBA - 32bit)
+export let LoadImageColors(image: Image): Listed<Color> {
+    return rl.LoadImageColors(image);
+}
+// Load colors palette from image as a Color array (RGBA - 32bit)
+export let LoadImagePalette(image: Image, maxPaletteSize: Int, colorCount: Listed<Int>): Listed<Color> {
+    return rl.LoadImagePalette(image, maxPaletteSize, colorCount);
+}
+// Unload color data loaded with LoadImageColors()
+export let UnloadImageColors(colors: Listed<Color>): Void {
+    rl.UnloadImageColors(colors);
+}
+// Unload colors palette loaded with LoadImagePalette()
+export let UnloadImagePalette(colors: Listed<Color>): Void {
+    rl.UnloadImagePalette(colors);
+}
+// Get image alpha border rectangle
+export let GetImageAlphaBorder(image: Image, threshold: Float64): Rectangle {
+    return rl.GetImageAlphaBorder(image, threshold);
+}
+// Get image pixel color at (x, y) position
+export let GetImageColor(image: Image, x: Int, y: Int): Color {
+    return rl.GetImageColor(image, x, y);
+}
+// Clear image background with given color
+export let ImageClearBackground(dst: Listed<Image>, color: Color): Void {
+    rl.ImageClearBackground(dst, color);
+}
+// Draw pixel within an image
+export let ImageDrawPixel(dst: Listed<Image>, posX: Int, posY: Int, color: Color): Void {
+    rl.ImageDrawPixel(dst, posX, posY, color);
+}
+// Draw pixel within an image (Vector version)
+export let ImageDrawPixelV(dst: Listed<Image>, position: Vector2, color: Color): Void {
+    rl.ImageDrawPixelV(dst, position, color);
+}
+// Draw line within an image
+export let ImageDrawLine(dst: Listed<Image>, startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void {
+    rl.ImageDrawLine(dst, startPosX, startPosY, endPosX, endPosY, color);
+}
+// Draw line within an image (Vector version)
+export let ImageDrawLineV(dst: Listed<Image>, start: Vector2, end: Vector2, color: Color): Void {
+    rl.ImageDrawLineV(dst, start, end, color);
+}
+// Draw a filled circle within an image
+export let ImageDrawCircle(dst: Listed<Image>, centerX: Int, centerY: Int, radius: Int, color: Color): Void {
+    rl.ImageDrawCircle(dst, centerX, centerY, radius, color);
+}
+// Draw a filled circle within an image (Vector version)
+export let ImageDrawCircleV(dst: Listed<Image>, center: Vector2, radius: Int, color: Color): Void {
+    rl.ImageDrawCircleV(dst, center, radius, color);
+}
+// Draw circle outline within an image
+export let ImageDrawCircleLines(dst: Listed<Image>, centerX: Int, centerY: Int, radius: Int, color: Color): Void {
+    rl.ImageDrawCircleLines(dst, centerX, centerY, radius, color);
+}
+// Draw circle outline within an image (Vector version)
+export let ImageDrawCircleLinesV(dst: Listed<Image>, center: Vector2, radius: Int, color: Color): Void {
+    rl.ImageDrawCircleLinesV(dst, center, radius, color);
+}
+// Draw rectangle within an image
+export let ImageDrawRectangle(dst: Listed<Image>, posX: Int, posY: Int, width: Int, height: Int, color: Color): Void {
+    rl.ImageDrawRectangle(dst, posX, posY, width, height, color);
+}
+// Draw rectangle within an image (Vector version)
+export let ImageDrawRectangleV(dst: Listed<Image>, position: Vector2, size: Vector2, color: Color): Void {
+    rl.ImageDrawRectangleV(dst, position, size, color);
+}
+// Draw rectangle within an image
+export let ImageDrawRectangleRec(dst: Listed<Image>, rec: Rectangle, color: Color): Void {
+    rl.ImageDrawRectangleRec(dst, rec, color);
+}
+// Draw rectangle lines within an image
+export let ImageDrawRectangleLines(dst: Listed<Image>, rec: Rectangle, thick: Int, color: Color): Void {
+    rl.ImageDrawRectangleLines(dst, rec, thick, color);
+}
+// Draw a source image within a destination image (tint applied to source)
+export let ImageDraw(dst: Listed<Image>, src: Image, srcRec: Rectangle, dstRec: Rectangle, tint: Color): Void {
+    rl.ImageDraw(dst, src, srcRec, dstRec, tint);
+}
+// Draw text (using default font) within an image (destination)
+export let ImageDrawText(dst: Listed<Image>, text: String, posX: Int, posY: Int, fontSize: Int, color: Color): Void {
+    rl.ImageDrawText(dst, text, posX, posY, fontSize, color);
+}
+// Draw text (custom sprite font) within an image (destination)
+export let ImageDrawTextEx(dst: Listed<Image>, font: Font, text: String, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void {
+    rl.ImageDrawTextEx(dst, font, text, position, fontSize, spacing, tint);
+}
+// Load texture from file into GPU memory (VRAM)
+export let LoadTexture(fileName: String): Texture2D {
+    return rl.LoadTexture(fileName);
+}
+// Load texture from image data
+export let LoadTextureFromImage(image: Image): Texture2D {
+    return rl.LoadTextureFromImage(image);
+}
+// Load cubemap from image, multiple image cubemap layouts supported
+export let LoadTextureCubemap(image: Image, layout: Int): TextureCubemap {
+    return rl.LoadTextureCubemap(image, layout);
+}
+// Load texture for rendering (framebuffer)
+export let LoadRenderTexture(width: Int, height: Int): RenderTexture2D {
+    return rl.LoadRenderTexture(width, height);
+}
+// Check if a texture is ready
+export let IsTextureReady(texture: Texture2D): Boolean {
+    return rl.IsTextureReady(texture);
+}
+// Unload texture from GPU memory (VRAM)
+export let UnloadTexture(texture: Texture2D): Void {
+    rl.UnloadTexture(texture);
+}
+// Check if a render texture is ready
+export let IsRenderTextureReady(target: RenderTexture2D): Boolean {
+    return rl.IsRenderTextureReady(target);
+}
+// Unload render texture from GPU memory (VRAM)
+export let UnloadRenderTexture(target: RenderTexture2D): Void {
+    rl.UnloadRenderTexture(target);
+}
+// Update GPU texture with new data
+export let UpdateTexture(texture: Texture2D, pixels: DenseBitVector): Void {
+    rl.UpdateTexture(texture, pixels);
+}
+// Update GPU texture rectangle with new data
+export let UpdateTextureRec(texture: Texture2D, rec: Rectangle, pixels: DenseBitVector): Void {
+    rl.UpdateTextureRec(texture, rec, pixels);
+}
+// Generate GPU mipmaps for a texture
+export let GenTextureMipmaps(texture: Listed<Texture2D>): Void {
+    rl.GenTextureMipmaps(texture);
+}
+// Set texture scaling filter mode
+export let SetTextureFilter(texture: Texture2D, filter: Int): Void {
+    rl.SetTextureFilter(texture, filter);
+}
+// Set texture wrapping mode
+export let SetTextureWrap(texture: Texture2D, wrap: Int): Void {
+    rl.SetTextureWrap(texture, wrap);
+}
+// Draw a Texture2D
+export let DrawTexture(texture: Texture2D, posX: Int, posY: Int, tint: Color): Void {
+    rl.DrawTexture(texture, posX, posY, tint);
+}
+// Draw a Texture2D with position defined as Vector2
+export let DrawTextureV(texture: Texture2D, position: Vector2, tint: Color): Void {
+    rl.DrawTextureV(texture, position, tint);
+}
+// Draw a Texture2D with extended parameters
+export let DrawTextureEx(texture: Texture2D, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void {
+    rl.DrawTextureEx(texture, position, rotation, scale, tint);
+}
+// Draw a part of a texture defined by a rectangle
+export let DrawTextureRec(texture: Texture2D, source: Rectangle, position: Vector2, tint: Color): Void {
+    rl.DrawTextureRec(texture, source, position, tint);
+}
+// Draw a part of a texture defined by a rectangle with 'pro' parameters
+export let DrawTexturePro(texture: Texture2D, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
+    rl.DrawTexturePro(texture, source, dest, origin, rotation, tint);
+}
+// Draws a texture (or part of it) that stretches or shrinks nicely
+export let DrawTextureNPatch(texture: Texture2D, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
+    rl.DrawTextureNPatch(texture, nPatchInfo, dest, origin, rotation, tint);
+}
+// Get color with alpha applied, alpha goes from 0.0f to 1.0f
+export let Fade(color: Color, alpha: Float64): Color {
+    return rl.Fade(color, alpha);
+}
+// Get hexadecimal value for a Color
+export let ColorToInt(color: Color): Int {
+    return rl.ColorToInt(color);
+}
+// Get Color normalized as float [0..1]
+export let ColorNormalize(color: Color): Vector4 {
+    return rl.ColorNormalize(color);
+}
+// Get Color from normalized values [0..1]
+export let ColorFromNormalized(normalized: Vector4): Color {
+    return rl.ColorFromNormalized(normalized);
+}
+// Get HSV values for a Color, hue [0..360], saturation/value [0..1]
+export let ColorToHSV(color: Color): Vector3 {
+    return rl.ColorToHSV(color);
+}
+// Get a Color from HSV values, hue [0..360], saturation/value [0..1]
+export let ColorFromHSV(hue: Float64, saturation: Float64, value: Float64): Color {
+    return rl.ColorFromHSV(hue, saturation, value);
+}
+// Get color multiplied with another color
+export let ColorTint(color: Color, tint: Color): Color {
+    return rl.ColorTint(color, tint);
+}
+// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
+export let ColorBrightness(color: Color, factor: Float64): Color {
+    return rl.ColorBrightness(color, factor);
+}
+// Get color with contrast correction, contrast values between -1.0f and 1.0f
+export let ColorContrast(color: Color, contrast: Float64): Color {
+    return rl.ColorContrast(color, contrast);
+}
+// Get color with alpha applied, alpha goes from 0.0f to 1.0f
+export let ColorAlpha(color: Color, alpha: Float64): Color {
+    return rl.ColorAlpha(color, alpha);
+}
+// Get src alpha-blended into dst color with tint
+export let ColorAlphaBlend(dst: Color, src: Color, tint: Color): Color {
+    return rl.ColorAlphaBlend(dst, src, tint);
+}
+// Get Color structure from hexadecimal value
+export let GetColor(hexValue: Int): Color {
+    return rl.GetColor(hexValue);
+}
+// Get Color from a source pixel pointer of certain format
+export let GetPixelColor(srcPtr: DenseBitVector, format: Int): Color {
+    return rl.GetPixelColor(srcPtr, format);
+}
+// Set color formatted into destination pixel pointer
+export let SetPixelColor(dstPtr: DenseBitVector, color: Color, format: Int): Void {
+    rl.SetPixelColor(dstPtr, color, format);
+}
+// Get pixel data size in bytes for certain format
+export let GetPixelDataSize(width: Int, height: Int, format: Int): Int {
+    return rl.GetPixelDataSize(width, height, format);
+}
+// Get the default Font
+export let GetFontDefault(): Font {
+    return rl.GetFontDefault();
+}
+// Load font from file into GPU memory (VRAM)
+export let LoadFont(fileName: String): Font {
+    return rl.LoadFont(fileName);
+}
+// Load font from file with extended parameters, use NULL for codepoints and 0 for codepointCount to load the default character setFont
+export let LoadFontEx(fileName: String, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font {
+    return rl.LoadFontEx(fileName, fontSize, codepoints, codepointCount);
+}
+// Load font from Image (XNA style)
+export let LoadFontFromImage(image: Image, key: Color, firstChar: Int): Font {
+    return rl.LoadFontFromImage(image, key, firstChar);
+}
+// Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
+export let LoadFontFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font {
+    return rl.LoadFontFromMemory(fileType, fileData, dataSize, fontSize, codepoints, codepointCount);
+}
+// Check if a font is ready
+export let IsFontReady(font: Font): Boolean {
+    return rl.IsFontReady(font);
+}
+// Load font data for further use
+export let LoadFontData(fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo> {
+    return rl.LoadFontData(fileData, dataSize, fontSize, codepoints, codepointCount, type);
+}
+// Generate image font atlas using chars info
+export let GenImageFontAtlas(glyphs: Listed<GlyphInfo>, glyphRecs: Listed<Listed<Rectangle>>, glyphCount: Int, fontSize: Int, padding: Int, packMethod: Int): Image {
+    return rl.GenImageFontAtlas(glyphs, glyphRecs, glyphCount, fontSize, padding, packMethod);
+}
+// Unload font chars info data (RAM)
+export let UnloadFontData(glyphs: Listed<GlyphInfo>, glyphCount: Int): Void {
+    rl.UnloadFontData(glyphs, glyphCount);
+}
+// Unload font from GPU memory (VRAM)
+export let UnloadFont(font: Font): Void {
+    rl.UnloadFont(font);
+}
+// Export font as code file, returns true on success
+export let ExportFontAsCode(font: Font, fileName: String): Boolean {
+    return rl.ExportFontAsCode(font, fileName);
+}
+// Draw current FPS
+export let DrawFPS(posX: Int, posY: Int): Void {
+    rl.DrawFPS(posX, posY);
+}
+// Draw text (using default font)
+export let DrawText(text: String, posX: Int, posY: Int, fontSize: Int, color: Color): Void {
+    rl.DrawText(text, posX, posY, fontSize, color);
+}
+// Draw text using font and additional parameters
+export let DrawTextEx(font: Font, text: String, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void {
+    rl.DrawTextEx(font, text, position, fontSize, spacing, tint);
+}
+// Draw text using Font and pro parameters (rotation)
+export let DrawTextPro(font: Font, text: String, position: Vector2, origin: Vector2, rotation: Float64, fontSize: Float64, spacing: Float64, tint: Color): Void {
+    rl.DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, tint);
+}
+// Draw one character (codepoint)
+export let DrawTextCodepoint(font: Font, codepoint: Int, position: Vector2, fontSize: Float64, tint: Color): Void {
+    rl.DrawTextCodepoint(font, codepoint, position, fontSize, tint);
+}
+// Draw multiple character (codepoint)
+export let DrawTextCodepoints(font: Font, codepoints: Listed<Int>, codepointCount: Int, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void {
+    rl.DrawTextCodepoints(font, codepoints, codepointCount, position, fontSize, spacing, tint);
+}
+// Set vertical line spacing when drawing with line-breaks
+export let SetTextLineSpacing(spacing: Int): Void {
+    rl.SetTextLineSpacing(spacing);
+}
+// Measure string width for default font
+export let MeasureText(text: String, fontSize: Int): Int {
+    return rl.MeasureText(text, fontSize);
+}
+// Measure string size for Font
+export let MeasureTextEx(font: Font, text: String, fontSize: Float64, spacing: Float64): Vector2 {
+    return rl.MeasureTextEx(font, text, fontSize, spacing);
+}
+// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
+export let GetGlyphIndex(font: Font, codepoint: Int): Int {
+    return rl.GetGlyphIndex(font, codepoint);
+}
+// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
+export let GetGlyphInfo(font: Font, codepoint: Int): GlyphInfo {
+    return rl.GetGlyphInfo(font, codepoint);
+}
+// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
+export let GetGlyphAtlasRec(font: Font, codepoint: Int): Rectangle {
+    return rl.GetGlyphAtlasRec(font, codepoint);
+}
+// Load UTF-8 text encoded from codepoints array
+export let LoadUTF8(codepoints: Listed<Int>, length: Int): String {
+    return rl.LoadUTF8(codepoints, length);
+}
+// Unload UTF-8 text encoded from codepoints array
+export let UnloadUTF8(text: String): Void {
+    rl.UnloadUTF8(text);
+}
+// Load all codepoints from a UTF-8 text string, codepoints count returned by parameter
+export let LoadCodepoints(text: String, count: Listed<Int>): Listed<Int> {
+    return rl.LoadCodepoints(text, count);
+}
+// Unload codepoints data from memory
+export let UnloadCodepoints(codepoints: Listed<Int>): Void {
+    rl.UnloadCodepoints(codepoints);
+}
+// Get total number of codepoints in a UTF-8 encoded string
+export let GetCodepointCount(text: String): Int {
+    return rl.GetCodepointCount(text);
+}
+// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+export let GetCodepoint(text: String, codepointSize: Listed<Int>): Int {
+    return rl.GetCodepoint(text, codepointSize);
+}
+// Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+export let GetCodepointNext(text: String, codepointSize: Listed<Int>): Int {
+    return rl.GetCodepointNext(text, codepointSize);
+}
+// Get previous codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure
+export let GetCodepointPrevious(text: String, codepointSize: Listed<Int>): Int {
+    return rl.GetCodepointPrevious(text, codepointSize);
+}
+// Encode one codepoint into UTF-8 byte array (array length returned as parameter)
+export let CodepointToUTF8(codepoint: Int, utf8Size: Listed<Int>): String {
+    return rl.CodepointToUTF8(codepoint, utf8Size);
+}
+// Copy one string to another, returns bytes copied
+export let TextCopy(dst: String, src: String): Int {
+    return rl.TextCopy(dst, src);
+}
+// Check if two text string are equal
+export let TextIsEqual(text1: String, text2: String): Boolean {
+    return rl.TextIsEqual(text1, text2);
+}
+// Get text length, checks for '\0' ending
+export let TextLength(text: String): Int {
+    return rl.TextLength(text);
+}
+// Get a piece of a text string
+export let TextSubtext(text: String, position: Int, length: Int): String {
+    return rl.TextSubtext(text, position, length);
+}
+// Replace text string (WARNING: memory must be freed!)
+export let TextReplace(text: String, replace: String, by: String): String {
+    return rl.TextReplace(text, replace, by);
+}
+// Insert text in a position (WARNING: memory must be freed!)
+export let TextInsert(text: String, insert: String, position: Int): String {
+    return rl.TextInsert(text, insert, position);
+}
+// Join text strings with delimiter
+export let TextJoin(textList: Listed<String>, count: Int, delimiter: String): String {
+    return rl.TextJoin(textList, count, delimiter);
+}
+// Split text into multiple strings
+export let TextSplit(text: String, delimiter: Int, count: Listed<Int>): Listed<String> {
+    return rl.TextSplit(text, delimiter, count);
+}
+// Append text at specific position and move cursor!
+export let TextAppend(text: String, append: String, position: Listed<Int>): Void {
+    rl.TextAppend(text, append, position);
+}
+// Find first text occurrence within a string
+export let TextFindIndex(text: String, find: String): Int {
+    return rl.TextFindIndex(text, find);
+}
+// Get upper case version of provided string
+export let TextToUpper(text: String): String {
+    return rl.TextToUpper(text);
+}
+// Get lower case version of provided string
+export let TextToLower(text: String): String {
+    return rl.TextToLower(text);
+}
+// Get Pascal case notation version of provided string
+export let TextToPascal(text: String): String {
+    return rl.TextToPascal(text);
+}
+// Get integer value from text (negative values not supported)
+export let TextToInteger(text: String): Int {
+    return rl.TextToInteger(text);
+}
+// Draw a line in 3D world space
+export let DrawLine3D(startPos: Vector3, endPos: Vector3, color: Color): Void {
+    rl.DrawLine3D(startPos, endPos, color);
+}
+// Draw a point in 3D space, actually a small line
+export let DrawPoint3D(position: Vector3, color: Color): Void {
+    rl.DrawPoint3D(position, color);
+}
+// Draw a circle in 3D world space
+export let DrawCircle3D(center: Vector3, radius: Float64, rotationAxis: Vector3, rotationAngle: Float64, color: Color): Void {
+    rl.DrawCircle3D(center, radius, rotationAxis, rotationAngle, color);
+}
+// Draw a color-filled triangle (vertex in counter-clockwise order!)
+export let DrawTriangle3D(v1: Vector3, v2: Vector3, v3: Vector3, color: Color): Void {
+    rl.DrawTriangle3D(v1, v2, v3, color);
+}
+// Draw a triangle strip defined by points
+export let DrawTriangleStrip3D(points: Listed<Vector3>, pointCount: Int, color: Color): Void {
+    rl.DrawTriangleStrip3D(points, pointCount, color);
+}
+// Draw cube
+export let DrawCube(position: Vector3, width: Float64, height: Float64, length: Float64, color: Color): Void {
+    rl.DrawCube(position, width, height, length, color);
+}
+// Draw cube (Vector version)
+export let DrawCubeV(position: Vector3, size: Vector3, color: Color): Void {
+    rl.DrawCubeV(position, size, color);
+}
+// Draw cube wires
+export let DrawCubeWires(position: Vector3, width: Float64, height: Float64, length: Float64, color: Color): Void {
+    rl.DrawCubeWires(position, width, height, length, color);
+}
+// Draw cube wires (Vector version)
+export let DrawCubeWiresV(position: Vector3, size: Vector3, color: Color): Void {
+    rl.DrawCubeWiresV(position, size, color);
+}
+// Draw sphere
+export let DrawSphere(centerPos: Vector3, radius: Float64, color: Color): Void {
+    rl.DrawSphere(centerPos, radius, color);
+}
+// Draw sphere with extended parameters
+export let DrawSphereEx(centerPos: Vector3, radius: Float64, rings: Int, slices: Int, color: Color): Void {
+    rl.DrawSphereEx(centerPos, radius, rings, slices, color);
+}
+// Draw sphere wires
+export let DrawSphereWires(centerPos: Vector3, radius: Float64, rings: Int, slices: Int, color: Color): Void {
+    rl.DrawSphereWires(centerPos, radius, rings, slices, color);
+}
+// Draw a cylinder/cone
+export let DrawCylinder(position: Vector3, radiusTop: Float64, radiusBottom: Float64, height: Float64, slices: Int, color: Color): Void {
+    rl.DrawCylinder(position, radiusTop, radiusBottom, height, slices, color);
+}
+// Draw a cylinder with base at startPos and top at endPos
+export let DrawCylinderEx(startPos: Vector3, endPos: Vector3, startRadius: Float64, endRadius: Float64, sides: Int, color: Color): Void {
+    rl.DrawCylinderEx(startPos, endPos, startRadius, endRadius, sides, color);
+}
+// Draw a cylinder/cone wires
+export let DrawCylinderWires(position: Vector3, radiusTop: Float64, radiusBottom: Float64, height: Float64, slices: Int, color: Color): Void {
+    rl.DrawCylinderWires(position, radiusTop, radiusBottom, height, slices, color);
+}
+// Draw a cylinder wires with base at startPos and top at endPos
+export let DrawCylinderWiresEx(startPos: Vector3, endPos: Vector3, startRadius: Float64, endRadius: Float64, sides: Int, color: Color): Void {
+    rl.DrawCylinderWiresEx(startPos, endPos, startRadius, endRadius, sides, color);
+}
+// Draw a capsule with the center of its sphere caps at startPos and endPos
+export let DrawCapsule(startPos: Vector3, endPos: Vector3, radius: Float64, slices: Int, rings: Int, color: Color): Void {
+    rl.DrawCapsule(startPos, endPos, radius, slices, rings, color);
+}
+// Draw capsule wireframe with the center of its sphere caps at startPos and endPos
+export let DrawCapsuleWires(startPos: Vector3, endPos: Vector3, radius: Float64, slices: Int, rings: Int, color: Color): Void {
+    rl.DrawCapsuleWires(startPos, endPos, radius, slices, rings, color);
+}
+// Draw a plane XZ
+export let DrawPlane(centerPos: Vector3, size: Vector2, color: Color): Void {
+    rl.DrawPlane(centerPos, size, color);
+}
+// Draw a ray line
+export let DrawRay(ray: Ray, color: Color): Void {
+    rl.DrawRay(ray, color);
+}
+// Draw a grid (centered at (0, 0, 0))
+export let DrawGrid(slices: Int, spacing: Float64): Void {
+    rl.DrawGrid(slices, spacing);
+}
+// Load model from files (meshes and materials)
+export let LoadModel(fileName: String): Model {
+    return rl.LoadModel(fileName);
+}
+// Load model from generated mesh (default material)
+export let LoadModelFromMesh(mesh: Mesh): Model {
+    return rl.LoadModelFromMesh(mesh);
+}
+// Check if a model is ready
+export let IsModelReady(model: Model): Boolean {
+    return rl.IsModelReady(model);
+}
+// Unload model (including meshes) from memory (RAM and/or VRAM)
+export let UnloadModel(model: Model): Void {
+    rl.UnloadModel(model);
+}
+// Compute model bounding box limits (considers all meshes)
+export let GetModelBoundingBox(model: Model): BoundingBox {
+    return rl.GetModelBoundingBox(model);
+}
+// Draw a model (with texture if set)
+export let DrawModel(model: Model, position: Vector3, scale: Float64, tint: Color): Void {
+    rl.DrawModel(model, position, scale, tint);
+}
+// Draw a model with extended parameters
+export let DrawModelEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: Float64, scale: Vector3, tint: Color): Void {
+    rl.DrawModelEx(model, position, rotationAxis, rotationAngle, scale, tint);
+}
+// Draw a model wires (with texture if set)
+export let DrawModelWires(model: Model, position: Vector3, scale: Float64, tint: Color): Void {
+    rl.DrawModelWires(model, position, scale, tint);
+}
+// Draw a model wires (with texture if set) with extended parameters
+export let DrawModelWiresEx(model: Model, position: Vector3, rotationAxis: Vector3, rotationAngle: Float64, scale: Vector3, tint: Color): Void {
+    rl.DrawModelWiresEx(model, position, rotationAxis, rotationAngle, scale, tint);
+}
+// Draw bounding box (wires)
+export let DrawBoundingBox(box: BoundingBox, color: Color): Void {
+    rl.DrawBoundingBox(box, color);
+}
+// Draw a billboard texture
+export let DrawBillboard(camera: Camera, texture: Texture2D, position: Vector3, size: Float64, tint: Color): Void {
+    rl.DrawBillboard(camera, texture, position, size, tint);
+}
+// Draw a billboard texture defined by source
+export let DrawBillboardRec(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void {
+    rl.DrawBillboardRec(camera, texture, source, position, size, tint);
+}
+// Draw a billboard texture defined by source and rotation
+export let DrawBillboardPro(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void {
+    rl.DrawBillboardPro(camera, texture, source, position, up, size, origin, rotation, tint);
+}
+// Upload mesh vertex data in GPU and provide VAO/VBO ids
+export let UploadMesh(mesh: Listed<Mesh>, dynamic: Boolean): Void {
+    rl.UploadMesh(mesh, dynamic);
+}
+// Update mesh vertex data in GPU for a specific buffer index
+export let UpdateMeshBuffer(mesh: Mesh, index: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void {
+    rl.UpdateMeshBuffer(mesh, index, data, dataSize, offset);
+}
+// Unload mesh data from CPU and GPU
+export let UnloadMesh(mesh: Mesh): Void {
+    rl.UnloadMesh(mesh);
+}
+// Draw a 3d mesh with material and transform
+export let DrawMesh(mesh: Mesh, material: Material, transform: Matrix): Void {
+    rl.DrawMesh(mesh, material, transform);
+}
+// Draw multiple mesh instances with material and different transforms
+export let DrawMeshInstanced(mesh: Mesh, material: Material, transforms: Listed<Matrix>, instances: Int): Void {
+    rl.DrawMeshInstanced(mesh, material, transforms, instances);
+}
+// Export mesh data to file, returns true on success
+export let ExportMesh(mesh: Mesh, fileName: String): Boolean {
+    return rl.ExportMesh(mesh, fileName);
+}
+// Compute mesh bounding box limits
+export let GetMeshBoundingBox(mesh: Mesh): BoundingBox {
+    return rl.GetMeshBoundingBox(mesh);
+}
+// Compute mesh tangents
+export let GenMeshTangents(mesh: Listed<Mesh>): Void {
+    rl.GenMeshTangents(mesh);
+}
+// Generate polygonal mesh
+export let GenMeshPoly(sides: Int, radius: Float64): Mesh {
+    return rl.GenMeshPoly(sides, radius);
+}
+// Generate plane mesh (with subdivisions)
+export let GenMeshPlane(width: Float64, length: Float64, resX: Int, resZ: Int): Mesh {
+    return rl.GenMeshPlane(width, length, resX, resZ);
+}
+// Generate cuboid mesh
+export let GenMeshCube(width: Float64, height: Float64, length: Float64): Mesh {
+    return rl.GenMeshCube(width, height, length);
+}
+// Generate sphere mesh (standard sphere)
+export let GenMeshSphere(radius: Float64, rings: Int, slices: Int): Mesh {
+    return rl.GenMeshSphere(radius, rings, slices);
+}
+// Generate half-sphere mesh (no bottom cap)
+export let GenMeshHemiSphere(radius: Float64, rings: Int, slices: Int): Mesh {
+    return rl.GenMeshHemiSphere(radius, rings, slices);
+}
+// Generate cylinder mesh
+export let GenMeshCylinder(radius: Float64, height: Float64, slices: Int): Mesh {
+    return rl.GenMeshCylinder(radius, height, slices);
+}
+// Generate cone/pyramid mesh
+export let GenMeshCone(radius: Float64, height: Float64, slices: Int): Mesh {
+    return rl.GenMeshCone(radius, height, slices);
+}
+// Generate torus mesh
+export let GenMeshTorus(radius: Float64, size: Float64, radSeg: Int, sides: Int): Mesh {
+    return rl.GenMeshTorus(radius, size, radSeg, sides);
+}
+// Generate trefoil knot mesh
+export let GenMeshKnot(radius: Float64, size: Float64, radSeg: Int, sides: Int): Mesh {
+    return rl.GenMeshKnot(radius, size, radSeg, sides);
+}
+// Generate heightmap mesh from image data
+export let GenMeshHeightmap(heightmap: Image, size: Vector3): Mesh {
+    return rl.GenMeshHeightmap(heightmap, size);
+}
+// Generate cubes-based map mesh from image data
+export let GenMeshCubicmap(cubicmap: Image, cubeSize: Vector3): Mesh {
+    return rl.GenMeshCubicmap(cubicmap, cubeSize);
+}
+// Load materials from model file
+export let LoadMaterials(fileName: String, materialCount: Listed<Int>): Listed<Material> {
+    return rl.LoadMaterials(fileName, materialCount);
+}
+// Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
+export let LoadMaterialDefault(): Material {
+    return rl.LoadMaterialDefault();
+}
+// Check if a material is ready
+export let IsMaterialReady(material: Material): Boolean {
+    return rl.IsMaterialReady(material);
+}
+// Unload material from GPU memory (VRAM)
+export let UnloadMaterial(material: Material): Void {
+    rl.UnloadMaterial(material);
+}
+// Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
+export let SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture2D): Void {
+    rl.SetMaterialTexture(material, mapType, texture);
+}
+// Set material for a mesh
+export let SetModelMeshMaterial(model: Listed<Model>, meshId: Int, materialId: Int): Void {
+    rl.SetModelMeshMaterial(model, meshId, materialId);
+}
+// Load model animations from file
+export let LoadModelAnimations(fileName: String, animCount: Listed<Int>): Listed<ModelAnimation> {
+    return rl.LoadModelAnimations(fileName, animCount);
+}
+// Update model animation pose
+export let UpdateModelAnimation(model: Model, anim: ModelAnimation, frame: Int): Void {
+    rl.UpdateModelAnimation(model, anim, frame);
+}
+// Unload animation data
+export let UnloadModelAnimation(anim: ModelAnimation): Void {
+    rl.UnloadModelAnimation(anim);
+}
+// Unload animation array data
+export let UnloadModelAnimations(animations: Listed<ModelAnimation>, animCount: Int): Void {
+    rl.UnloadModelAnimations(animations, animCount);
+}
+// Check model animation skeleton match
+export let IsModelAnimationValid(model: Model, anim: ModelAnimation): Boolean {
+    return rl.IsModelAnimationValid(model, anim);
+}
+// Check collision between two spheres
+export let CheckCollisionSpheres(center1: Vector3, radius1: Float64, center2: Vector3, radius2: Float64): Boolean {
+    return rl.CheckCollisionSpheres(center1, radius1, center2, radius2);
+}
+// Check collision between two bounding boxes
+export let CheckCollisionBoxes(box1: BoundingBox, box2: BoundingBox): Boolean {
+    return rl.CheckCollisionBoxes(box1, box2);
+}
+// Check collision between box and sphere
+export let CheckCollisionBoxSphere(box: BoundingBox, center: Vector3, radius: Float64): Boolean {
+    return rl.CheckCollisionBoxSphere(box, center, radius);
+}
+// Get collision info between ray and sphere
+export let GetRayCollisionSphere(ray: Ray, center: Vector3, radius: Float64): RayCollision {
+    return rl.GetRayCollisionSphere(ray, center, radius);
+}
+// Get collision info between ray and box
+export let GetRayCollisionBox(ray: Ray, box: BoundingBox): RayCollision {
+    return rl.GetRayCollisionBox(ray, box);
+}
+// Get collision info between ray and mesh
+export let GetRayCollisionMesh(ray: Ray, mesh: Mesh, transform: Matrix): RayCollision {
+    return rl.GetRayCollisionMesh(ray, mesh, transform);
+}
+// Get collision info between ray and triangle
+export let GetRayCollisionTriangle(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3): RayCollision {
+    return rl.GetRayCollisionTriangle(ray, p1, p2, p3);
+}
+// Get collision info between ray and quad
+export let GetRayCollisionQuad(ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3): RayCollision {
+    return rl.GetRayCollisionQuad(ray, p1, p2, p3, p4);
+}
+// Initialize audio device and context
+export let InitAudioDevice(): Void {
+    rl.InitAudioDevice();
+}
+// Close the audio device and context
+export let CloseAudioDevice(): Void {
+    rl.CloseAudioDevice();
+}
+// Check if audio device has been initialized successfully
+export let IsAudioDeviceReady(): Boolean {
+    return rl.IsAudioDeviceReady();
+}
+// Set master volume (listener)
+export let SetMasterVolume(volume: Float64): Void {
+    rl.SetMasterVolume(volume);
+}
+// Load wave data from file
+export let LoadWave(fileName: String): Wave {
+    return rl.LoadWave(fileName);
+}
+// Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
+export let LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Wave {
+    return rl.LoadWaveFromMemory(fileType, fileData, dataSize);
+}
+// Checks if wave data is ready
+export let IsWaveReady(wave: Wave): Boolean {
+    return rl.IsWaveReady(wave);
+}
+// Load sound from file
+export let LoadSound(fileName: String): Sound {
+    return rl.LoadSound(fileName);
+}
+// Load sound from wave data
+export let LoadSoundFromWave(wave: Wave): Sound {
+    return rl.LoadSoundFromWave(wave);
+}
+// Create a new sound that shares the same sample data as the source sound, does not own the sound data
+export let LoadSoundAlias(source: Sound): Sound {
+    return rl.LoadSoundAlias(source);
+}
+// Checks if a sound is ready
+export let IsSoundReady(sound: Sound): Boolean {
+    return rl.IsSoundReady(sound);
+}
+// Update sound buffer with new data
+export let UpdateSound(sound: Sound, data: DenseBitVector, sampleCount: Int): Void {
+    rl.UpdateSound(sound, data, sampleCount);
+}
+// Unload wave data
+export let UnloadWave(wave: Wave): Void {
+    rl.UnloadWave(wave);
+}
+// Unload sound
+export let UnloadSound(sound: Sound): Void {
+    rl.UnloadSound(sound);
+}
+// Unload a sound alias (does not deallocate sample data)
+export let UnloadSoundAlias(alias: Sound): Void {
+    rl.UnloadSoundAlias(alias);
+}
+// Export wave data to file, returns true on success
+export let ExportWave(wave: Wave, fileName: String): Boolean {
+    return rl.ExportWave(wave, fileName);
+}
+// Export wave sample data to code (.h), returns true on success
+export let ExportWaveAsCode(wave: Wave, fileName: String): Boolean {
+    return rl.ExportWaveAsCode(wave, fileName);
+}
+// Play a sound
+export let PlaySound(sound: Sound): Void {
+    rl.PlaySound(sound);
+}
+// Stop playing a sound
+export let StopSound(sound: Sound): Void {
+    rl.StopSound(sound);
+}
+// Pause a sound
+export let PauseSound(sound: Sound): Void {
+    rl.PauseSound(sound);
+}
+// Resume a paused sound
+export let ResumeSound(sound: Sound): Void {
+    rl.ResumeSound(sound);
+}
+// Check if a sound is currently playing
+export let IsSoundPlaying(sound: Sound): Boolean {
+    return rl.IsSoundPlaying(sound);
+}
+// Set volume for a sound (1.0 is max level)
+export let SetSoundVolume(sound: Sound, volume: Float64): Void {
+    rl.SetSoundVolume(sound, volume);
+}
+// Set pitch for a sound (1.0 is base level)
+export let SetSoundPitch(sound: Sound, pitch: Float64): Void {
+    rl.SetSoundPitch(sound, pitch);
+}
+// Set pan for a sound (0.5 is center)
+export let SetSoundPan(sound: Sound, pan: Float64): Void {
+    rl.SetSoundPan(sound, pan);
+}
+// Copy a wave to a new wave
+export let WaveCopy(wave: Wave): Wave {
+    return rl.WaveCopy(wave);
+}
+// Crop a wave to defined samples range
+export let WaveCrop(wave: Listed<Wave>, initSample: Int, finalSample: Int): Void {
+    rl.WaveCrop(wave, initSample, finalSample);
+}
+// Convert wave data to desired format
+export let WaveFormat(wave: Listed<Wave>, sampleRate: Int, sampleSize: Int, channels: Int): Void {
+    rl.WaveFormat(wave, sampleRate, sampleSize, channels);
+}
+// Load samples data from wave as a 32bit float data array
+export let LoadWaveSamples(wave: Wave): Listed<Float64> {
+    return rl.LoadWaveSamples(wave);
+}
+// Unload samples data loaded with LoadWaveSamples()
+export let UnloadWaveSamples(samples: Listed<Float64>): Void {
+    rl.UnloadWaveSamples(samples);
+}
+// Load music stream from file
+export let LoadMusicStream(fileName: String): Music {
+    return rl.LoadMusicStream(fileName);
+}
+// Load music stream from data
+export let LoadMusicStreamFromMemory(fileType: String, data: Listed<Int>, dataSize: Int): Music {
+    return rl.LoadMusicStreamFromMemory(fileType, data, dataSize);
+}
+// Checks if a music stream is ready
+export let IsMusicReady(music: Music): Boolean {
+    return rl.IsMusicReady(music);
+}
+// Unload music stream
+export let UnloadMusicStream(music: Music): Void {
+    rl.UnloadMusicStream(music);
+}
+// Start music playing
+export let PlayMusicStream(music: Music): Void {
+    rl.PlayMusicStream(music);
+}
+// Check if music is playing
+export let IsMusicStreamPlaying(music: Music): Boolean {
+    return rl.IsMusicStreamPlaying(music);
+}
+// Updates buffers for music streaming
+export let UpdateMusicStream(music: Music): Void {
+    rl.UpdateMusicStream(music);
+}
+// Stop music playing
+export let StopMusicStream(music: Music): Void {
+    rl.StopMusicStream(music);
+}
+// Pause music playing
+export let PauseMusicStream(music: Music): Void {
+    rl.PauseMusicStream(music);
+}
+// Resume playing paused music
+export let ResumeMusicStream(music: Music): Void {
+    rl.ResumeMusicStream(music);
+}
+// Seek music to a position (in seconds)
+export let SeekMusicStream(music: Music, position: Float64): Void {
+    rl.SeekMusicStream(music, position);
+}
+// Set volume for music (1.0 is max level)
+export let SetMusicVolume(music: Music, volume: Float64): Void {
+    rl.SetMusicVolume(music, volume);
+}
+// Set pitch for a music (1.0 is base level)
+export let SetMusicPitch(music: Music, pitch: Float64): Void {
+    rl.SetMusicPitch(music, pitch);
+}
+// Set pan for a music (0.5 is center)
+export let SetMusicPan(music: Music, pan: Float64): Void {
+    rl.SetMusicPan(music, pan);
+}
+// Get music time length (in seconds)
+export let GetMusicTimeLength(music: Music): Float64 {
+    return rl.GetMusicTimeLength(music);
+}
+// Get current music time played (in seconds)
+export let GetMusicTimePlayed(music: Music): Float64 {
+    return rl.GetMusicTimePlayed(music);
+}
+// Load audio stream (to stream raw audio pcm data)
+export let LoadAudioStream(sampleRate: Int, sampleSize: Int, channels: Int): AudioStream {
+    return rl.LoadAudioStream(sampleRate, sampleSize, channels);
+}
+// Checks if an audio stream is ready
+export let IsAudioStreamReady(stream: AudioStream): Boolean {
+    return rl.IsAudioStreamReady(stream);
+}
+// Unload audio stream and free memory
+export let UnloadAudioStream(stream: AudioStream): Void {
+    rl.UnloadAudioStream(stream);
+}
+// Update audio stream buffers with data
+export let UpdateAudioStream(stream: AudioStream, data: DenseBitVector, frameCount: Int): Void {
+    rl.UpdateAudioStream(stream, data, frameCount);
+}
+// Check if any audio stream buffers requires refill
+export let IsAudioStreamProcessed(stream: AudioStream): Boolean {
+    return rl.IsAudioStreamProcessed(stream);
+}
+// Play audio stream
+export let PlayAudioStream(stream: AudioStream): Void {
+    rl.PlayAudioStream(stream);
+}
+// Pause audio stream
+export let PauseAudioStream(stream: AudioStream): Void {
+    rl.PauseAudioStream(stream);
+}
+// Resume audio stream
+export let ResumeAudioStream(stream: AudioStream): Void {
+    rl.ResumeAudioStream(stream);
+}
+// Check if audio stream is playing
+export let IsAudioStreamPlaying(stream: AudioStream): Boolean {
+    return rl.IsAudioStreamPlaying(stream);
+}
+// Stop audio stream
+export let StopAudioStream(stream: AudioStream): Void {
+    rl.StopAudioStream(stream);
+}
+// Set volume for audio stream (1.0 is max level)
+export let SetAudioStreamVolume(stream: AudioStream, volume: Float64): Void {
+    rl.SetAudioStreamVolume(stream, volume);
+}
+// Set pitch for audio stream (1.0 is base level)
+export let SetAudioStreamPitch(stream: AudioStream, pitch: Float64): Void {
+    rl.SetAudioStreamPitch(stream, pitch);
+}
+// Set pan for audio stream (0.5 is centered)
+export let SetAudioStreamPan(stream: AudioStream, pan: Float64): Void {
+    rl.SetAudioStreamPan(stream, pan);
+}
+// Default size for new audio streams
+export let SetAudioStreamBufferSizeDefault(size: Int): Void {
+    rl.SetAudioStreamBufferSizeDefault(size);
+}
+// Audio thread callback to request new data
+export let SetAudioStreamCallback(stream: AudioStream, callback: AudioCallback): Void {
+    rl.SetAudioStreamCallback(stream, callback);
+}
+// Attach audio stream processor to stream, receives the samples as <float>s
+export let AttachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void {
+    rl.AttachAudioStreamProcessor(stream, processor);
+}
+// Detach audio stream processor from stream
+export let DetachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void {
+    rl.DetachAudioStreamProcessor(stream, processor);
+}
+// Attach audio stream processor to the entire audio pipeline, receives the samples as <float>s
+export let AttachAudioMixedProcessor(processor: AudioCallback): Void {
+    rl.AttachAudioMixedProcessor(processor);
+}
+// Detach audio stream processor from the entire audio pipeline
+export let DetachAudioMixedProcessor(processor: AudioCallback): Void {
+    rl.DetachAudioMixedProcessor(processor);
+}
+
+export let RAYLIB_VERSION_MAJOR: Int = 4;
+export let RAYLIB_VERSION_MINOR: Int = 6;
+export let RAYLIB_VERSION_PATCH: Int = 0;
+export let RAYLIB_VERSION: String = "4.6-dev";
+export let PI: Float64 = 3.141592653589793;
+export let LIGHTGRAY: Color = new Color(200, 200, 200, 255);
+export let GRAY: Color = new Color(130, 130, 130, 255);
+export let DARKGRAY: Color = new Color(80, 80, 80, 255);
+export let YELLOW: Color = new Color(253, 249, 0, 255);
+export let GOLD: Color = new Color(255, 203, 0, 255);
+export let ORANGE: Color = new Color(255, 161, 0, 255);
+export let PINK: Color = new Color(255, 109, 194, 255);
+export let RED: Color = new Color(230, 41, 55, 255);
+export let MAROON: Color = new Color(190, 33, 55, 255);
+export let GREEN: Color = new Color(0, 228, 48, 255);
+export let LIME: Color = new Color(0, 158, 47, 255);
+export let DARKGREEN: Color = new Color(0, 117, 44, 255);
+export let SKYBLUE: Color = new Color(102, 191, 255, 255);
+export let BLUE: Color = new Color(0, 121, 241, 255);
+export let DARKBLUE: Color = new Color(0, 82, 172, 255);
+export let PURPLE: Color = new Color(200, 122, 255, 255);
+export let VIOLET: Color = new Color(135, 60, 190, 255);
+export let DARKPURPLE: Color = new Color(112, 31, 126, 255);
+export let BEIGE: Color = new Color(211, 176, 131, 255);
+export let BROWN: Color = new Color(127, 106, 79, 255);
+export let DARKBROWN: Color = new Color(76, 63, 47, 255);
+export let WHITE: Color = new Color(255, 255, 255, 255);
+export let BLACK: Color = new Color(0, 0, 0, 255);
+export let BLANK: Color = new Color(0, 0, 0, 0);
+export let MAGENTA: Color = new Color(255, 0, 255, 255);
+export let RAYWHITE: Color = new Color(245, 245, 245, 255);
+
+// ConfigFlags
+export let FLAG_VSYNC_HINT = 64; // Set to try enabling V-Sync on GPU
+export let FLAG_FULLSCREEN_MODE = 2; // Set to run program in fullscreen
+export let FLAG_WINDOW_RESIZABLE = 4; // Set to allow resizable window
+export let FLAG_WINDOW_UNDECORATED = 8; // Set to disable window decoration (frame and buttons)
+export let FLAG_WINDOW_HIDDEN = 128; // Set to hide window
+export let FLAG_WINDOW_MINIMIZED = 512; // Set to minimize window (iconify)
+export let FLAG_WINDOW_MAXIMIZED = 1024; // Set to maximize window (expanded to monitor)
+export let FLAG_WINDOW_UNFOCUSED = 2048; // Set to window non focused
+export let FLAG_WINDOW_TOPMOST = 4096; // Set to window always on top
+export let FLAG_WINDOW_ALWAYS_RUN = 256; // Set to allow windows running while minimized
+export let FLAG_WINDOW_TRANSPARENT = 16; // Set to allow transparent framebuffer
+export let FLAG_WINDOW_HIGHDPI = 8192; // Set to support HighDPI
+export let FLAG_WINDOW_MOUSE_PASSTHROUGH = 16384; // Set to support mouse passthrough, only supported when FLAG_WINDOW_UNDECORATED
+export let FLAG_BORDERLESS_WINDOWED_MODE = 32768; // Set to run program in borderless windowed mode
+export let FLAG_MSAA_4X_HINT = 32; // Set to try enabling MSAA 4X
+export let FLAG_INTERLACED_HINT = 65536; // Set to try enabling interlaced video format (for V3D)
+
+// TraceLogLevel
+export let LOG_ALL = 0; // Display all logs
+export let LOG_TRACE = 1; // Trace logging, intended for internal use only
+export let LOG_DEBUG = 2; // Debug logging, used for internal debugging, it should be disabled on release builds
+export let LOG_INFO = 3; // Info logging, used for program execution info
+export let LOG_WARNING = 4; // Warning logging, used on recoverable failures
+export let LOG_ERROR = 5; // Error logging, used on unrecoverable failures
+export let LOG_FATAL = 6; // Fatal logging, used to abort program: exit(EXIT_FAILURE)
+export let LOG_NONE = 7; // Disable logging
+
+// KeyboardKey
+export let KEY_NULL = 0; // Key: NULL, used for no key pressed
+export let KEY_APOSTROPHE = 39; // Key: '
+export let KEY_COMMA = 44; // Key: ,
+export let KEY_MINUS = 45; // Key: -
+export let KEY_PERIOD = 46; // Key: .
+export let KEY_SLASH = 47; // Key: /
+export let KEY_ZERO = 48; // Key: 0
+export let KEY_ONE = 49; // Key: 1
+export let KEY_TWO = 50; // Key: 2
+export let KEY_THREE = 51; // Key: 3
+export let KEY_FOUR = 52; // Key: 4
+export let KEY_FIVE = 53; // Key: 5
+export let KEY_SIX = 54; // Key: 6
+export let KEY_SEVEN = 55; // Key: 7
+export let KEY_EIGHT = 56; // Key: 8
+export let KEY_NINE = 57; // Key: 9
+export let KEY_SEMICOLON = 59; // Key: ;
+export let KEY_EQUAL = 61; // Key: =
+export let KEY_A = 65; // Key: A | a
+export let KEY_B = 66; // Key: B | b
+export let KEY_C = 67; // Key: C | c
+export let KEY_D = 68; // Key: D | d
+export let KEY_E = 69; // Key: E | e
+export let KEY_F = 70; // Key: F | f
+export let KEY_G = 71; // Key: G | g
+export let KEY_H = 72; // Key: H | h
+export let KEY_I = 73; // Key: I | i
+export let KEY_J = 74; // Key: J | j
+export let KEY_K = 75; // Key: K | k
+export let KEY_L = 76; // Key: L | l
+export let KEY_M = 77; // Key: M | m
+export let KEY_N = 78; // Key: N | n
+export let KEY_O = 79; // Key: O | o
+export let KEY_P = 80; // Key: P | p
+export let KEY_Q = 81; // Key: Q | q
+export let KEY_R = 82; // Key: R | r
+export let KEY_S = 83; // Key: S | s
+export let KEY_T = 84; // Key: T | t
+export let KEY_U = 85; // Key: U | u
+export let KEY_V = 86; // Key: V | v
+export let KEY_W = 87; // Key: W | w
+export let KEY_X = 88; // Key: X | x
+export let KEY_Y = 89; // Key: Y | y
+export let KEY_Z = 90; // Key: Z | z
+export let KEY_LEFT_BRACKET = 91; // Key: [
+export let KEY_BACKSLASH = 92; // Key: '\'
+export let KEY_RIGHT_BRACKET = 93; // Key: ]
+export let KEY_GRAVE = 96; // Key: `
+export let KEY_SPACE = 32; // Key: Space
+export let KEY_ESCAPE = 256; // Key: Esc
+export let KEY_ENTER = 257; // Key: Enter
+export let KEY_TAB = 258; // Key: Tab
+export let KEY_BACKSPACE = 259; // Key: Backspace
+export let KEY_INSERT = 260; // Key: Ins
+export let KEY_DELETE = 261; // Key: Del
+export let KEY_RIGHT = 262; // Key: Cursor right
+export let KEY_LEFT = 263; // Key: Cursor left
+export let KEY_DOWN = 264; // Key: Cursor down
+export let KEY_UP = 265; // Key: Cursor up
+export let KEY_PAGE_UP = 266; // Key: Page up
+export let KEY_PAGE_DOWN = 267; // Key: Page down
+export let KEY_HOME = 268; // Key: Home
+export let KEY_END = 269; // Key: End
+export let KEY_CAPS_LOCK = 280; // Key: Caps lock
+export let KEY_SCROLL_LOCK = 281; // Key: Scroll down
+export let KEY_NUM_LOCK = 282; // Key: Num lock
+export let KEY_PRINT_SCREEN = 283; // Key: Print screen
+export let KEY_PAUSE = 284; // Key: Pause
+export let KEY_F1 = 290; // Key: F1
+export let KEY_F2 = 291; // Key: F2
+export let KEY_F3 = 292; // Key: F3
+export let KEY_F4 = 293; // Key: F4
+export let KEY_F5 = 294; // Key: F5
+export let KEY_F6 = 295; // Key: F6
+export let KEY_F7 = 296; // Key: F7
+export let KEY_F8 = 297; // Key: F8
+export let KEY_F9 = 298; // Key: F9
+export let KEY_F10 = 299; // Key: F10
+export let KEY_F11 = 300; // Key: F11
+export let KEY_F12 = 301; // Key: F12
+export let KEY_LEFT_SHIFT = 340; // Key: Shift left
+export let KEY_LEFT_CONTROL = 341; // Key: Control left
+export let KEY_LEFT_ALT = 342; // Key: Alt left
+export let KEY_LEFT_SUPER = 343; // Key: Super left
+export let KEY_RIGHT_SHIFT = 344; // Key: Shift right
+export let KEY_RIGHT_CONTROL = 345; // Key: Control right
+export let KEY_RIGHT_ALT = 346; // Key: Alt right
+export let KEY_RIGHT_SUPER = 347; // Key: Super right
+export let KEY_KB_MENU = 348; // Key: KB menu
+export let KEY_KP_0 = 320; // Key: Keypad 0
+export let KEY_KP_1 = 321; // Key: Keypad 1
+export let KEY_KP_2 = 322; // Key: Keypad 2
+export let KEY_KP_3 = 323; // Key: Keypad 3
+export let KEY_KP_4 = 324; // Key: Keypad 4
+export let KEY_KP_5 = 325; // Key: Keypad 5
+export let KEY_KP_6 = 326; // Key: Keypad 6
+export let KEY_KP_7 = 327; // Key: Keypad 7
+export let KEY_KP_8 = 328; // Key: Keypad 8
+export let KEY_KP_9 = 329; // Key: Keypad 9
+export let KEY_KP_DECIMAL = 330; // Key: Keypad .
+export let KEY_KP_DIVIDE = 331; // Key: Keypad /
+export let KEY_KP_MULTIPLY = 332; // Key: Keypad *
+export let KEY_KP_SUBTRACT = 333; // Key: Keypad -
+export let KEY_KP_ADD = 334; // Key: Keypad +
+export let KEY_KP_ENTER = 335; // Key: Keypad Enter
+export let KEY_KP_EQUAL = 336; // Key: Keypad =
+export let KEY_BACK = 4; // Key: Android back button
+export let KEY_MENU = 82; // Key: Android menu button
+export let KEY_VOLUME_UP = 24; // Key: Android volume up button
+export let KEY_VOLUME_DOWN = 25; // Key: Android volume down button
+
+// MouseButton
+export let MOUSE_BUTTON_LEFT = 0; // Mouse button left
+export let MOUSE_BUTTON_RIGHT = 1; // Mouse button right
+export let MOUSE_BUTTON_MIDDLE = 2; // Mouse button middle (pressed wheel)
+export let MOUSE_BUTTON_SIDE = 3; // Mouse button side (advanced mouse device)
+export let MOUSE_BUTTON_EXTRA = 4; // Mouse button extra (advanced mouse device)
+export let MOUSE_BUTTON_FORWARD = 5; // Mouse button forward (advanced mouse device)
+export let MOUSE_BUTTON_BACK = 6; // Mouse button back (advanced mouse device)
+
+// MouseCursor
+export let MOUSE_CURSOR_DEFAULT = 0; // Default pointer shape
+export let MOUSE_CURSOR_ARROW = 1; // Arrow shape
+export let MOUSE_CURSOR_IBEAM = 2; // Text writing cursor shape
+export let MOUSE_CURSOR_CROSSHAIR = 3; // Cross shape
+export let MOUSE_CURSOR_POINTING_HAND = 4; // Pointing hand cursor
+export let MOUSE_CURSOR_RESIZE_EW = 5; // Horizontal resize/move arrow shape
+export let MOUSE_CURSOR_RESIZE_NS = 6; // Vertical resize/move arrow shape
+export let MOUSE_CURSOR_RESIZE_NWSE = 7; // Top-left to bottom-right diagonal resize/move arrow shape
+export let MOUSE_CURSOR_RESIZE_NESW = 8; // The top-right to bottom-left diagonal resize/move arrow shape
+export let MOUSE_CURSOR_RESIZE_ALL = 9; // The omnidirectional resize/move cursor shape
+export let MOUSE_CURSOR_NOT_ALLOWED = 10; // The operation-not-allowed shape
+
+// GamepadButton
+export let GAMEPAD_BUTTON_UNKNOWN = 0; // Unknown button, just for error checking
+export let GAMEPAD_BUTTON_LEFT_FACE_UP = 1; // Gamepad left DPAD up button
+export let GAMEPAD_BUTTON_LEFT_FACE_RIGHT = 2; // Gamepad left DPAD right button
+export let GAMEPAD_BUTTON_LEFT_FACE_DOWN = 3; // Gamepad left DPAD down button
+export let GAMEPAD_BUTTON_LEFT_FACE_LEFT = 4; // Gamepad left DPAD left button
+export let GAMEPAD_BUTTON_RIGHT_FACE_UP = 5; // Gamepad right button up (i.e. PS3: Triangle, Xbox: Y)
+export let GAMEPAD_BUTTON_RIGHT_FACE_RIGHT = 6; // Gamepad right button right (i.e. PS3: Square, Xbox: X)
+export let GAMEPAD_BUTTON_RIGHT_FACE_DOWN = 7; // Gamepad right button down (i.e. PS3: Cross, Xbox: A)
+export let GAMEPAD_BUTTON_RIGHT_FACE_LEFT = 8; // Gamepad right button left (i.e. PS3: Circle, Xbox: B)
+export let GAMEPAD_BUTTON_LEFT_TRIGGER_1 = 9; // Gamepad top/back trigger left (first), it could be a trailing button
+export let GAMEPAD_BUTTON_LEFT_TRIGGER_2 = 10; // Gamepad top/back trigger left (second), it could be a trailing button
+export let GAMEPAD_BUTTON_RIGHT_TRIGGER_1 = 11; // Gamepad top/back trigger right (one), it could be a trailing button
+export let GAMEPAD_BUTTON_RIGHT_TRIGGER_2 = 12; // Gamepad top/back trigger right (second), it could be a trailing button
+export let GAMEPAD_BUTTON_MIDDLE_LEFT = 13; // Gamepad center buttons, left one (i.e. PS3: Select)
+export let GAMEPAD_BUTTON_MIDDLE = 14; // Gamepad center buttons, middle one (i.e. PS3: PS, Xbox: XBOX)
+export let GAMEPAD_BUTTON_MIDDLE_RIGHT = 15; // Gamepad center buttons, right one (i.e. PS3: Start)
+export let GAMEPAD_BUTTON_LEFT_THUMB = 16; // Gamepad joystick pressed button left
+export let GAMEPAD_BUTTON_RIGHT_THUMB = 17; // Gamepad joystick pressed button right
+
+// GamepadAxis
+export let GAMEPAD_AXIS_LEFT_X = 0; // Gamepad left stick X axis
+export let GAMEPAD_AXIS_LEFT_Y = 1; // Gamepad left stick Y axis
+export let GAMEPAD_AXIS_RIGHT_X = 2; // Gamepad right stick X axis
+export let GAMEPAD_AXIS_RIGHT_Y = 3; // Gamepad right stick Y axis
+export let GAMEPAD_AXIS_LEFT_TRIGGER = 4; // Gamepad back trigger left, pressure level: [1..-1]
+export let GAMEPAD_AXIS_RIGHT_TRIGGER = 5; // Gamepad back trigger right, pressure level: [1..-1]
+
+// MaterialMapIndex
+export let MATERIAL_MAP_ALBEDO = 0; // Albedo material (same as: MATERIAL_MAP_DIFFUSE)
+export let MATERIAL_MAP_METALNESS = 1; // Metalness material (same as: MATERIAL_MAP_SPECULAR)
+export let MATERIAL_MAP_NORMAL = 2; // Normal material
+export let MATERIAL_MAP_ROUGHNESS = 3; // Roughness material
+export let MATERIAL_MAP_OCCLUSION = 4; // Ambient occlusion material
+export let MATERIAL_MAP_EMISSION = 5; // Emission material
+export let MATERIAL_MAP_HEIGHT = 6; // Heightmap material
+export let MATERIAL_MAP_CUBEMAP = 7; // Cubemap material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+export let MATERIAL_MAP_IRRADIANCE = 8; // Irradiance material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+export let MATERIAL_MAP_PREFILTER = 9; // Prefilter material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+export let MATERIAL_MAP_BRDF = 10; // Brdf material
+
+// ShaderLocationIndex
+export let SHADER_LOC_VERTEX_POSITION = 0; // Shader location: vertex attribute: position
+export let SHADER_LOC_VERTEX_TEXCOORD01 = 1; // Shader location: vertex attribute: texcoord01
+export let SHADER_LOC_VERTEX_TEXCOORD02 = 2; // Shader location: vertex attribute: texcoord02
+export let SHADER_LOC_VERTEX_NORMAL = 3; // Shader location: vertex attribute: normal
+export let SHADER_LOC_VERTEX_TANGENT = 4; // Shader location: vertex attribute: tangent
+export let SHADER_LOC_VERTEX_COLOR = 5; // Shader location: vertex attribute: color
+export let SHADER_LOC_MATRIX_MVP = 6; // Shader location: matrix uniform: model-view-projection
+export let SHADER_LOC_MATRIX_VIEW = 7; // Shader location: matrix uniform: view (camera transform)
+export let SHADER_LOC_MATRIX_PROJECTION = 8; // Shader location: matrix uniform: projection
+export let SHADER_LOC_MATRIX_MODEL = 9; // Shader location: matrix uniform: model (transform)
+export let SHADER_LOC_MATRIX_NORMAL = 10; // Shader location: matrix uniform: normal
+export let SHADER_LOC_VECTOR_VIEW = 11; // Shader location: vector uniform: view
+export let SHADER_LOC_COLOR_DIFFUSE = 12; // Shader location: vector uniform: diffuse color
+export let SHADER_LOC_COLOR_SPECULAR = 13; // Shader location: vector uniform: specular color
+export let SHADER_LOC_COLOR_AMBIENT = 14; // Shader location: vector uniform: ambient color
+export let SHADER_LOC_MAP_ALBEDO = 15; // Shader location: sampler2d texture: albedo (same as: SHADER_LOC_MAP_DIFFUSE)
+export let SHADER_LOC_MAP_METALNESS = 16; // Shader location: sampler2d texture: metalness (same as: SHADER_LOC_MAP_SPECULAR)
+export let SHADER_LOC_MAP_NORMAL = 17; // Shader location: sampler2d texture: normal
+export let SHADER_LOC_MAP_ROUGHNESS = 18; // Shader location: sampler2d texture: roughness
+export let SHADER_LOC_MAP_OCCLUSION = 19; // Shader location: sampler2d texture: occlusion
+export let SHADER_LOC_MAP_EMISSION = 20; // Shader location: sampler2d texture: emission
+export let SHADER_LOC_MAP_HEIGHT = 21; // Shader location: sampler2d texture: height
+export let SHADER_LOC_MAP_CUBEMAP = 22; // Shader location: samplerCube texture: cubemap
+export let SHADER_LOC_MAP_IRRADIANCE = 23; // Shader location: samplerCube texture: irradiance
+export let SHADER_LOC_MAP_PREFILTER = 24; // Shader location: samplerCube texture: prefilter
+export let SHADER_LOC_MAP_BRDF = 25; // Shader location: sampler2d texture: brdf
+
+// ShaderUniformDataType
+export let SHADER_UNIFORM_FLOAT = 0; // Shader uniform type: float
+export let SHADER_UNIFORM_VEC2 = 1; // Shader uniform type: vec2 (2 float)
+export let SHADER_UNIFORM_VEC3 = 2; // Shader uniform type: vec3 (3 float)
+export let SHADER_UNIFORM_VEC4 = 3; // Shader uniform type: vec4 (4 float)
+export let SHADER_UNIFORM_INT = 4; // Shader uniform type: int
+export let SHADER_UNIFORM_IVEC2 = 5; // Shader uniform type: ivec2 (2 int)
+export let SHADER_UNIFORM_IVEC3 = 6; // Shader uniform type: ivec3 (3 int)
+export let SHADER_UNIFORM_IVEC4 = 7; // Shader uniform type: ivec4 (4 int)
+export let SHADER_UNIFORM_SAMPLER2D = 8; // Shader uniform type: sampler2d
+
+// ShaderAttributeDataType
+export let SHADER_ATTRIB_FLOAT = 0; // Shader attribute type: float
+export let SHADER_ATTRIB_VEC2 = 1; // Shader attribute type: vec2 (2 float)
+export let SHADER_ATTRIB_VEC3 = 2; // Shader attribute type: vec3 (3 float)
+export let SHADER_ATTRIB_VEC4 = 3; // Shader attribute type: vec4 (4 float)
+
+// PixelFormat
+export let PIXELFORMAT_UNCOMPRESSED_GRAYSCALE = 1; // 8 bit per pixel (no alpha)
+export let PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA = 2; // 8*2 bpp (2 channels)
+export let PIXELFORMAT_UNCOMPRESSED_R5G6B5 = 3; // 16 bpp
+export let PIXELFORMAT_UNCOMPRESSED_R8G8B8 = 4; // 24 bpp
+export let PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 = 5; // 16 bpp (1 bit alpha)
+export let PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 = 6; // 16 bpp (4 bit alpha)
+export let PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 = 7; // 32 bpp
+export let PIXELFORMAT_UNCOMPRESSED_R32 = 8; // 32 bpp (1 channel - float)
+export let PIXELFORMAT_UNCOMPRESSED_R32G32B32 = 9; // 32*3 bpp (3 channels - float)
+export let PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 = 10; // 32*4 bpp (4 channels - float)
+export let PIXELFORMAT_UNCOMPRESSED_R16 = 11; // 16 bpp (1 channel - half float)
+export let PIXELFORMAT_UNCOMPRESSED_R16G16B16 = 12; // 16*3 bpp (3 channels - half float)
+export let PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 = 13; // 16*4 bpp (4 channels - half float)
+export let PIXELFORMAT_COMPRESSED_DXT1_RGB = 14; // 4 bpp (no alpha)
+export let PIXELFORMAT_COMPRESSED_DXT1_RGBA = 15; // 4 bpp (1 bit alpha)
+export let PIXELFORMAT_COMPRESSED_DXT3_RGBA = 16; // 8 bpp
+export let PIXELFORMAT_COMPRESSED_DXT5_RGBA = 17; // 8 bpp
+export let PIXELFORMAT_COMPRESSED_ETC1_RGB = 18; // 4 bpp
+export let PIXELFORMAT_COMPRESSED_ETC2_RGB = 19; // 4 bpp
+export let PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA = 20; // 8 bpp
+export let PIXELFORMAT_COMPRESSED_PVRT_RGB = 21; // 4 bpp
+export let PIXELFORMAT_COMPRESSED_PVRT_RGBA = 22; // 4 bpp
+export let PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA = 23; // 8 bpp
+export let PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA = 24; // 2 bpp
+
+// TextureFilter
+export let TEXTURE_FILTER_POINT = 0; // No filter, just pixel approximation
+export let TEXTURE_FILTER_BILINEAR = 1; // Linear filtering
+export let TEXTURE_FILTER_TRILINEAR = 2; // Trilinear filtering (linear with mipmaps)
+export let TEXTURE_FILTER_ANISOTROPIC_4X = 3; // Anisotropic filtering 4x
+export let TEXTURE_FILTER_ANISOTROPIC_8X = 4; // Anisotropic filtering 8x
+export let TEXTURE_FILTER_ANISOTROPIC_16X = 5; // Anisotropic filtering 16x
+
+// TextureWrap
+export let TEXTURE_WRAP_REPEAT = 0; // Repeats texture in tiled mode
+export let TEXTURE_WRAP_CLAMP = 1; // Clamps texture to edge pixel in tiled mode
+export let TEXTURE_WRAP_MIRROR_REPEAT = 2; // Mirrors and repeats the texture in tiled mode
+export let TEXTURE_WRAP_MIRROR_CLAMP = 3; // Mirrors and clamps to border the texture in tiled mode
+
+// CubemapLayout
+export let CUBEMAP_LAYOUT_AUTO_DETECT = 0; // Automatically detect layout type
+export let CUBEMAP_LAYOUT_LINE_VERTICAL = 1; // Layout is defined by a vertical line with faces
+export let CUBEMAP_LAYOUT_LINE_HORIZONTAL = 2; // Layout is defined by a horizontal line with faces
+export let CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR = 3; // Layout is defined by a 3x4 cross with cubemap faces
+export let CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE = 4; // Layout is defined by a 4x3 cross with cubemap faces
+export let CUBEMAP_LAYOUT_PANORAMA = 5; // Layout is defined by a panorama image (equirrectangular map)
+
+// FontType
+export let FONT_DEFAULT = 0; // Default font generation, anti-aliased
+export let FONT_BITMAP = 1; // Bitmap font generation, no anti-aliasing
+export let FONT_SDF = 2; // SDF font generation, requires external shader
+
+// BlendMode
+export let BLEND_ALPHA = 0; // Blend textures considering alpha (default)
+export let BLEND_ADDITIVE = 1; // Blend textures adding colors
+export let BLEND_MULTIPLIED = 2; // Blend textures multiplying colors
+export let BLEND_ADD_COLORS = 3; // Blend textures adding colors (alternative)
+export let BLEND_SUBTRACT_COLORS = 4; // Blend textures subtracting colors (alternative)
+export let BLEND_ALPHA_PREMULTIPLY = 5; // Blend premultiplied textures considering alpha
+export let BLEND_CUSTOM = 6; // Blend textures using custom src/dst factors (use rlSetBlendFactors())
+export let BLEND_CUSTOM_SEPARATE = 7; // Blend textures using custom rgb/alpha separate src/dst factors (use rlSetBlendFactorsSeparate())
+
+// Gesture
+export let GESTURE_NONE = 0; // No gesture
+export let GESTURE_TAP = 1; // Tap gesture
+export let GESTURE_DOUBLETAP = 2; // Double tap gesture
+export let GESTURE_HOLD = 4; // Hold gesture
+export let GESTURE_DRAG = 8; // Drag gesture
+export let GESTURE_SWIPE_RIGHT = 16; // Swipe right gesture
+export let GESTURE_SWIPE_LEFT = 32; // Swipe left gesture
+export let GESTURE_SWIPE_UP = 64; // Swipe up gesture
+export let GESTURE_SWIPE_DOWN = 128; // Swipe down gesture
+export let GESTURE_PINCH_IN = 256; // Pinch in gesture
+export let GESTURE_PINCH_OUT = 512; // Pinch out gesture
+
+// CameraMode
+export let CAMERA_CUSTOM = 0; // Custom camera
+export let CAMERA_FREE = 1; // Free camera
+export let CAMERA_ORBITAL = 2; // Orbital camera
+export let CAMERA_FIRST_PERSON = 3; // First person camera
+export let CAMERA_THIRD_PERSON = 4; // Third person camera
+
+// CameraProjection
+export let CAMERA_PERSPECTIVE = 0; // Perspective projection
+export let CAMERA_ORTHOGRAPHIC = 1; // Orthographic projection
+
+// NPatchLayout
+export let NPATCH_NINE_PATCH = 0; // Npatch layout: 3x3 tiles
+export let NPATCH_THREE_PATCH_VERTICAL = 1; // Npatch layout: 1x3 tiles
+export let NPATCH_THREE_PATCH_HORIZONTAL = 2; // Npatch layout: 3x1 tiles
+
+export let ConfigFlags = Int;
+export let TraceLogLevel = Int;
+export let KeyboardKey = Int;
+export let MouseButton = Int;
+export let MouseCursor = Int;
+export let GamepadButton = Int;
+export let GamepadAxis = Int;
+export let MaterialMapIndex = Int;
+export let ShaderLocationIndex = Int;
+export let ShaderUniformDataType = Int;
+export let ShaderAttributeDataType = Int;
+export let PixelFormat = Int;
+export let TextureFilter = Int;
+export let TextureWrap = Int;
+export let CubemapLayout = Int;
+export let FontType = Int;
+export let BlendMode = Int;
+export let Gesture = Int;
+export let CameraMode = Int;
+export let CameraProjection = Int;
+export let NPatchLayout = Int;
+// Vector2, 2 components
+export class Vector2 {
+    // Vector x component
+    public x: Float64;
+    // Vector y component
+    public y: Float64;
+}
+// Vector3, 3 components
+export class Vector3 {
+    // Vector x component
+    public x: Float64;
+    // Vector y component
+    public y: Float64;
+    // Vector z component
+    public z: Float64;
+}
+// Vector4, 4 components
+export class Vector4 {
+    // Vector x component
+    public x: Float64;
+    // Vector y component
+    public y: Float64;
+    // Vector z component
+    public z: Float64;
+    // Vector w component
+    public w: Float64;
+}
+// Matrix, 4x4 components, column major, OpenGL style, right-handed
+export class Matrix {
+    // Matrix first row (4 components)
+    public m0: Float64;
+    // Matrix first row (4 components)
+    public m4: Float64;
+    // Matrix first row (4 components)
+    public m8: Float64;
+    // Matrix first row (4 components)
+    public m12: Float64;
+    // Matrix second row (4 components)
+    public m1: Float64;
+    // Matrix second row (4 components)
+    public m5: Float64;
+    // Matrix second row (4 components)
+    public m9: Float64;
+    // Matrix second row (4 components)
+    public m13: Float64;
+    // Matrix third row (4 components)
+    public m2: Float64;
+    // Matrix third row (4 components)
+    public m6: Float64;
+    // Matrix third row (4 components)
+    public m10: Float64;
+    // Matrix third row (4 components)
+    public m14: Float64;
+    // Matrix fourth row (4 components)
+    public m3: Float64;
+    // Matrix fourth row (4 components)
+    public m7: Float64;
+    // Matrix fourth row (4 components)
+    public m11: Float64;
+    // Matrix fourth row (4 components)
+    public m15: Float64;
+}
+// Color, 4 components, R8G8B8A8 (32bit)
+export class Color {
+    // Color red value
+    public r: Int;
+    // Color green value
+    public g: Int;
+    // Color blue value
+    public b: Int;
+    // Color alpha value
+    public a: Int;
+}
+// Rectangle, 4 components
+export class Rectangle {
+    // Rectangle top-left corner position x
+    public x: Float64;
+    // Rectangle top-left corner position y
+    public y: Float64;
+    // Rectangle width
+    public width: Float64;
+    // Rectangle height
+    public height: Float64;
+}
+// Image, pixel data stored in CPU memory (RAM)
+export class Image {
+    // Image raw data
+    public data: DenseBitVector;
+    // Image base width
+    public width: Int;
+    // Image base height
+    public height: Int;
+    // Mipmap levels, 1 by default
+    public mipmaps: Int;
+    // Data format (PixelFormat type)
+    public format: Int;
+}
+// Texture, tex data stored in GPU memory (VRAM)
+export class Texture {
+    // OpenGL texture id
+    public id: Int;
+    // Texture base width
+    public width: Int;
+    // Texture base height
+    public height: Int;
+    // Mipmap levels, 1 by default
+    public mipmaps: Int;
+    // Data format (PixelFormat type)
+    public format: Int;
+}
+// RenderTexture, fbo for texture rendering
+export class RenderTexture {
+    // OpenGL framebuffer object id
+    public id: Int;
+    // Color buffer attachment texture
+    public texture: Texture;
+    // Depth buffer attachment texture
+    public depth: Texture;
+}
+// NPatchInfo, n-patch layout info
+export class NPatchInfo {
+    // Texture source rectangle
+    public source: Rectangle;
+    // Left border offset
+    public left: Int;
+    // Top border offset
+    public top: Int;
+    // Right border offset
+    public right: Int;
+    // Bottom border offset
+    public bottom: Int;
+    // Layout of the n-patch: 3x3, 1x3 or 3x1
+    public layout: Int;
+}
+// GlyphInfo, font characters glyphs info
+export class GlyphInfo {
+    // Character value (Unicode)
+    public value: Int;
+    // Character offset X when drawing
+    public offsetX: Int;
+    // Character offset Y when drawing
+    public offsetY: Int;
+    // Character advance position X
+    public advanceX: Int;
+    // Character image data
+    public image: Image;
+}
+// Font, font texture and GlyphInfo array data
+export class Font {
+    // Base size (default chars height)
+    public baseSize: Int;
+    // Number of glyph characters
+    public glyphCount: Int;
+    // Padding around the glyph characters
+    public glyphPadding: Int;
+    // Texture atlas containing the glyphs
+    public texture: Texture2D;
+    // Rectangles in texture for the glyphs
+    public recs: Listed<Rectangle>;
+    // Glyphs info data
+    public glyphs: Listed<GlyphInfo>;
+}
+// Camera, defines position/orientation in 3d space
+export class Camera3D {
+    // Camera position
+    public position: Vector3;
+    // Camera target it looks-at
+    public target: Vector3;
+    // Camera up vector (rotation over its axis)
+    public up: Vector3;
+    // Camera field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic
+    public fovy: Float64;
+    // Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
+    public projection: Int;
+}
+// Camera2D, defines position/orientation in 2d space
+export class Camera2D {
+    // Camera offset (displacement from target)
+    public offset: Vector2;
+    // Camera target (rotation and zoom origin)
+    public target: Vector2;
+    // Camera rotation in degrees
+    public rotation: Float64;
+    // Camera zoom (scaling), should be 1.0f by default
+    public zoom: Float64;
+}
+// Mesh, vertex data and vao/vbo
+export class Mesh {
+    // Number of vertices stored in arrays
+    public vertexCount: Int;
+    // Number of triangles stored (indexed or not)
+    public triangleCount: Int;
+    // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
+    public vertices: Listed<Float64>;
+    // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
+    public texcoords: Listed<Float64>;
+    // Vertex texture second coordinates (UV - 2 components per vertex) (shader-location = 5)
+    public texcoords2: Listed<Float64>;
+    // Vertex normals (XYZ - 3 components per vertex) (shader-location = 2)
+    public normals: Listed<Float64>;
+    // Vertex tangents (XYZW - 4 components per vertex) (shader-location = 4)
+    public tangents: Listed<Float64>;
+    // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
+    public colors: Listed<Int>;
+    // Vertex indices (in case vertex data comes indexed)
+    public indices: Listed<Int>;
+    // Animated vertex positions (after bones transformations)
+    public animVertices: Listed<Float64>;
+    // Animated normals (after bones transformations)
+    public animNormals: Listed<Float64>;
+    // Vertex bone ids, max 255 bone ids, up to 4 bones influence by vertex (skinning)
+    public boneIds: Listed<Int>;
+    // Vertex bone weight, up to 4 bones influence by vertex (skinning)
+    public boneWeights: Listed<Float64>;
+    // OpenGL Vertex Array Object id
+    public vaoId: Int;
+    // OpenGL Vertex Buffer Objects id (default vertex data)
+    public vboId: Listed<Int>;
+}
+// Shader
+export class Shader {
+    // Shader program id
+    public id: Int;
+    // Shader locations array (RL_MAX_SHADER_LOCATIONS)
+    public locs: Listed<Int>;
+}
+// MaterialMap
+export class MaterialMap {
+    // Material map texture
+    public texture: Texture2D;
+    // Material map color
+    public color: Color;
+    // Material map value
+    public value: Float64;
+}
+// Material, includes shader and maps
+export class Material {
+    // Material shader
+    public shader: Shader;
+    // Material maps array (MAX_MATERIAL_MAPS)
+    public maps: Listed<MaterialMap>;
+    // Material generic parameters (if required)
+    public params: Listed<Float64>;
+}
+// Transform, vertex transformation data
+export class Transform {
+    // Translation
+    public translation: Vector3;
+    // Rotation
+    public rotation: Quaternion;
+    // Scale
+    public scale: Vector3;
+}
+// Bone, skeletal animation bone
+export class BoneInfo {
+    // Bone name
+    public name: String;
+    // Bone parent
+    public parent: Int;
+}
+// Model, meshes, materials and animation data
+export class Model {
+    // Local transform matrix
+    public transform: Matrix;
+    // Number of meshes
+    public meshCount: Int;
+    // Number of materials
+    public materialCount: Int;
+    // Meshes array
+    public meshes: Listed<Mesh>;
+    // Materials array
+    public materials: Listed<Material>;
+    // Mesh material number
+    public meshMaterial: Listed<Int>;
+    // Number of bones
+    public boneCount: Int;
+    // Bones information (skeleton)
+    public bones: Listed<BoneInfo>;
+    // Bones base transformation (pose)
+    public bindPose: Listed<Transform>;
+}
+// ModelAnimation
+export class ModelAnimation {
+    // Number of bones
+    public boneCount: Int;
+    // Number of animation frames
+    public frameCount: Int;
+    // Bones information (skeleton)
+    public bones: Listed<BoneInfo>;
+    // Poses array by frame
+    public framePoses: Listed<Listed<Transform>>;
+    // Animation name
+    public name: String;
+}
+// Ray, ray for raycasting
+export class Ray {
+    // Ray position (origin)
+    public position: Vector3;
+    // Ray direction
+    public direction: Vector3;
+}
+// RayCollision, ray hit information
+export class RayCollision {
+    // Did the ray hit something?
+    public hit: Boolean;
+    // Distance to the nearest hit
+    public distance: Float64;
+    // Point of the nearest hit
+    public point: Vector3;
+    // Surface normal of hit
+    public normal: Vector3;
+}
+// BoundingBox
+export class BoundingBox {
+    // Minimum vertex box-corner
+    public min: Vector3;
+    // Maximum vertex box-corner
+    public max: Vector3;
+}
+// Wave, audio wave data
+export class Wave {
+    // Total number of frames (considering channels)
+    public frameCount: Int;
+    // Frequency (samples per second)
+    public sampleRate: Int;
+    // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
+    public sampleSize: Int;
+    // Number of channels (1-mono, 2-stereo, ...)
+    public channels: Int;
+    // Buffer data pointer
+    public data: DenseBitVector;
+}
+// AudioStream, custom audio stream
+export class AudioStream {
+    // Pointer to internal data used by the audio system
+    public buffer: Listed<AnyValue>;
+    // Pointer to internal data processor, useful for audio effects
+    public processor: Listed<AnyValue>;
+    // Frequency (samples per second)
+    public sampleRate: Int;
+    // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
+    public sampleSize: Int;
+    // Number of channels (1-mono, 2-stereo, ...)
+    public channels: Int;
+}
+// Sound
+export class Sound {
+    // Audio stream
+    public stream: AudioStream;
+    // Total number of frames (considering channels)
+    public frameCount: Int;
+}
+// Music, audio stream, anything longer than ~10 seconds should be streamed
+export class Music {
+    // Audio stream
+    public stream: AudioStream;
+    // Total number of frames (considering channels)
+    public frameCount: Int;
+    // Music looping enable
+    public looping: Boolean;
+    // Type of music context (audio filetype)
+    public ctxType: Int;
+    // Audio context data, depends on type
+    public ctxData: DenseBitVector;
+}
+// VrDeviceInfo, Head-Mounted-Display device parameters
+export class VrDeviceInfo {
+    // Horizontal resolution in pixels
+    public hResolution: Int;
+    // Vertical resolution in pixels
+    public vResolution: Int;
+    // Horizontal size in meters
+    public hScreenSize: Float64;
+    // Vertical size in meters
+    public vScreenSize: Float64;
+    // Screen center in meters
+    public vScreenCenter: Float64;
+    // Distance between eye and display in meters
+    public eyeToScreenDistance: Float64;
+    // Lens separation distance in meters
+    public lensSeparationDistance: Float64;
+    // IPD (distance between pupils) in meters
+    public interpupillaryDistance: Float64;
+    // Lens distortion constant parameters
+    public lensDistortionValues: Listed<Float64>;
+    // Chromatic aberration correction parameters
+    public chromaAbCorrection: Listed<Float64>;
+}
+// VrStereoConfig, VR stereo rendering configuration for simulator
+export class VrStereoConfig {
+    // VR projection matrices (per eye)
+    public projection: Listed<Matrix>;
+    // VR view offset matrices (per eye)
+    public viewOffset: Listed<Matrix>;
+    // VR left lens center
+    public leftLensCenter: Listed<Float64>;
+    // VR right lens center
+    public rightLensCenter: Listed<Float64>;
+    // VR left screen center
+    public leftScreenCenter: Listed<Float64>;
+    // VR right screen center
+    public rightScreenCenter: Listed<Float64>;
+    // VR distortion scale
+    public scale: Listed<Float64>;
+    // VR distortion scale in
+    public scaleIn: Listed<Float64>;
+}
+// File path list
+export class FilePathList {
+    // Filepaths max entries
+    public capacity: Int;
+    // Filepaths entries count
+    public count: Int;
+    // Filepaths entries
+    public paths: Listed<String>;
+}
+// Quaternion, 4 components (Vector4 alias)
+export let Quaternion = Vector4;
+// Texture2D, same as Texture
+export let Texture2D = Texture;
+// TextureCubemap, same as Texture
+export let TextureCubemap = Texture;
+// RenderTexture2D, same as RenderTexture
+export let RenderTexture2D = RenderTexture;
+// Camera type fallback, defaults to Camera3D
+export let Camera = Camera3D;
+// FileIO: Load binary data
+export let LoadFileDataCallback = fn(String, Listed<Int>): Listed<Int>;
+// FileIO: Save binary data
+export let SaveFileDataCallback = fn(String, DenseBitVector, Int): Boolean;
+// FileIO: Load text data
+export let LoadFileTextCallback = fn(String): String;
+// FileIO: Save text data
+export let SaveFileTextCallback = fn(String, String): Boolean;
+// 
+export let AudioCallback = fn(DenseBitVector, Int): Void;

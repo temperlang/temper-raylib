@@ -48,8 +48,66 @@ def main() -> None:
     with open('rl/raylib.json') as raylib_json_file:
         raylib_json = json.load(raylib_json_file)
 
-    with open('rl/constants.temper', 'w') as out_file:
-        out_file.write('let {...} = import("./types.temper");\n')
+    with open('rl/raylib.temper', 'w') as out_file:
+        
+        out_file.write('\n')
+
+        out_file.write('export interface Raylib {\n')
+        for func in raylib_json['functions']:
+            name = func['name']
+            desc = func['description']
+            ret = conv(func['returnType'])
+            params = []
+            if 'params' in func:
+                bad = False
+                for spec in func['params']:
+                    if spec['type'] == '...' or spec['type'] == 'TraceLogCallback':
+                        bad = True
+                    spec_name = spec['name']
+                    spec_type = conv(spec['type'])
+                    params.append(f'{spec_name}: {spec_type}')
+                if bad:
+                    continue
+            params = ', '.join(params)
+            out_file.write(f'{tab}// {desc}\n')
+            out_file.write(f'{tab}public {name}({params}): {ret};\n')
+        out_file.write('}\n')
+        
+        out_file.write('\n')
+
+        out_file.write(f'let rl: Raylib;\n')
+        out_file.write('export let use(impl: Raylib): Void { rl = impl; }\n')        
+        for func in raylib_json['functions']:
+            name = func['name']
+            desc = func['description']
+            ret = conv(func['returnType'])
+            params = []
+            args = []
+            if 'params' in func:
+                bad = False
+                for spec in func['params']:
+                    if spec['type'] == '...' or spec['type'] == 'TraceLogCallback':
+                        bad = True
+                    spec_name = spec['name']
+                    spec_type = conv(spec['type'])
+                    params.append(f'{spec_name}: {spec_type}')
+                    args.append(f'{spec_name}')
+                if bad:
+                    continue
+            params = ', '.join(params)
+            args = ', '.join(args)
+            out_file.write(f'// {desc}\n')
+            out_file.write(f'export let {name}({params}): {ret} ')
+            out_file.write('{\n')
+            if ret == 'Void':
+                out_file.write(f'{tab}')
+            else:
+                out_file.write(f'{tab}return ')
+            out_file.write(f'rl.{name}({args});\n')
+            out_file.write('}\n')
+
+        out_file.write('\n')
+
         for define in raylib_json['defines']:
             name = define['name']
             dtype = define['type']
@@ -88,11 +146,12 @@ def main() -> None:
                 value_value = value['value']
                 value_desc = value['description']
                 out_file.write(f'export let {value_name} = {value_value}; // {value_desc}\n')
-
-    with open('rl/types.temper', 'w') as out_file:
+        
+        out_file.write('\n')
+        
         for enum in raylib_json['enums']:
             name = enum['name']
-            out_file.write(f'export let {name} = Int;')
+            out_file.write(f'export let {name} = Int;\n')
         for struct in raylib_json['structs']:
             name = struct['name']
             desc = struct['description']
@@ -130,30 +189,5 @@ def main() -> None:
             out_file.write(f'// {cb_desc}\n')
             out_file.write(f'export let {cb_name} = fn({cb_args}): {cb_ret};\n')
     
-    with open('rl/functions.temper', 'w') as out_file:
-        out_file.write('let {...} = import("./types.temper");\n')
-        out_file.write('export interface Raylib {\n')
-        for func in raylib_json['functions']:
-            name = func['name']
-            desc = func['description']
-            ret = conv(func['returnType'])
-            params = []
-            if 'params' in func:
-                bad = False
-                for spec in func['params']:
-                    if spec['type'] == '...' or spec['type'] == 'TraceLogCallback':
-                        bad = True
-                    spec_name = spec['name']
-                    spec_type = conv(spec['type'])
-                    params.append(f'{spec_name}: {spec_type}')
-                if bad:
-                    continue
-            params = ', '.join(params)
-            out_file.write(f'{tab}// {desc}\n')
-            out_file.write(f'{tab}public {name}({params}): {ret};\n')
-        out_file.write('}\n')
-
-    print(raylib_json.keys())
-
 if __name__ == '__main__':
     main()

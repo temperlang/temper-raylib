@@ -1,0 +1,197 @@
+let {...} = import('./rl/raylib.temper');
+
+export let main(): Void | Bubble {
+  let BORDER_SIZE = 16.0;
+
+  let UP = 0;
+  let DOWN = 1;
+
+  let SCREEN_TITLE = 0;
+  let SCREEN_PLAY = 1;
+  let SCREEN_ENDING = 2;
+
+  var rightScore = 0;
+  var leftScore = 0;
+
+  var leftStrength = -0.2;
+  var rightStrength = -0.2;
+
+  InitWindow(0, 0, "Pong!");
+
+  var screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64()/2.0, GetScreenHeight().toFloat64()/2.0);
+  var border = new Rectangle(BORDER_SIZE, BORDER_SIZE, screen.width - 2.0 * BORDER_SIZE, screen.height - 2.0 * BORDER_SIZE);
+  var top = new Rectangle(screen.x, screen.y, border.width, border.y);
+  var bottom = new Rectangle(screen.x, border.height + BORDER_SIZE, screen.width, screen.y);
+
+  SetWindowPosition(screen.width.toInt() / 2, screen.height.toInt() / 2);
+  SetWindowSize(screen.width.toInt(), screen.height.toInt());
+  SetTargetFPS(60);
+
+  var ball = new Rectangle(BORDER_SIZE * 5.0, border.height, BORDER_SIZE, BORDER_SIZE);
+  var leftRacket = new Rectangle(border.x + BORDER_SIZE, border.height / 2.0, BORDER_SIZE, BORDER_SIZE * 5.0);
+  var rightRacket = new Rectangle(border.width - BORDER_SIZE, border.height / 2.0, BORDER_SIZE, BORDER_SIZE * 5.0);
+  var scoreWidth = MeasureText("00", 60);
+  var frameTime = 0.0;
+
+  let abs(v: Int): Int {
+    if (v < 0) {
+      return -v;
+    } else {
+      return v;
+    }
+  }
+
+  // let roundToStirng(v: Float64, n: Float64): String {
+  //   return ((v * n).toInt().toFloat64() / n).toString();
+  // }
+
+  let toStringPadZero(v: Int, n: Int): String {
+    var res = v.toString();
+    while (res.codePoints.length < n) {
+      res = "0${res}";
+    }
+    return res;
+  }
+
+  let setBallPos(x: Float64, y: Float64): Void {
+    ball = new Rectangle(x, y, BORDER_SIZE, BORDER_SIZE);
+  }
+
+  var xx = BORDER_SIZE / 2.0;
+  var yy = BORDER_SIZE / 2.0;
+  let moveBall(): Void {
+    if (CheckCollisionRecs(ball, leftRacket)) {
+      if (xx < 0) {
+        xx = -xx;
+      }
+      if (IsKeyDown(KEY_W)) {
+        yy += -BORDER_SIZE * leftStrength;
+      }
+      if (IsKeyDown(KEY_S)) {
+        yy += BORDER_SIZE * leftStrength;
+      }
+    } else if (CheckCollisionRecs(ball, rightRacket)) {
+      if (xx > 0) {
+        xx = -xx;
+      }
+      if (IsKeyDown(KEY_UP)) {
+        yy += -BORDER_SIZE * rightStrength;
+      }
+      if (IsKeyDown(KEY_DOWN)) {
+        yy += BORDER_SIZE * rightStrength;
+      }
+    } else if (CheckCollisionRecs(ball, top) || ball.y < 0) {
+      if (yy < 0) {
+        yy = -yy
+      }
+    } else if (CheckCollisionRecs(ball, bottom) || ball.y > screen.height) {
+      if (yy > 0) {
+        yy = -yy;
+      }
+    } else if (ball.x < screen.x) {
+      rightScore = rightScore + 1;
+      serveBall();
+    } else if (ball.x > screen.width) {
+      leftScore = leftScore + 1;
+      serveBall();
+    }
+    setBallPos(ball.x + xx * frameTime, ball.y + yy * frameTime);
+  }
+
+  let moveRacket(racket: Rectangle, dir: Int): Rectangle {
+    var step = if (dir == UP) {
+      -BORDER_SIZE / 2.0
+    } else {
+      BORDER_SIZE / 2.0
+    };
+    step *= frameTime;
+    if ((CheckCollisionRecs(top, racket) && dir == UP) || (CheckCollisionRecs(bottom, racket) && dir == DOWN)) {
+      return racket;
+    } else {
+      return new Rectangle(racket.x, racket.y + step, racket.width, racket.height);
+    }
+  }
+
+  let serveBall(): Void {
+    if (yy < 0) {
+      yy = BORDER_SIZE / 2.0;
+    } else {
+      yy = -BORDER_SIZE / 2.0;
+    }
+    setBallPos(border.width / 2.0, GetRandomValue(border.y.toInt() + 10, border.height.toInt()).toFloat64());
+  }
+
+  var winnerMessage = "";
+  var currentScreen = SCREEN_TITLE;
+  while (!WindowShouldClose()) {
+    frameTime = GetFrameTime() * 60.0;
+    match (currentScreen) {
+      SCREEN_TITLE -> do {
+        if (IsKeyPressed(KEY_ENTER)) {
+          currentScreen = SCREEN_PLAY;
+        }
+      };
+      SCREEN_PLAY -> do {
+        moveBall();
+
+        if (IsKeyDown(KEY_W)) {
+          leftRacket = moveRacket(leftRacket, UP);
+        }
+        if (IsKeyDown(KEY_S)) {
+          leftRacket = moveRacket(leftRacket, DOWN);
+        }
+
+        if (IsKeyDown(KEY_UP)) {
+          rightRacket = moveRacket(rightRacket, UP);
+        }
+        if (IsKeyDown(KEY_DOWN)) {
+          rightRacket = moveRacket(rightRacket, DOWN);
+        }
+
+        if (((leftScore >= 11) || (rightScore >= 11)) && abs(leftScore - rightScore) > 1) {
+          winnerMessage = if (leftScore > rightScore) { "Left" } else { "Right" };
+          rightScore = 0;
+          leftScore = 0;
+          currentScreen = SCREEN_ENDING;
+        }
+      };
+      SCREEN_ENDING -> do {
+        if (IsKeyPressed(KEY_ENTER)) {
+          currentScreen = SCREEN_TITLE;
+        }
+      };
+    }
+    BeginDrawing();
+    match (currentScreen) {
+      SCREEN_TITLE -> do {
+        ClearBackground(BLACK);
+        DrawText("PONG", 120, 20, 120, GRAY);
+        DrawText("Based on Atari PONG", 120, 140, 60, GRAY);
+        DrawText("Programmed with Raylib", 120, 220, 20, GRAY);
+        DrawText("Player to the Left: W Key, S Key", 120, 390, 20, GRAY);
+        DrawText("Player to the Right: Arrow Up, Arrow Down", 120, 420, 20, GRAY);
+        DrawText("Press ENTER to PLAY", 120, 450, 20, GRAY);
+        DrawText("Press ESCAPE to QUIT", 120, 480, 20, GRAY);
+      };
+      SCREEN_PLAY -> do {
+        DrawRectangleRec(screen, GRAY);
+        DrawRectangle(screen.x.toInt(), border.y.toInt(), screen.width.toInt(), border.height.toInt(), BLACK);
+        DrawRectangle(((screen.width/2.0) - 5.0).toInt(), border.y.toInt(), BORDER_SIZE.toInt(), border.height.toInt(), GRAY);
+        DrawText(toStringPadZero(leftScore, 2), screen.width.toInt() / 2 - 50 - scoreWidth, 50, 60, GRAY);
+        DrawText(toStringPadZero(rightScore, 2), screen.width.toInt() / 2 + 50, 50, 60, GRAY);
+        DrawRectangleRec(ball, WHITE);
+        DrawRectangleRec(leftRacket, WHITE);
+        DrawRectangleRec(rightRacket, WHITE);
+      };
+      SCREEN_ENDING -> do {
+        ClearBackground(BLACK);
+        DrawText("${winnerMessage} Wins!", 120 , 50, 60, GRAY);
+        DrawText("Press ENTER to PLAY AGAIN", 120, 420, 20, GRAY);
+        DrawText("Press ESCAPE to QUIT", 120, 450, 20, GRAY);
+      };
+    }
+    EndDrawing();
+  }
+  CloseWindow();
+}
+

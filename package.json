@@ -4,7 +4,7 @@
   "description": "Raylib in Temper",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "app": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/* && node main.js"
   },
   "repository": {
     "type": "git",
