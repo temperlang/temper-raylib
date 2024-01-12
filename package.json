@@ -1,10 +1,11 @@
 {
-  "name": "rapture",
+  "name": "temper-raylib",
   "version": "0.0.1",
   "description": "Raylib in Temper",
   "main": "main.js",
   "scripts": {
-    "app": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/* && node main.js"
+    "build": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/*",
+    "pong": "npm run build && node launch.js pong"
   },
   "repository": {
     "type": "git",

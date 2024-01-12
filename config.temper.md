@@ -2,5 +2,5 @@
 
     export let name = "temper-raylib";
     import("./rl/raylib.temper");
-    import("./app.temper");
+    import("./games/pong.temper");
     
