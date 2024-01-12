@@ -1,10 +1,5 @@
 
-let {...} = import('./rl/raylib.temper');
+// let {main} = import("./cube-and-text.temper");
+let {main} = import("./pong");
 
-InitWindow(640, 480, "Hello From Temper");
-while (!WindowShouldClose()) {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("Hello Temper!", 20, 20, 64, RED);
-    EndDrawing();
-}
+main();
