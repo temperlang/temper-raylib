@@ -1,7 +1,7 @@
 let {...} = import('./rl/raylib.temper');
 
 export let main(): Void | Bubble {
-  let BORDER_SIZE = 12.0;
+  let BORDER_SIZE = 16.0;
 
   let UP = 0;
   let DOWN = 1;
@@ -60,16 +60,20 @@ export let main(): Void | Bubble {
   var xx = BORDER_SIZE / 2.0;
   var yy = BORDER_SIZE / 2.0;
   let moveBall(): Void {
-    if (CheckCollisionRecs(ball, leftRacket) && ball.x < leftRacket.x + leftRacket.width) {
-      xx = -xx;
+    if (CheckCollisionRecs(ball, leftRacket)) {
+      if (xx < 0) {
+        xx = -xx;
+      }
       if (IsKeyDown(KEY_W)) {
         yy += -BORDER_SIZE * leftStrength;
       }
       if (IsKeyDown(KEY_S)) {
         yy += BORDER_SIZE * leftStrength;
       }
-    } else if (CheckCollisionRecs(ball, rightRacket) && ball.x > rightRacket.x - rightRacket.width) {
-      xx = -xx;
+    } else if (CheckCollisionRecs(ball, rightRacket)) {
+      if (xx > 0) {
+        xx = -xx;
+      }
       if (IsKeyDown(KEY_UP)) {
         yy += -BORDER_SIZE * rightStrength;
       }
