@@ -1,11 +1,115 @@
 
 export interface Raylib {
+    // Enable gui controls (global state)
+    public GuiEnable(): Void;
+    // Disable gui controls (global state)
+    public GuiDisable(): Void;
+    // Lock gui controls (global state)
+    public GuiLock(): Void;
+    // Unlock gui controls (global state)
+    public GuiUnlock(): Void;
+    // Check if gui is locked (global state)
+    public GuiIsLocked(): Boolean;
+    // Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f
+    public GuiSetAlpha(alpha: Float64): Void;
+    // Set gui state (global state)
+    public GuiSetState(state: Int): Void;
+    // Get gui state (global state)
+    public GuiGetState(): Int;
+    // Set gui custom font (global state)
+    public GuiSetFont(font: Font): Void;
+    // Get gui custom font (global state)
+    public GuiGetFont(): Font;
+    // Set one style property
+    public GuiSetStyle(control: Int, property: Int, value: Int): Void;
+    // Get one style property
+    public GuiGetStyle(control: Int, property: Int): Int;
+    // Load style file over global style variable (.rgs)
+    public GuiLoadStyle(fileName: String): Void;
+    // Load style default over global style
+    public GuiLoadStyleDefault(): Void;
+    // Enable gui tooltips (global state)
+    public GuiEnableTooltip(): Void;
+    // Disable gui tooltips (global state)
+    public GuiDisableTooltip(): Void;
+    // Set tooltip string
+    public GuiSetTooltip(tooltip: String): Void;
+    // Get text with icon id prepended (if supported)
+    public GuiIconText(iconId: Int, text: String): String;
+    // Window Box control, shows a window that can be closed
+    public GuiWindowBox(bounds: Rectangle, title: String): Int;
+    // Group Box control with text name
+    public GuiGroupBox(bounds: Rectangle, text: String): Int;
+    // Line separator control, could contain text
+    public GuiLine(bounds: Rectangle, text: String): Int;
+    // Panel control, useful to group controls
+    public GuiPanel(bounds: Rectangle, text: String): Int;
+    // Tab Bar control, returns TAB to be closed or -1
+    public GuiTabBar(bounds: Rectangle, text: Listed<String>, count: Int, active: Listed<Int>): Int;
+    // Scroll Panel control
+    public GuiScrollPanel(bounds: Rectangle, text: String, content: Rectangle, scroll: Listed<Vector2>, view: Listed<Rectangle>): Int;
+    // Label control, shows text
+    public GuiLabel(bounds: Rectangle, text: String): Int;
+    // Button control, returns true when clicked
+    public GuiButton(bounds: Rectangle, text: String): Int;
+    // Label button control, show true when clicked
+    public GuiLabelButton(bounds: Rectangle, text: String): Int;
+    // Toggle Button control, returns true when active
+    public GuiToggle(bounds: Rectangle, text: String, active: Listed<Boolean>): Int;
+    // Toggle Group control, returns active toggle index
+    public GuiToggleGroup(bounds: Rectangle, text: String, active: Listed<Int>): Int;
+    // Toggle Slider control, returns true when clicked
+    public GuiToggleSlider(bounds: Rectangle, text: String, active: Listed<Int>): Int;
+    // Check Box control, returns true when active
+    public GuiCheckBox(bounds: Rectangle, text: String, checked: Listed<Boolean>): Int;
+    // Combo Box control, returns selected item index
+    public GuiComboBox(bounds: Rectangle, text: String, active: Listed<Int>): Int;
+    // Dropdown Box control, returns selected item
+    public GuiDropdownBox(bounds: Rectangle, text: String, active: Listed<Int>, editMode: Boolean): Int;
+    // Spinner control, returns selected value
+    public GuiSpinner(bounds: Rectangle, text: String, value: Listed<Int>, minValue: Int, maxValue: Int, editMode: Boolean): Int;
+    // Value Box control, updates input text with numbers
+    public GuiValueBox(bounds: Rectangle, text: String, value: Listed<Int>, minValue: Int, maxValue: Int, editMode: Boolean): Int;
+    // Text Box control, updates input text
+    public GuiTextBox(bounds: Rectangle, text: String, textSize: Int, editMode: Boolean): Int;
+    // Slider control, returns selected value
+    public GuiSlider(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int;
+    // Slider Bar control, returns selected value
+    public GuiSliderBar(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int;
+    // Progress Bar control, shows current progress value
+    public GuiProgressBar(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int;
+    // Status Bar control, shows info text
+    public GuiStatusBar(bounds: Rectangle, text: String): Int;
+    // Dummy control for placeholders
+    public GuiDummyRec(bounds: Rectangle, text: String): Int;
+    // Grid control, returns mouse cell position
+    public GuiGrid(bounds: Rectangle, text: String, spacing: Float64, subdivs: Int, mouseCell: Listed<Vector2>): Int;
+    // List View control, returns selected list item index
+    public GuiListView(bounds: Rectangle, text: String, scrollIndex: Listed<Int>, active: Listed<Int>): Int;
+    // List View with extended parameters
+    public GuiListViewEx(bounds: Rectangle, text: Listed<String>, count: Int, scrollIndex: Listed<Int>, active: Listed<Int>, focus: Listed<Int>): Int;
+    // Message Box control, displays a message
+    public GuiMessageBox(bounds: Rectangle, title: String, message: String, buttons: String): Int;
+    // Text Input Box control, ask for text, supports secret
+    public GuiTextInputBox(bounds: Rectangle, title: String, message: String, buttons: String, text: String, textMaxSize: Int, secretViewActive: Listed<Boolean>): Int;
+    // Color Picker control (multiple color controls)
+    public GuiColorPicker(bounds: Rectangle, text: String, color: Listed<Color>): Int;
+    // Color Panel control
+    public GuiColorPanel(bounds: Rectangle, text: String, color: Listed<Color>): Int;
+    // Color Bar Alpha control
+    public GuiColorBarAlpha(bounds: Rectangle, text: String, alpha: Listed<Float64>): Int;
+    // Color Bar Hue control
+    public GuiColorBarHue(bounds: Rectangle, text: String, value: Listed<Float64>): Int;
+    // Color Picker control that avoids conversion to RGB on each call (multiple color controls)
+    public GuiColorPickerHSV(bounds: Rectangle, text: String, colorHsv: Listed<Vector3>): Int;
+    // Color Panel control that returns HSV color value, used by GuiColorPickerHSV()
+    public GuiColorPanelHSV(bounds: Rectangle, text: String, colorHsv: Listed<Vector3>): Int;
     // Initialize window and OpenGL context
     public InitWindow(width: Int, height: Int, title: String): Void;
-    // Check if KEY_ESCAPE pressed or Close icon pressed
-    public WindowShouldClose(): Boolean;
     // Close window and unload OpenGL context
     public CloseWindow(): Void;
+    // Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
+    public WindowShouldClose(): Boolean;
     // Check if window has been initialized successfully
     public IsWindowReady(): Boolean;
     // Check if window is currently fullscreen
@@ -96,12 +200,6 @@ export interface Raylib {
     public EnableEventWaiting(): Void;
     // Disable waiting for events on EndDrawing(), automatic events polling
     public DisableEventWaiting(): Void;
-    // Swap back buffer with front buffer (screen drawing)
-    public SwapScreenBuffer(): Void;
-    // Register all input events
-    public PollInputEvents(): Void;
-    // Wait for some time (halt program execution)
-    public WaitTime(seconds: Float64): Void;
     // Shows cursor
     public ShowCursor(): Void;
     // Hides cursor
@@ -188,20 +286,32 @@ export interface Raylib {
     public GetWorldToScreen2D(position: Vector2, camera: Camera2D): Vector2;
     // Set target FPS (maximum)
     public SetTargetFPS(fps: Int): Void;
-    // Get current FPS
-    public GetFPS(): Int;
     // Get time in seconds for last frame drawn (delta time)
     public GetFrameTime(): Float64;
     // Get elapsed time in seconds since InitWindow()
     public GetTime(): Float64;
-    // Get a random value between min and max (both included)
-    public GetRandomValue(min: Int, max: Int): Int;
+    // Get current FPS
+    public GetFPS(): Int;
+    // Swap back buffer with front buffer (screen drawing)
+    public SwapScreenBuffer(): Void;
+    // Register all input events
+    public PollInputEvents(): Void;
+    // Wait for some time (halt program execution)
+    public WaitTime(seconds: Float64): Void;
     // Set the seed for the random number generator
     public SetRandomSeed(seed: Int): Void;
+    // Get a random value between min and max (both included)
+    public GetRandomValue(min: Int, max: Int): Int;
+    // Load random values sequence, no values repeated
+    public LoadRandomSequence(count: Int, min: Int, max: Int): Listed<Int>;
+    // Unload random values sequence
+    public UnloadRandomSequence(sequence: Listed<Int>): Void;
     // Takes a screenshot of current screen (filename extension defines format)
     public TakeScreenshot(fileName: String): Void;
     // Setup init configuration flags (view FLAGS)
     public SetConfigFlags(flags: Int): Void;
+    // Open URL with default system browser (if available)
+    public OpenURL(url: String): Void;
     // Set the current threshold (minimum) log level
     public SetTraceLogLevel(logLevel: Int): Void;
     // Internal memory allocator
@@ -210,8 +320,6 @@ export interface Raylib {
     public MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector;
     // Internal memory free
     public MemFree(ptr: DenseBitVector): Void;
-    // Open URL with default system browser (if available)
-    public OpenURL(url: String): Void;
     // Set custom file binary data loader
     public SetLoadFileDataCallback(callback: LoadFileDataCallback): Void;
     // Set custom file binary data saver
@@ -282,6 +390,22 @@ export interface Raylib {
     public EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed<Int>): String;
     // Decode Base64 string data, memory must be MemFree()
     public DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int>;
+    // Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
+    public LoadAutomationEventList(fileName: String): AutomationEventList;
+    // Unload automation events list from file
+    public UnloadAutomationEventList(list: AutomationEventList): Void;
+    // Export automation events list as text file
+    public ExportAutomationEventList(list: AutomationEventList, fileName: String): Boolean;
+    // Set automation event list to record to
+    public SetAutomationEventList(list: Listed<AutomationEventList>): Void;
+    // Set automation event internal base frame to start recording
+    public SetAutomationEventBaseFrame(frame: Int): Void;
+    // Start recording automation events (AutomationEventList must be set)
+    public StartAutomationEventRecording(): Void;
+    // Stop recording automation events
+    public StopAutomationEventRecording(): Void;
+    // Play a recorded automation event
+    public PlayAutomationEvent(event: AutomationEvent): Void;
     // Check if a key has been pressed once
     public IsKeyPressed(key: Int): Boolean;
     // Check if a key has been pressed again (Only PLATFORM_DESKTOP)
@@ -292,12 +416,12 @@ export interface Raylib {
     public IsKeyReleased(key: Int): Boolean;
     // Check if a key is NOT being pressed
     public IsKeyUp(key: Int): Boolean;
-    // Set a custom key to exit program (default is ESC)
-    public SetExitKey(key: Int): Void;
     // Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
     public GetKeyPressed(): Int;
     // Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
     public GetCharPressed(): Int;
+    // Set a custom key to exit program (default is ESC)
+    public SetExitKey(key: Int): Void;
     // Check if a gamepad is available
     public IsGamepadAvailable(gamepad: Int): Boolean;
     // Get gamepad internal name id
@@ -378,28 +502,24 @@ export interface Raylib {
     public UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: Vector3, zoom: Float64): Void;
     // Set texture and rectangle to be used on shapes drawing
     public SetShapesTexture(texture: Texture2D, source: Rectangle): Void;
+    // Get texture that is used for shapes drawing
+    public GetShapesTexture(): Texture2D;
+    // Get texture source rectangle that is used for shapes drawing
+    public GetShapesTextureRectangle(): Rectangle;
     // Draw a pixel
     public DrawPixel(posX: Int, posY: Int, color: Color): Void;
     // Draw a pixel (Vector version)
     public DrawPixelV(position: Vector2, color: Color): Void;
     // Draw a line
     public DrawLine(startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void;
-    // Draw a line (Vector version)
+    // Draw a line (using gl lines)
     public DrawLineV(startPos: Vector2, endPos: Vector2, color: Color): Void;
-    // Draw a line defining thickness
+    // Draw a line (using triangles/quads)
     public DrawLineEx(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void;
-    // Draw a line using cubic-bezier curves in-out
-    public DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void;
-    // Draw line using quadratic bezier curves with a control point
-    public DrawLineBezierQuad(startPos: Vector2, endPos: Vector2, controlPos: Vector2, thick: Float64, color: Color): Void;
-    // Draw line using cubic bezier curves with 2 control points
-    public DrawLineBezierCubic(startPos: Vector2, endPos: Vector2, startControlPos: Vector2, endControlPos: Vector2, thick: Float64, color: Color): Void;
-    // Draw a B-Spline line, minimum 4 points
-    public DrawLineBSpline(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
-    // Draw a Catmull Rom spline line, minimum 4 points
-    public DrawLineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
-    // Draw lines sequence
+    // Draw lines sequence (using gl lines)
     public DrawLineStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void;
+    // Draw line segment cubic-bezier in-out interpolation
+    public DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void;
     // Draw a color-filled circle
     public DrawCircle(centerX: Int, centerY: Int, radius: Float64, color: Color): Void;
     // Draw a piece of a circle
@@ -412,6 +532,8 @@ export interface Raylib {
     public DrawCircleV(center: Vector2, radius: Float64, color: Color): Void;
     // Draw circle outline
     public DrawCircleLines(centerX: Int, centerY: Int, radius: Float64, color: Color): Void;
+    // Draw circle outline (Vector version)
+    public DrawCircleLinesV(center: Vector2, radius: Float64, color: Color): Void;
     // Draw ellipse
     public DrawEllipse(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void;
     // Draw ellipse outline
@@ -456,6 +578,36 @@ export interface Raylib {
     public DrawPolyLines(center: Vector2, sides: Int, radius: Float64, rotation: Float64, color: Color): Void;
     // Draw a polygon outline of n sides with extended parameters
     public DrawPolyLinesEx(center: Vector2, sides: Int, radius: Float64, rotation: Float64, lineThick: Float64, color: Color): Void;
+    // Draw spline: Linear, minimum 2 points
+    public DrawSplineLinear(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw spline: B-Spline, minimum 4 points
+    public DrawSplineBasis(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw spline: Catmull-Rom, minimum 4 points
+    public DrawSplineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw spline: Quadratic Bezier, minimum 3 points (1 control point): [p1, c2, p3, c4...]
+    public DrawSplineBezierQuadratic(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw spline: Cubic Bezier, minimum 4 points (2 control points): [p1, c2, c3, p4, c5, c6...]
+    public DrawSplineBezierCubic(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void;
+    // Draw spline segment: Linear, 2 points
+    public DrawSplineSegmentLinear(p1: Vector2, p2: Vector2, thick: Float64, color: Color): Void;
+    // Draw spline segment: B-Spline, 4 points
+    public DrawSplineSegmentBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: Float64, color: Color): Void;
+    // Draw spline segment: Catmull-Rom, 4 points
+    public DrawSplineSegmentCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: Float64, color: Color): Void;
+    // Draw spline segment: Quadratic Bezier, 2 points, 1 control point
+    public DrawSplineSegmentBezierQuadratic(p1: Vector2, c2: Vector2, p3: Vector2, thick: Float64, color: Color): Void;
+    // Draw spline segment: Cubic Bezier, 2 points, 2 control points
+    public DrawSplineSegmentBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, thick: Float64, color: Color): Void;
+    // Get (evaluate) spline point: Linear
+    public GetSplinePointLinear(startPos: Vector2, endPos: Vector2, t: Float64): Vector2;
+    // Get (evaluate) spline point: B-Spline
+    public GetSplinePointBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: Float64): Vector2;
+    // Get (evaluate) spline point: Catmull-Rom
+    public GetSplinePointCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: Float64): Vector2;
+    // Get (evaluate) spline point: Quadratic Bezier
+    public GetSplinePointBezierQuad(p1: Vector2, c2: Vector2, p3: Vector2, t: Float64): Vector2;
+    // Get (evaluate) spline point: Cubic Bezier
+    public GetSplinePointBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, t: Float64): Vector2;
     // Check collision between two rectangles
     public CheckCollisionRecs(rec1: Rectangle, rec2: Rectangle): Boolean;
     // Check collision between two circles
@@ -484,6 +636,8 @@ export interface Raylib {
     public LoadImageSvg(fileNameOrString: String, width: Int, height: Int): Image;
     // Load image sequence from file (frames appended to image.data)
     public LoadImageAnim(fileName: String, frames: Listed<Int>): Image;
+    // Load image sequence from memory buffer
+    public LoadImageAnimFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, frames: Listed<Int>): Image;
     // Load image from memory buffer, fileType refers to extension: i.e. '.png'
     public LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image;
     // Load image from GPU texture data
@@ -542,6 +696,8 @@ export interface Raylib {
     public ImageAlphaPremultiply(image: Listed<Image>): Void;
     // Apply Gaussian blur using a box blur approximation
     public ImageBlurGaussian(image: Listed<Image>, blurSize: Int): Void;
+    // Apply Custom Square image convolution kernel
+    public ImageKernelConvolution(image: Listed<Image>, kernel: Listed<Float64>, kernelSize: Int): Void;
     // Resize image (Bicubic scaling algorithm)
     public ImageResize(image: Listed<Image>, newWidth: Int, newHeight: Int): Void;
     // Resize image (Nearest-Neighbor scaling algorithm)
@@ -778,6 +934,8 @@ export interface Raylib {
     public TextToPascal(text: String): String;
     // Get integer value from text (negative values not supported)
     public TextToInteger(text: String): Int;
+    // Get float value from text (negative values not supported)
+    public TextToFloat(text: String): Float64;
     // Draw a line in 3D world space
     public DrawLine3D(startPos: Vector3, endPos: Vector3, color: Color): Void;
     // Draw a point in 3D space, actually a small line
@@ -856,12 +1014,14 @@ export interface Raylib {
     public DrawMesh(mesh: Mesh, material: Material, transform: Matrix): Void;
     // Draw multiple mesh instances with material and different transforms
     public DrawMeshInstanced(mesh: Mesh, material: Material, transforms: Listed<Matrix>, instances: Int): Void;
-    // Export mesh data to file, returns true on success
-    public ExportMesh(mesh: Mesh, fileName: String): Boolean;
     // Compute mesh bounding box limits
     public GetMeshBoundingBox(mesh: Mesh): BoundingBox;
     // Compute mesh tangents
     public GenMeshTangents(mesh: Listed<Mesh>): Void;
+    // Export mesh data to file, returns true on success
+    public ExportMesh(mesh: Mesh, fileName: String): Boolean;
+    // Export mesh as code file (.h) defining multiple arrays of vertex attributes
+    public ExportMeshAsCode(mesh: Mesh, fileName: String): Boolean;
     // Generate polygonal mesh
     public GenMeshPoly(sides: Int, radius: Float64): Mesh;
     // Generate plane mesh (with subdivisions)
@@ -930,6 +1090,8 @@ export interface Raylib {
     public IsAudioDeviceReady(): Boolean;
     // Set master volume (listener)
     public SetMasterVolume(volume: Float64): Void;
+    // Get master volume (listener)
+    public GetMasterVolume(): Float64;
     // Load wave data from file
     public LoadWave(fileName: String): Wave;
     // Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
@@ -1052,21 +1214,755 @@ export interface Raylib {
     public AttachAudioMixedProcessor(processor: AudioCallback): Void;
     // Detach audio stream processor from the entire audio pipeline
     public DetachAudioMixedProcessor(processor: AudioCallback): Void;
+    // 
+    public Clamp(value: Float64, min: Float64, max: Float64): Float64;
+    // 
+    public Lerp(start: Float64, end: Float64, amount: Float64): Float64;
+    // 
+    public Normalize(value: Float64, start: Float64, end: Float64): Float64;
+    // 
+    public Remap(value: Float64, inputStart: Float64, inputEnd: Float64, outputStart: Float64, outputEnd: Float64): Float64;
+    // 
+    public Wrap(value: Float64, min: Float64, max: Float64): Float64;
+    // 
+    public FloatEquals(x: Float64, y: Float64): Int;
+    // 
+    public Vector2Zero(): Vector2;
+    // 
+    public Vector2One(): Vector2;
+    // 
+    public Vector2Add(v1: Vector2, v2: Vector2): Vector2;
+    // 
+    public Vector2AddValue(v: Vector2, add: Float64): Vector2;
+    // 
+    public Vector2Subtract(v1: Vector2, v2: Vector2): Vector2;
+    // 
+    public Vector2SubtractValue(v: Vector2, sub: Float64): Vector2;
+    // 
+    public Vector2Length(v: Vector2): Float64;
+    // 
+    public Vector2LengthSqr(v: Vector2): Float64;
+    // 
+    public Vector2DotProduct(v1: Vector2, v2: Vector2): Float64;
+    // 
+    public Vector2Distance(v1: Vector2, v2: Vector2): Float64;
+    // 
+    public Vector2DistanceSqr(v1: Vector2, v2: Vector2): Float64;
+    // 
+    public Vector2Angle(v1: Vector2, v2: Vector2): Float64;
+    // 
+    public Vector2LineAngle(start: Vector2, end: Vector2): Float64;
+    // 
+    public Vector2Scale(v: Vector2, scale: Float64): Vector2;
+    // 
+    public Vector2Multiply(v1: Vector2, v2: Vector2): Vector2;
+    // 
+    public Vector2Negate(v: Vector2): Vector2;
+    // 
+    public Vector2Divide(v1: Vector2, v2: Vector2): Vector2;
+    // 
+    public Vector2Normalize(v: Vector2): Vector2;
+    // 
+    public Vector2Transform(v: Vector2, mat: Matrix): Vector2;
+    // 
+    public Vector2Lerp(v1: Vector2, v2: Vector2, amount: Float64): Vector2;
+    // 
+    public Vector2Reflect(v: Vector2, normal: Vector2): Vector2;
+    // 
+    public Vector2Rotate(v: Vector2, angle: Float64): Vector2;
+    // 
+    public Vector2MoveTowards(v: Vector2, target: Vector2, maxDistance: Float64): Vector2;
+    // 
+    public Vector2Invert(v: Vector2): Vector2;
+    // 
+    public Vector2Clamp(v: Vector2, min: Vector2, max: Vector2): Vector2;
+    // 
+    public Vector2ClampValue(v: Vector2, min: Float64, max: Float64): Vector2;
+    // 
+    public Vector2Equals(p: Vector2, q: Vector2): Int;
+    // 
+    public Vector3Zero(): Vector3;
+    // 
+    public Vector3One(): Vector3;
+    // 
+    public Vector3Add(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3AddValue(v: Vector3, add: Float64): Vector3;
+    // 
+    public Vector3Subtract(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3SubtractValue(v: Vector3, sub: Float64): Vector3;
+    // 
+    public Vector3Scale(v: Vector3, scalar: Float64): Vector3;
+    // 
+    public Vector3Multiply(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3CrossProduct(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3Perpendicular(v: Vector3): Vector3;
+    // 
+    public Vector3Length(v: Vector3): Float64;
+    // 
+    public Vector3LengthSqr(v: Vector3): Float64;
+    // 
+    public Vector3DotProduct(v1: Vector3, v2: Vector3): Float64;
+    // 
+    public Vector3Distance(v1: Vector3, v2: Vector3): Float64;
+    // 
+    public Vector3DistanceSqr(v1: Vector3, v2: Vector3): Float64;
+    // 
+    public Vector3Angle(v1: Vector3, v2: Vector3): Float64;
+    // 
+    public Vector3Negate(v: Vector3): Vector3;
+    // 
+    public Vector3Divide(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3Normalize(v: Vector3): Vector3;
+    // 
+    public Vector3Project(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3Reject(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3OrthoNormalize(v1: Listed<Vector3>, v2: Listed<Vector3>): Void;
+    // 
+    public Vector3Transform(v: Vector3, mat: Matrix): Vector3;
+    // 
+    public Vector3RotateByQuaternion(v: Vector3, q: Quaternion): Vector3;
+    // 
+    public Vector3RotateByAxisAngle(v: Vector3, axis: Vector3, angle: Float64): Vector3;
+    // 
+    public Vector3Lerp(v1: Vector3, v2: Vector3, amount: Float64): Vector3;
+    // 
+    public Vector3Reflect(v: Vector3, normal: Vector3): Vector3;
+    // 
+    public Vector3Min(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3Max(v1: Vector3, v2: Vector3): Vector3;
+    // 
+    public Vector3Barycenter(p: Vector3, a: Vector3, b: Vector3, c: Vector3): Vector3;
+    // 
+    public Vector3Unproject(source: Vector3, projection: Matrix, view: Matrix): Vector3;
+    // 
+    public Vector3ToFloatV(v: Vector3): float3;
+    // 
+    public Vector3Invert(v: Vector3): Vector3;
+    // 
+    public Vector3Clamp(v: Vector3, min: Vector3, max: Vector3): Vector3;
+    // 
+    public Vector3ClampValue(v: Vector3, min: Float64, max: Float64): Vector3;
+    // 
+    public Vector3Equals(p: Vector3, q: Vector3): Int;
+    // 
+    public Vector3Refract(v: Vector3, n: Vector3, r: Float64): Vector3;
+    // 
+    public MatrixDeterminant(mat: Matrix): Float64;
+    // 
+    public MatrixTrace(mat: Matrix): Float64;
+    // 
+    public MatrixTranspose(mat: Matrix): Matrix;
+    // 
+    public MatrixInvert(mat: Matrix): Matrix;
+    // 
+    public MatrixIdentity(): Matrix;
+    // 
+    public MatrixAdd(left: Matrix, right: Matrix): Matrix;
+    // 
+    public MatrixSubtract(left: Matrix, right: Matrix): Matrix;
+    // 
+    public MatrixMultiply(left: Matrix, right: Matrix): Matrix;
+    // 
+    public MatrixTranslate(x: Float64, y: Float64, z: Float64): Matrix;
+    // 
+    public MatrixRotate(axis: Vector3, angle: Float64): Matrix;
+    // 
+    public MatrixRotateX(angle: Float64): Matrix;
+    // 
+    public MatrixRotateY(angle: Float64): Matrix;
+    // 
+    public MatrixRotateZ(angle: Float64): Matrix;
+    // 
+    public MatrixRotateXYZ(angle: Vector3): Matrix;
+    // 
+    public MatrixRotateZYX(angle: Vector3): Matrix;
+    // 
+    public MatrixScale(x: Float64, y: Float64, z: Float64): Matrix;
+    // 
+    public MatrixFrustum(left: Float64, right: Float64, bottom: Float64, top: Float64, near: Float64, far: Float64): Matrix;
+    // 
+    public MatrixPerspective(fovY: Float64, aspect: Float64, nearPlane: Float64, farPlane: Float64): Matrix;
+    // 
+    public MatrixOrtho(left: Float64, right: Float64, bottom: Float64, top: Float64, nearPlane: Float64, farPlane: Float64): Matrix;
+    // 
+    public MatrixLookAt(eye: Vector3, target: Vector3, up: Vector3): Matrix;
+    // 
+    public MatrixToFloatV(mat: Matrix): float16;
+    // 
+    public QuaternionAdd(q1: Quaternion, q2: Quaternion): Quaternion;
+    // 
+    public QuaternionAddValue(q: Quaternion, add: Float64): Quaternion;
+    // 
+    public QuaternionSubtract(q1: Quaternion, q2: Quaternion): Quaternion;
+    // 
+    public QuaternionSubtractValue(q: Quaternion, sub: Float64): Quaternion;
+    // 
+    public QuaternionIdentity(): Quaternion;
+    // 
+    public QuaternionLength(q: Quaternion): Float64;
+    // 
+    public QuaternionNormalize(q: Quaternion): Quaternion;
+    // 
+    public QuaternionInvert(q: Quaternion): Quaternion;
+    // 
+    public QuaternionMultiply(q1: Quaternion, q2: Quaternion): Quaternion;
+    // 
+    public QuaternionScale(q: Quaternion, mul: Float64): Quaternion;
+    // 
+    public QuaternionDivide(q1: Quaternion, q2: Quaternion): Quaternion;
+    // 
+    public QuaternionLerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    // 
+    public QuaternionNlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    // 
+    public QuaternionSlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    // 
+    public QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Quaternion;
+    // 
+    public QuaternionFromMatrix(mat: Matrix): Quaternion;
+    // 
+    public QuaternionToMatrix(q: Quaternion): Matrix;
+    // 
+    public QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Quaternion;
+    // 
+    public QuaternionToAxisAngle(q: Quaternion, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void;
+    // 
+    public QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Quaternion;
+    // 
+    public QuaternionToEuler(q: Quaternion): Vector3;
+    // 
+    public QuaternionTransform(q: Quaternion, mat: Matrix): Quaternion;
+    // 
+    public QuaternionEquals(p: Quaternion, q: Quaternion): Int;
+    // Choose the current matrix to be transformed
+    public rlMatrixMode(mode: Int): Void;
+    // Push the current matrix to stack
+    public rlPushMatrix(): Void;
+    // Pop latest inserted matrix from stack
+    public rlPopMatrix(): Void;
+    // Reset current matrix to identity matrix
+    public rlLoadIdentity(): Void;
+    // Multiply the current matrix by a translation matrix
+    public rlTranslatef(x: Float64, y: Float64, z: Float64): Void;
+    // Multiply the current matrix by a rotation matrix
+    public rlRotatef(angle: Float64, x: Float64, y: Float64, z: Float64): Void;
+    // Multiply the current matrix by a scaling matrix
+    public rlScalef(x: Float64, y: Float64, z: Float64): Void;
+    // Multiply the current matrix by another matrix
+    public rlMultMatrixf(matf: Listed<Float64>): Void;
+    // 
+    public rlFrustum(left: Float64, right: Float64, bottom: Float64, top: Float64, znear: Float64, zfar: Float64): Void;
+    // 
+    public rlOrtho(left: Float64, right: Float64, bottom: Float64, top: Float64, znear: Float64, zfar: Float64): Void;
+    // Set the viewport area
+    public rlViewport(x: Int, y: Int, width: Int, height: Int): Void;
+    // Initialize drawing mode (how to organize vertex)
+    public rlBegin(mode: Int): Void;
+    // Finish vertex providing
+    public rlEnd(): Void;
+    // Define one vertex (position) - 2 int
+    public rlVertex2i(x: Int, y: Int): Void;
+    // Define one vertex (position) - 2 float
+    public rlVertex2f(x: Float64, y: Float64): Void;
+    // Define one vertex (position) - 3 float
+    public rlVertex3f(x: Float64, y: Float64, z: Float64): Void;
+    // Define one vertex (texture coordinate) - 2 float
+    public rlTexCoord2f(x: Float64, y: Float64): Void;
+    // Define one vertex (normal) - 3 float
+    public rlNormal3f(x: Float64, y: Float64, z: Float64): Void;
+    // Define one vertex (color) - 4 byte
+    public rlColor4ub(r: Int, g: Int, b: Int, a: Int): Void;
+    // Define one vertex (color) - 3 float
+    public rlColor3f(x: Float64, y: Float64, z: Float64): Void;
+    // Define one vertex (color) - 4 float
+    public rlColor4f(x: Float64, y: Float64, z: Float64, w: Float64): Void;
+    // Enable vertex array (VAO, if supported)
+    public rlEnableVertexArray(vaoId: Int): Boolean;
+    // Disable vertex array (VAO, if supported)
+    public rlDisableVertexArray(): Void;
+    // Enable vertex buffer (VBO)
+    public rlEnableVertexBuffer(id: Int): Void;
+    // Disable vertex buffer (VBO)
+    public rlDisableVertexBuffer(): Void;
+    // Enable vertex buffer element (VBO element)
+    public rlEnableVertexBufferElement(id: Int): Void;
+    // Disable vertex buffer element (VBO element)
+    public rlDisableVertexBufferElement(): Void;
+    // Enable vertex attribute index
+    public rlEnableVertexAttribute(index: Int): Void;
+    // Disable vertex attribute index
+    public rlDisableVertexAttribute(index: Int): Void;
+    // Select and active a texture slot
+    public rlActiveTextureSlot(slot: Int): Void;
+    // Enable texture
+    public rlEnableTexture(id: Int): Void;
+    // Disable texture
+    public rlDisableTexture(): Void;
+    // Enable texture cubemap
+    public rlEnableTextureCubemap(id: Int): Void;
+    // Disable texture cubemap
+    public rlDisableTextureCubemap(): Void;
+    // Set texture parameters (filter, wrap)
+    public rlTextureParameters(id: Int, param: Int, value: Int): Void;
+    // Set cubemap parameters (filter, wrap)
+    public rlCubemapParameters(id: Int, param: Int, value: Int): Void;
+    // Enable shader program
+    public rlEnableShader(id: Int): Void;
+    // Disable shader program
+    public rlDisableShader(): Void;
+    // Enable render texture (fbo)
+    public rlEnableFramebuffer(id: Int): Void;
+    // Disable render texture (fbo), return to default framebuffer
+    public rlDisableFramebuffer(): Void;
+    // Activate multiple draw color buffers
+    public rlActiveDrawBuffers(count: Int): Void;
+    // Blit active framebuffer to main framebuffer
+    public rlBlitFramebuffer(srcX: Int, srcY: Int, srcWidth: Int, srcHeight: Int, dstX: Int, dstY: Int, dstWidth: Int, dstHeight: Int, bufferMask: Int): Void;
+    // Bind framebuffer (FBO) 
+    public rlBindFramebuffer(target: Int, framebuffer: Int): Void;
+    // Enable color blending
+    public rlEnableColorBlend(): Void;
+    // Disable color blending
+    public rlDisableColorBlend(): Void;
+    // Enable depth test
+    public rlEnableDepthTest(): Void;
+    // Disable depth test
+    public rlDisableDepthTest(): Void;
+    // Enable depth write
+    public rlEnableDepthMask(): Void;
+    // Disable depth write
+    public rlDisableDepthMask(): Void;
+    // Enable backface culling
+    public rlEnableBackfaceCulling(): Void;
+    // Disable backface culling
+    public rlDisableBackfaceCulling(): Void;
+    // Color mask control
+    public rlColorMask(r: Boolean, g: Boolean, b: Boolean, a: Boolean): Void;
+    // Set face culling mode
+    public rlSetCullFace(mode: Int): Void;
+    // Enable scissor test
+    public rlEnableScissorTest(): Void;
+    // Disable scissor test
+    public rlDisableScissorTest(): Void;
+    // Scissor test
+    public rlScissor(x: Int, y: Int, width: Int, height: Int): Void;
+    // Enable wire mode
+    public rlEnableWireMode(): Void;
+    // Enable point mode
+    public rlEnablePointMode(): Void;
+    // Disable wire mode ( and point ) maybe rename
+    public rlDisableWireMode(): Void;
+    // Set the line drawing width
+    public rlSetLineWidth(width: Float64): Void;
+    // Get the line drawing width
+    public rlGetLineWidth(): Float64;
+    // Enable line aliasing
+    public rlEnableSmoothLines(): Void;
+    // Disable line aliasing
+    public rlDisableSmoothLines(): Void;
+    // Enable stereo rendering
+    public rlEnableStereoRender(): Void;
+    // Disable stereo rendering
+    public rlDisableStereoRender(): Void;
+    // Check if stereo render is enabled
+    public rlIsStereoRenderEnabled(): Boolean;
+    // Clear color buffer with color
+    public rlClearColor(r: Int, g: Int, b: Int, a: Int): Void;
+    // Clear used screen buffers (color and depth)
+    public rlClearScreenBuffers(): Void;
+    // Check and log OpenGL error codes
+    public rlCheckErrors(): Void;
+    // Set blending mode
+    public rlSetBlendMode(mode: Int): Void;
+    // Set blending mode factor and equation (using OpenGL factors)
+    public rlSetBlendFactors(glSrcFactor: Int, glDstFactor: Int, glEquation: Int): Void;
+    // Set blending mode factors and equations separately (using OpenGL factors)
+    public rlSetBlendFactorsSeparate(glSrcRGB: Int, glDstRGB: Int, glSrcAlpha: Int, glDstAlpha: Int, glEqRGB: Int, glEqAlpha: Int): Void;
+    // Initialize rlgl (buffers, shaders, textures, states)
+    public rlglInit(width: Int, height: Int): Void;
+    // De-initialize rlgl (buffers, shaders, textures)
+    public rlglClose(): Void;
+    // Load OpenGL extensions (loader function required)
+    public rlLoadExtensions(loader: DenseBitVector): Void;
+    // Get current OpenGL version
+    public rlGetVersion(): Int;
+    // Set current framebuffer width
+    public rlSetFramebufferWidth(width: Int): Void;
+    // Get default framebuffer width
+    public rlGetFramebufferWidth(): Int;
+    // Set current framebuffer height
+    public rlSetFramebufferHeight(height: Int): Void;
+    // Get default framebuffer height
+    public rlGetFramebufferHeight(): Int;
+    // Get default texture id
+    public rlGetTextureIdDefault(): Int;
+    // Get default shader id
+    public rlGetShaderIdDefault(): Int;
+    // Get default shader locations
+    public rlGetShaderLocsDefault(): Listed<Int>;
+    // Load a render batch system
+    public rlLoadRenderBatch(numBuffers: Int, bufferElements: Int): rlRenderBatch;
+    // Unload render batch system
+    public rlUnloadRenderBatch(batch: rlRenderBatch): Void;
+    // Draw render batch data (Update->Draw->Reset)
+    public rlDrawRenderBatch(batch: Listed<rlRenderBatch>): Void;
+    // Set the active render batch for rlgl (NULL for default internal)
+    public rlSetRenderBatchActive(batch: Listed<rlRenderBatch>): Void;
+    // Update and draw internal render batch
+    public rlDrawRenderBatchActive(): Void;
+    // Check internal buffer overflow for a given number of vertex
+    public rlCheckRenderBatchLimit(vCount: Int): Boolean;
+    // Set current texture for render batch and check buffers limits
+    public rlSetTexture(id: Int): Void;
+    // Load vertex array (vao) if supported
+    public rlLoadVertexArray(): Int;
+    // Load a vertex buffer object
+    public rlLoadVertexBuffer(buffer: DenseBitVector, size: Int, dynamic: Boolean): Int;
+    // Load vertex buffer elements object
+    public rlLoadVertexBufferElement(buffer: DenseBitVector, size: Int, dynamic: Boolean): Int;
+    // Update vertex buffer object data on GPU buffer
+    public rlUpdateVertexBuffer(bufferId: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void;
+    // Update vertex buffer elements data on GPU buffer
+    public rlUpdateVertexBufferElements(id: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void;
+    // Unload vertex array (vao)
+    public rlUnloadVertexArray(vaoId: Int): Void;
+    // Unload vertex buffer object
+    public rlUnloadVertexBuffer(vboId: Int): Void;
+    // Set vertex attribute data configuration
+    public rlSetVertexAttribute(index: Int, compSize: Int, type: Int, normalized: Boolean, stride: Int, pointer: DenseBitVector): Void;
+    // Set vertex attribute data divisor
+    public rlSetVertexAttributeDivisor(index: Int, divisor: Int): Void;
+    // Set vertex attribute default value, when attribute to provided
+    public rlSetVertexAttributeDefault(locIndex: Int, value: DenseBitVector, attribType: Int, count: Int): Void;
+    // Draw vertex array (currently active vao)
+    public rlDrawVertexArray(offset: Int, count: Int): Void;
+    // Draw vertex array elements
+    public rlDrawVertexArrayElements(offset: Int, count: Int, buffer: DenseBitVector): Void;
+    // Draw vertex array (currently active vao) with instancing
+    public rlDrawVertexArrayInstanced(offset: Int, count: Int, instances: Int): Void;
+    // Draw vertex array elements with instancing
+    public rlDrawVertexArrayElementsInstanced(offset: Int, count: Int, buffer: DenseBitVector, instances: Int): Void;
+    // Load texture data
+    public rlLoadTexture(data: DenseBitVector, width: Int, height: Int, format: Int, mipmapCount: Int): Int;
+    // Load depth texture/renderbuffer (to be attached to fbo)
+    public rlLoadTextureDepth(width: Int, height: Int, useRenderBuffer: Boolean): Int;
+    // Load texture cubemap data
+    public rlLoadTextureCubemap(data: DenseBitVector, size: Int, format: Int): Int;
+    // Update texture with new data on GPU
+    public rlUpdateTexture(id: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, format: Int, data: DenseBitVector): Void;
+    // Get OpenGL internal formats
+    public rlGetGlTextureFormats(format: Int, glInternalFormat: Listed<Int>, glFormat: Listed<Int>, glType: Listed<Int>): Void;
+    // Get name string for pixel format
+    public rlGetPixelFormatName(format: Int): String;
+    // Unload texture from GPU memory
+    public rlUnloadTexture(id: Int): Void;
+    // Generate mipmap data for selected texture
+    public rlGenTextureMipmaps(id: Int, width: Int, height: Int, format: Int, mipmaps: Listed<Int>): Void;
+    // Read texture pixel data
+    public rlReadTexturePixels(id: Int, width: Int, height: Int, format: Int): DenseBitVector;
+    // Read screen pixel data (color buffer)
+    public rlReadScreenPixels(width: Int, height: Int): Listed<Int>;
+    // Load an empty framebuffer
+    public rlLoadFramebuffer(width: Int, height: Int): Int;
+    // Attach texture/renderbuffer to a framebuffer
+    public rlFramebufferAttach(fboId: Int, texId: Int, attachType: Int, texType: Int, mipLevel: Int): Void;
+    // Verify framebuffer is complete
+    public rlFramebufferComplete(id: Int): Boolean;
+    // Delete framebuffer from GPU
+    public rlUnloadFramebuffer(id: Int): Void;
+    // Load shader from code strings
+    public rlLoadShaderCode(vsCode: String, fsCode: String): Int;
+    // Compile custom shader and return shader id (type: RL_VERTEX_SHADER, RL_FRAGMENT_SHADER, RL_COMPUTE_SHADER)
+    public rlCompileShader(shaderCode: String, type: Int): Int;
+    // Load custom shader program
+    public rlLoadShaderProgram(vShaderId: Int, fShaderId: Int): Int;
+    // Unload shader program
+    public rlUnloadShaderProgram(id: Int): Void;
+    // Get shader location uniform
+    public rlGetLocationUniform(shaderId: Int, uniformName: String): Int;
+    // Get shader location attribute
+    public rlGetLocationAttrib(shaderId: Int, attribName: String): Int;
+    // Set shader value uniform
+    public rlSetUniform(locIndex: Int, value: DenseBitVector, uniformType: Int, count: Int): Void;
+    // Set shader value matrix
+    public rlSetUniformMatrix(locIndex: Int, mat: Matrix): Void;
+    // Set shader value sampler
+    public rlSetUniformSampler(locIndex: Int, textureId: Int): Void;
+    // Set shader currently active (id and locations)
+    public rlSetShader(id: Int, locs: Listed<Int>): Void;
+    // Load compute shader program
+    public rlLoadComputeShaderProgram(shaderId: Int): Int;
+    // Dispatch compute shader (equivalent to *draw* for graphics pipeline)
+    public rlComputeShaderDispatch(groupX: Int, groupY: Int, groupZ: Int): Void;
+    // Load shader storage buffer object (SSBO)
+    public rlLoadShaderBuffer(size: Int, data: DenseBitVector, usageHint: Int): Int;
+    // Unload shader storage buffer object (SSBO)
+    public rlUnloadShaderBuffer(ssboId: Int): Void;
+    // Update SSBO buffer data
+    public rlUpdateShaderBuffer(id: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void;
+    // Bind SSBO buffer
+    public rlBindShaderBuffer(id: Int, index: Int): Void;
+    // Read SSBO buffer data (GPU->CPU)
+    public rlReadShaderBuffer(id: Int, dest: DenseBitVector, count: Int, offset: Int): Void;
+    // Copy SSBO data between buffers
+    public rlCopyShaderBuffer(destId: Int, srcId: Int, destOffset: Int, srcOffset: Int, count: Int): Void;
+    // Get SSBO buffer size
+    public rlGetShaderBufferSize(id: Int): Int;
+    // Bind image texture
+    public rlBindImageTexture(id: Int, index: Int, format: Int, readonly: Boolean): Void;
+    // Get internal modelview matrix
+    public rlGetMatrixModelview(): Matrix;
+    // Get internal projection matrix
+    public rlGetMatrixProjection(): Matrix;
+    // Get internal accumulated transform matrix
+    public rlGetMatrixTransform(): Matrix;
+    // Get internal projection matrix for stereo render (selected eye)
+    public rlGetMatrixProjectionStereo(eye: Int): Matrix;
+    // Get internal view offset matrix for stereo render (selected eye)
+    public rlGetMatrixViewOffsetStereo(eye: Int): Matrix;
+    // Set a custom projection matrix (replaces internal projection matrix)
+    public rlSetMatrixProjection(proj: Matrix): Void;
+    // Set a custom modelview matrix (replaces internal modelview matrix)
+    public rlSetMatrixModelview(view: Matrix): Void;
+    // Set eyes projection matrices for stereo rendering
+    public rlSetMatrixProjectionStereo(right: Matrix, left: Matrix): Void;
+    // Set eyes view offsets matrices for stereo rendering
+    public rlSetMatrixViewOffsetStereo(right: Matrix, left: Matrix): Void;
+    // Load and draw a cube
+    public rlLoadDrawCube(): Void;
+    // Load and draw a quad
+    public rlLoadDrawQuad(): Void;
 }
 
 let rl: Raylib;
 export let use(impl: Raylib): Void { rl = impl; }
+// Enable gui controls (global state)
+export let GuiEnable(): Void {
+    rl.GuiEnable();
+}
+// Disable gui controls (global state)
+export let GuiDisable(): Void {
+    rl.GuiDisable();
+}
+// Lock gui controls (global state)
+export let GuiLock(): Void {
+    rl.GuiLock();
+}
+// Unlock gui controls (global state)
+export let GuiUnlock(): Void {
+    rl.GuiUnlock();
+}
+// Check if gui is locked (global state)
+export let GuiIsLocked(): Boolean {
+    return rl.GuiIsLocked();
+}
+// Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f
+export let GuiSetAlpha(alpha: Float64): Void {
+    rl.GuiSetAlpha(alpha);
+}
+// Set gui state (global state)
+export let GuiSetState(state: Int): Void {
+    rl.GuiSetState(state);
+}
+// Get gui state (global state)
+export let GuiGetState(): Int {
+    return rl.GuiGetState();
+}
+// Set gui custom font (global state)
+export let GuiSetFont(font: Font): Void {
+    rl.GuiSetFont(font);
+}
+// Get gui custom font (global state)
+export let GuiGetFont(): Font {
+    return rl.GuiGetFont();
+}
+// Set one style property
+export let GuiSetStyle(control: Int, property: Int, value: Int): Void {
+    rl.GuiSetStyle(control, property, value);
+}
+// Get one style property
+export let GuiGetStyle(control: Int, property: Int): Int {
+    return rl.GuiGetStyle(control, property);
+}
+// Load style file over global style variable (.rgs)
+export let GuiLoadStyle(fileName: String): Void {
+    rl.GuiLoadStyle(fileName);
+}
+// Load style default over global style
+export let GuiLoadStyleDefault(): Void {
+    rl.GuiLoadStyleDefault();
+}
+// Enable gui tooltips (global state)
+export let GuiEnableTooltip(): Void {
+    rl.GuiEnableTooltip();
+}
+// Disable gui tooltips (global state)
+export let GuiDisableTooltip(): Void {
+    rl.GuiDisableTooltip();
+}
+// Set tooltip string
+export let GuiSetTooltip(tooltip: String): Void {
+    rl.GuiSetTooltip(tooltip);
+}
+// Get text with icon id prepended (if supported)
+export let GuiIconText(iconId: Int, text: String): String {
+    return rl.GuiIconText(iconId, text);
+}
+// Window Box control, shows a window that can be closed
+export let GuiWindowBox(bounds: Rectangle, title: String): Int {
+    return rl.GuiWindowBox(bounds, title);
+}
+// Group Box control with text name
+export let GuiGroupBox(bounds: Rectangle, text: String): Int {
+    return rl.GuiGroupBox(bounds, text);
+}
+// Line separator control, could contain text
+export let GuiLine(bounds: Rectangle, text: String): Int {
+    return rl.GuiLine(bounds, text);
+}
+// Panel control, useful to group controls
+export let GuiPanel(bounds: Rectangle, text: String): Int {
+    return rl.GuiPanel(bounds, text);
+}
+// Tab Bar control, returns TAB to be closed or -1
+export let GuiTabBar(bounds: Rectangle, text: Listed<String>, count: Int, active: Listed<Int>): Int {
+    return rl.GuiTabBar(bounds, text, count, active);
+}
+// Scroll Panel control
+export let GuiScrollPanel(bounds: Rectangle, text: String, content: Rectangle, scroll: Listed<Vector2>, view: Listed<Rectangle>): Int {
+    return rl.GuiScrollPanel(bounds, text, content, scroll, view);
+}
+// Label control, shows text
+export let GuiLabel(bounds: Rectangle, text: String): Int {
+    return rl.GuiLabel(bounds, text);
+}
+// Button control, returns true when clicked
+export let GuiButton(bounds: Rectangle, text: String): Int {
+    return rl.GuiButton(bounds, text);
+}
+// Label button control, show true when clicked
+export let GuiLabelButton(bounds: Rectangle, text: String): Int {
+    return rl.GuiLabelButton(bounds, text);
+}
+// Toggle Button control, returns true when active
+export let GuiToggle(bounds: Rectangle, text: String, active: Listed<Boolean>): Int {
+    return rl.GuiToggle(bounds, text, active);
+}
+// Toggle Group control, returns active toggle index
+export let GuiToggleGroup(bounds: Rectangle, text: String, active: Listed<Int>): Int {
+    return rl.GuiToggleGroup(bounds, text, active);
+}
+// Toggle Slider control, returns true when clicked
+export let GuiToggleSlider(bounds: Rectangle, text: String, active: Listed<Int>): Int {
+    return rl.GuiToggleSlider(bounds, text, active);
+}
+// Check Box control, returns true when active
+export let GuiCheckBox(bounds: Rectangle, text: String, checked: Listed<Boolean>): Int {
+    return rl.GuiCheckBox(bounds, text, checked);
+}
+// Combo Box control, returns selected item index
+export let GuiComboBox(bounds: Rectangle, text: String, active: Listed<Int>): Int {
+    return rl.GuiComboBox(bounds, text, active);
+}
+// Dropdown Box control, returns selected item
+export let GuiDropdownBox(bounds: Rectangle, text: String, active: Listed<Int>, editMode: Boolean): Int {
+    return rl.GuiDropdownBox(bounds, text, active, editMode);
+}
+// Spinner control, returns selected value
+export let GuiSpinner(bounds: Rectangle, text: String, value: Listed<Int>, minValue: Int, maxValue: Int, editMode: Boolean): Int {
+    return rl.GuiSpinner(bounds, text, value, minValue, maxValue, editMode);
+}
+// Value Box control, updates input text with numbers
+export let GuiValueBox(bounds: Rectangle, text: String, value: Listed<Int>, minValue: Int, maxValue: Int, editMode: Boolean): Int {
+    return rl.GuiValueBox(bounds, text, value, minValue, maxValue, editMode);
+}
+// Text Box control, updates input text
+export let GuiTextBox(bounds: Rectangle, text: String, textSize: Int, editMode: Boolean): Int {
+    return rl.GuiTextBox(bounds, text, textSize, editMode);
+}
+// Slider control, returns selected value
+export let GuiSlider(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int {
+    return rl.GuiSlider(bounds, textLeft, textRight, value, minValue, maxValue);
+}
+// Slider Bar control, returns selected value
+export let GuiSliderBar(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int {
+    return rl.GuiSliderBar(bounds, textLeft, textRight, value, minValue, maxValue);
+}
+// Progress Bar control, shows current progress value
+export let GuiProgressBar(bounds: Rectangle, textLeft: String, textRight: String, value: Listed<Float64>, minValue: Float64, maxValue: Float64): Int {
+    return rl.GuiProgressBar(bounds, textLeft, textRight, value, minValue, maxValue);
+}
+// Status Bar control, shows info text
+export let GuiStatusBar(bounds: Rectangle, text: String): Int {
+    return rl.GuiStatusBar(bounds, text);
+}
+// Dummy control for placeholders
+export let GuiDummyRec(bounds: Rectangle, text: String): Int {
+    return rl.GuiDummyRec(bounds, text);
+}
+// Grid control, returns mouse cell position
+export let GuiGrid(bounds: Rectangle, text: String, spacing: Float64, subdivs: Int, mouseCell: Listed<Vector2>): Int {
+    return rl.GuiGrid(bounds, text, spacing, subdivs, mouseCell);
+}
+// List View control, returns selected list item index
+export let GuiListView(bounds: Rectangle, text: String, scrollIndex: Listed<Int>, active: Listed<Int>): Int {
+    return rl.GuiListView(bounds, text, scrollIndex, active);
+}
+// List View with extended parameters
+export let GuiListViewEx(bounds: Rectangle, text: Listed<String>, count: Int, scrollIndex: Listed<Int>, active: Listed<Int>, focus: Listed<Int>): Int {
+    return rl.GuiListViewEx(bounds, text, count, scrollIndex, active, focus);
+}
+// Message Box control, displays a message
+export let GuiMessageBox(bounds: Rectangle, title: String, message: String, buttons: String): Int {
+    return rl.GuiMessageBox(bounds, title, message, buttons);
+}
+// Text Input Box control, ask for text, supports secret
+export let GuiTextInputBox(bounds: Rectangle, title: String, message: String, buttons: String, text: String, textMaxSize: Int, secretViewActive: Listed<Boolean>): Int {
+    return rl.GuiTextInputBox(bounds, title, message, buttons, text, textMaxSize, secretViewActive);
+}
+// Color Picker control (multiple color controls)
+export let GuiColorPicker(bounds: Rectangle, text: String, color: Listed<Color>): Int {
+    return rl.GuiColorPicker(bounds, text, color);
+}
+// Color Panel control
+export let GuiColorPanel(bounds: Rectangle, text: String, color: Listed<Color>): Int {
+    return rl.GuiColorPanel(bounds, text, color);
+}
+// Color Bar Alpha control
+export let GuiColorBarAlpha(bounds: Rectangle, text: String, alpha: Listed<Float64>): Int {
+    return rl.GuiColorBarAlpha(bounds, text, alpha);
+}
+// Color Bar Hue control
+export let GuiColorBarHue(bounds: Rectangle, text: String, value: Listed<Float64>): Int {
+    return rl.GuiColorBarHue(bounds, text, value);
+}
+// Color Picker control that avoids conversion to RGB on each call (multiple color controls)
+export let GuiColorPickerHSV(bounds: Rectangle, text: String, colorHsv: Listed<Vector3>): Int {
+    return rl.GuiColorPickerHSV(bounds, text, colorHsv);
+}
+// Color Panel control that returns HSV color value, used by GuiColorPickerHSV()
+export let GuiColorPanelHSV(bounds: Rectangle, text: String, colorHsv: Listed<Vector3>): Int {
+    return rl.GuiColorPanelHSV(bounds, text, colorHsv);
+}
 // Initialize window and OpenGL context
 export let InitWindow(width: Int, height: Int, title: String): Void {
     rl.InitWindow(width, height, title);
 }
-// Check if KEY_ESCAPE pressed or Close icon pressed
-export let WindowShouldClose(): Boolean {
-    return rl.WindowShouldClose();
-}
 // Close window and unload OpenGL context
 export let CloseWindow(): Void {
     rl.CloseWindow();
+}
+// Check if application should close (KEY_ESCAPE pressed or windows close icon clicked)
+export let WindowShouldClose(): Boolean {
+    return rl.WindowShouldClose();
 }
 // Check if window has been initialized successfully
 export let IsWindowReady(): Boolean {
@@ -1248,18 +2144,6 @@ export let EnableEventWaiting(): Void {
 export let DisableEventWaiting(): Void {
     rl.DisableEventWaiting();
 }
-// Swap back buffer with front buffer (screen drawing)
-export let SwapScreenBuffer(): Void {
-    rl.SwapScreenBuffer();
-}
-// Register all input events
-export let PollInputEvents(): Void {
-    rl.PollInputEvents();
-}
-// Wait for some time (halt program execution)
-export let WaitTime(seconds: Float64): Void {
-    rl.WaitTime(seconds);
-}
 // Shows cursor
 export let ShowCursor(): Void {
     rl.ShowCursor();
@@ -1432,10 +2316,6 @@ export let GetWorldToScreen2D(position: Vector2, camera: Camera2D): Vector2 {
 export let SetTargetFPS(fps: Int): Void {
     rl.SetTargetFPS(fps);
 }
-// Get current FPS
-export let GetFPS(): Int {
-    return rl.GetFPS();
-}
 // Get time in seconds for last frame drawn (delta time)
 export let GetFrameTime(): Float64 {
     return rl.GetFrameTime();
@@ -1444,13 +2324,37 @@ export let GetFrameTime(): Float64 {
 export let GetTime(): Float64 {
     return rl.GetTime();
 }
-// Get a random value between min and max (both included)
-export let GetRandomValue(min: Int, max: Int): Int {
-    return rl.GetRandomValue(min, max);
+// Get current FPS
+export let GetFPS(): Int {
+    return rl.GetFPS();
+}
+// Swap back buffer with front buffer (screen drawing)
+export let SwapScreenBuffer(): Void {
+    rl.SwapScreenBuffer();
+}
+// Register all input events
+export let PollInputEvents(): Void {
+    rl.PollInputEvents();
+}
+// Wait for some time (halt program execution)
+export let WaitTime(seconds: Float64): Void {
+    rl.WaitTime(seconds);
 }
 // Set the seed for the random number generator
 export let SetRandomSeed(seed: Int): Void {
     rl.SetRandomSeed(seed);
+}
+// Get a random value between min and max (both included)
+export let GetRandomValue(min: Int, max: Int): Int {
+    return rl.GetRandomValue(min, max);
+}
+// Load random values sequence, no values repeated
+export let LoadRandomSequence(count: Int, min: Int, max: Int): Listed<Int> {
+    return rl.LoadRandomSequence(count, min, max);
+}
+// Unload random values sequence
+export let UnloadRandomSequence(sequence: Listed<Int>): Void {
+    rl.UnloadRandomSequence(sequence);
 }
 // Takes a screenshot of current screen (filename extension defines format)
 export let TakeScreenshot(fileName: String): Void {
@@ -1459,6 +2363,10 @@ export let TakeScreenshot(fileName: String): Void {
 // Setup init configuration flags (view FLAGS)
 export let SetConfigFlags(flags: Int): Void {
     rl.SetConfigFlags(flags);
+}
+// Open URL with default system browser (if available)
+export let OpenURL(url: String): Void {
+    rl.OpenURL(url);
 }
 // Set the current threshold (minimum) log level
 export let SetTraceLogLevel(logLevel: Int): Void {
@@ -1475,10 +2383,6 @@ export let MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector {
 // Internal memory free
 export let MemFree(ptr: DenseBitVector): Void {
     rl.MemFree(ptr);
-}
-// Open URL with default system browser (if available)
-export let OpenURL(url: String): Void {
-    rl.OpenURL(url);
 }
 // Set custom file binary data loader
 export let SetLoadFileDataCallback(callback: LoadFileDataCallback): Void {
@@ -1620,6 +2524,38 @@ export let EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed
 export let DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int> {
     return rl.DecodeDataBase64(data, outputSize);
 }
+// Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
+export let LoadAutomationEventList(fileName: String): AutomationEventList {
+    return rl.LoadAutomationEventList(fileName);
+}
+// Unload automation events list from file
+export let UnloadAutomationEventList(list: AutomationEventList): Void {
+    rl.UnloadAutomationEventList(list);
+}
+// Export automation events list as text file
+export let ExportAutomationEventList(list: AutomationEventList, fileName: String): Boolean {
+    return rl.ExportAutomationEventList(list, fileName);
+}
+// Set automation event list to record to
+export let SetAutomationEventList(list: Listed<AutomationEventList>): Void {
+    rl.SetAutomationEventList(list);
+}
+// Set automation event internal base frame to start recording
+export let SetAutomationEventBaseFrame(frame: Int): Void {
+    rl.SetAutomationEventBaseFrame(frame);
+}
+// Start recording automation events (AutomationEventList must be set)
+export let StartAutomationEventRecording(): Void {
+    rl.StartAutomationEventRecording();
+}
+// Stop recording automation events
+export let StopAutomationEventRecording(): Void {
+    rl.StopAutomationEventRecording();
+}
+// Play a recorded automation event
+export let PlayAutomationEvent(event: AutomationEvent): Void {
+    rl.PlayAutomationEvent(event);
+}
 // Check if a key has been pressed once
 export let IsKeyPressed(key: Int): Boolean {
     return rl.IsKeyPressed(key);
@@ -1640,10 +2576,6 @@ export let IsKeyReleased(key: Int): Boolean {
 export let IsKeyUp(key: Int): Boolean {
     return rl.IsKeyUp(key);
 }
-// Set a custom key to exit program (default is ESC)
-export let SetExitKey(key: Int): Void {
-    rl.SetExitKey(key);
-}
 // Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
 export let GetKeyPressed(): Int {
     return rl.GetKeyPressed();
@@ -1651,6 +2583,10 @@ export let GetKeyPressed(): Int {
 // Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
 export let GetCharPressed(): Int {
     return rl.GetCharPressed();
+}
+// Set a custom key to exit program (default is ESC)
+export let SetExitKey(key: Int): Void {
+    rl.SetExitKey(key);
 }
 // Check if a gamepad is available
 export let IsGamepadAvailable(gamepad: Int): Boolean {
@@ -1812,6 +2748,14 @@ export let UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: 
 export let SetShapesTexture(texture: Texture2D, source: Rectangle): Void {
     rl.SetShapesTexture(texture, source);
 }
+// Get texture that is used for shapes drawing
+export let GetShapesTexture(): Texture2D {
+    return rl.GetShapesTexture();
+}
+// Get texture source rectangle that is used for shapes drawing
+export let GetShapesTextureRectangle(): Rectangle {
+    return rl.GetShapesTextureRectangle();
+}
 // Draw a pixel
 export let DrawPixel(posX: Int, posY: Int, color: Color): Void {
     rl.DrawPixel(posX, posY, color);
@@ -1824,37 +2768,21 @@ export let DrawPixelV(position: Vector2, color: Color): Void {
 export let DrawLine(startPosX: Int, startPosY: Int, endPosX: Int, endPosY: Int, color: Color): Void {
     rl.DrawLine(startPosX, startPosY, endPosX, endPosY, color);
 }
-// Draw a line (Vector version)
+// Draw a line (using gl lines)
 export let DrawLineV(startPos: Vector2, endPos: Vector2, color: Color): Void {
     rl.DrawLineV(startPos, endPos, color);
 }
-// Draw a line defining thickness
+// Draw a line (using triangles/quads)
 export let DrawLineEx(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void {
     rl.DrawLineEx(startPos, endPos, thick, color);
 }
-// Draw a line using cubic-bezier curves in-out
-export let DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void {
-    rl.DrawLineBezier(startPos, endPos, thick, color);
-}
-// Draw line using quadratic bezier curves with a control point
-export let DrawLineBezierQuad(startPos: Vector2, endPos: Vector2, controlPos: Vector2, thick: Float64, color: Color): Void {
-    rl.DrawLineBezierQuad(startPos, endPos, controlPos, thick, color);
-}
-// Draw line using cubic bezier curves with 2 control points
-export let DrawLineBezierCubic(startPos: Vector2, endPos: Vector2, startControlPos: Vector2, endControlPos: Vector2, thick: Float64, color: Color): Void {
-    rl.DrawLineBezierCubic(startPos, endPos, startControlPos, endControlPos, thick, color);
-}
-// Draw a B-Spline line, minimum 4 points
-export let DrawLineBSpline(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
-    rl.DrawLineBSpline(points, pointCount, thick, color);
-}
-// Draw a Catmull Rom spline line, minimum 4 points
-export let DrawLineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
-    rl.DrawLineCatmullRom(points, pointCount, thick, color);
-}
-// Draw lines sequence
+// Draw lines sequence (using gl lines)
 export let DrawLineStrip(points: Listed<Vector2>, pointCount: Int, color: Color): Void {
     rl.DrawLineStrip(points, pointCount, color);
+}
+// Draw line segment cubic-bezier in-out interpolation
+export let DrawLineBezier(startPos: Vector2, endPos: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawLineBezier(startPos, endPos, thick, color);
 }
 // Draw a color-filled circle
 export let DrawCircle(centerX: Int, centerY: Int, radius: Float64, color: Color): Void {
@@ -1879,6 +2807,10 @@ export let DrawCircleV(center: Vector2, radius: Float64, color: Color): Void {
 // Draw circle outline
 export let DrawCircleLines(centerX: Int, centerY: Int, radius: Float64, color: Color): Void {
     rl.DrawCircleLines(centerX, centerY, radius, color);
+}
+// Draw circle outline (Vector version)
+export let DrawCircleLinesV(center: Vector2, radius: Float64, color: Color): Void {
+    rl.DrawCircleLinesV(center, radius, color);
 }
 // Draw ellipse
 export let DrawEllipse(centerX: Int, centerY: Int, radiusH: Float64, radiusV: Float64, color: Color): Void {
@@ -1968,6 +2900,66 @@ export let DrawPolyLines(center: Vector2, sides: Int, radius: Float64, rotation:
 export let DrawPolyLinesEx(center: Vector2, sides: Int, radius: Float64, rotation: Float64, lineThick: Float64, color: Color): Void {
     rl.DrawPolyLinesEx(center, sides, radius, rotation, lineThick, color);
 }
+// Draw spline: Linear, minimum 2 points
+export let DrawSplineLinear(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawSplineLinear(points, pointCount, thick, color);
+}
+// Draw spline: B-Spline, minimum 4 points
+export let DrawSplineBasis(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawSplineBasis(points, pointCount, thick, color);
+}
+// Draw spline: Catmull-Rom, minimum 4 points
+export let DrawSplineCatmullRom(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawSplineCatmullRom(points, pointCount, thick, color);
+}
+// Draw spline: Quadratic Bezier, minimum 3 points (1 control point): [p1, c2, p3, c4...]
+export let DrawSplineBezierQuadratic(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawSplineBezierQuadratic(points, pointCount, thick, color);
+}
+// Draw spline: Cubic Bezier, minimum 4 points (2 control points): [p1, c2, c3, p4, c5, c6...]
+export let DrawSplineBezierCubic(points: Listed<Vector2>, pointCount: Int, thick: Float64, color: Color): Void {
+    rl.DrawSplineBezierCubic(points, pointCount, thick, color);
+}
+// Draw spline segment: Linear, 2 points
+export let DrawSplineSegmentLinear(p1: Vector2, p2: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawSplineSegmentLinear(p1, p2, thick, color);
+}
+// Draw spline segment: B-Spline, 4 points
+export let DrawSplineSegmentBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawSplineSegmentBasis(p1, p2, p3, p4, thick, color);
+}
+// Draw spline segment: Catmull-Rom, 4 points
+export let DrawSplineSegmentCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawSplineSegmentCatmullRom(p1, p2, p3, p4, thick, color);
+}
+// Draw spline segment: Quadratic Bezier, 2 points, 1 control point
+export let DrawSplineSegmentBezierQuadratic(p1: Vector2, c2: Vector2, p3: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawSplineSegmentBezierQuadratic(p1, c2, p3, thick, color);
+}
+// Draw spline segment: Cubic Bezier, 2 points, 2 control points
+export let DrawSplineSegmentBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, thick: Float64, color: Color): Void {
+    rl.DrawSplineSegmentBezierCubic(p1, c2, c3, p4, thick, color);
+}
+// Get (evaluate) spline point: Linear
+export let GetSplinePointLinear(startPos: Vector2, endPos: Vector2, t: Float64): Vector2 {
+    return rl.GetSplinePointLinear(startPos, endPos, t);
+}
+// Get (evaluate) spline point: B-Spline
+export let GetSplinePointBasis(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: Float64): Vector2 {
+    return rl.GetSplinePointBasis(p1, p2, p3, p4, t);
+}
+// Get (evaluate) spline point: Catmull-Rom
+export let GetSplinePointCatmullRom(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, t: Float64): Vector2 {
+    return rl.GetSplinePointCatmullRom(p1, p2, p3, p4, t);
+}
+// Get (evaluate) spline point: Quadratic Bezier
+export let GetSplinePointBezierQuad(p1: Vector2, c2: Vector2, p3: Vector2, t: Float64): Vector2 {
+    return rl.GetSplinePointBezierQuad(p1, c2, p3, t);
+}
+// Get (evaluate) spline point: Cubic Bezier
+export let GetSplinePointBezierCubic(p1: Vector2, c2: Vector2, c3: Vector2, p4: Vector2, t: Float64): Vector2 {
+    return rl.GetSplinePointBezierCubic(p1, c2, c3, p4, t);
+}
 // Check collision between two rectangles
 export let CheckCollisionRecs(rec1: Rectangle, rec2: Rectangle): Boolean {
     return rl.CheckCollisionRecs(rec1, rec2);
@@ -2023,6 +3015,10 @@ export let LoadImageSvg(fileNameOrString: String, width: Int, height: Int): Imag
 // Load image sequence from file (frames appended to image.data)
 export let LoadImageAnim(fileName: String, frames: Listed<Int>): Image {
     return rl.LoadImageAnim(fileName, frames);
+}
+// Load image sequence from memory buffer
+export let LoadImageAnimFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, frames: Listed<Int>): Image {
+    return rl.LoadImageAnimFromMemory(fileType, fileData, dataSize, frames);
 }
 // Load image from memory buffer, fileType refers to extension: i.e. '.png'
 export let LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image {
@@ -2139,6 +3135,10 @@ export let ImageAlphaPremultiply(image: Listed<Image>): Void {
 // Apply Gaussian blur using a box blur approximation
 export let ImageBlurGaussian(image: Listed<Image>, blurSize: Int): Void {
     rl.ImageBlurGaussian(image, blurSize);
+}
+// Apply Custom Square image convolution kernel
+export let ImageKernelConvolution(image: Listed<Image>, kernel: Listed<Float64>, kernelSize: Int): Void {
+    rl.ImageKernelConvolution(image, kernel, kernelSize);
 }
 // Resize image (Bicubic scaling algorithm)
 export let ImageResize(image: Listed<Image>, newWidth: Int, newHeight: Int): Void {
@@ -2612,6 +3612,10 @@ export let TextToPascal(text: String): String {
 export let TextToInteger(text: String): Int {
     return rl.TextToInteger(text);
 }
+// Get float value from text (negative values not supported)
+export let TextToFloat(text: String): Float64 {
+    return rl.TextToFloat(text);
+}
 // Draw a line in 3D world space
 export let DrawLine3D(startPos: Vector3, endPos: Vector3, color: Color): Void {
     rl.DrawLine3D(startPos, endPos, color);
@@ -2768,10 +3772,6 @@ export let DrawMesh(mesh: Mesh, material: Material, transform: Matrix): Void {
 export let DrawMeshInstanced(mesh: Mesh, material: Material, transforms: Listed<Matrix>, instances: Int): Void {
     rl.DrawMeshInstanced(mesh, material, transforms, instances);
 }
-// Export mesh data to file, returns true on success
-export let ExportMesh(mesh: Mesh, fileName: String): Boolean {
-    return rl.ExportMesh(mesh, fileName);
-}
 // Compute mesh bounding box limits
 export let GetMeshBoundingBox(mesh: Mesh): BoundingBox {
     return rl.GetMeshBoundingBox(mesh);
@@ -2779,6 +3779,14 @@ export let GetMeshBoundingBox(mesh: Mesh): BoundingBox {
 // Compute mesh tangents
 export let GenMeshTangents(mesh: Listed<Mesh>): Void {
     rl.GenMeshTangents(mesh);
+}
+// Export mesh data to file, returns true on success
+export let ExportMesh(mesh: Mesh, fileName: String): Boolean {
+    return rl.ExportMesh(mesh, fileName);
+}
+// Export mesh as code file (.h) defining multiple arrays of vertex attributes
+export let ExportMeshAsCode(mesh: Mesh, fileName: String): Boolean {
+    return rl.ExportMeshAsCode(mesh, fileName);
 }
 // Generate polygonal mesh
 export let GenMeshPoly(sides: Int, radius: Float64): Mesh {
@@ -2915,6 +3923,10 @@ export let IsAudioDeviceReady(): Boolean {
 // Set master volume (listener)
 export let SetMasterVolume(volume: Float64): Void {
     rl.SetMasterVolume(volume);
+}
+// Get master volume (listener)
+export let GetMasterVolume(): Float64 {
+    return rl.GetMasterVolume();
 }
 // Load wave data from file
 export let LoadWave(fileName: String): Wave {
@@ -3160,11 +4172,1156 @@ export let AttachAudioMixedProcessor(processor: AudioCallback): Void {
 export let DetachAudioMixedProcessor(processor: AudioCallback): Void {
     rl.DetachAudioMixedProcessor(processor);
 }
+// 
+export let Clamp(value: Float64, min: Float64, max: Float64): Float64 {
+    return rl.Clamp(value, min, max);
+}
+// 
+export let Lerp(start: Float64, end: Float64, amount: Float64): Float64 {
+    return rl.Lerp(start, end, amount);
+}
+// 
+export let Normalize(value: Float64, start: Float64, end: Float64): Float64 {
+    return rl.Normalize(value, start, end);
+}
+// 
+export let Remap(value: Float64, inputStart: Float64, inputEnd: Float64, outputStart: Float64, outputEnd: Float64): Float64 {
+    return rl.Remap(value, inputStart, inputEnd, outputStart, outputEnd);
+}
+// 
+export let Wrap(value: Float64, min: Float64, max: Float64): Float64 {
+    return rl.Wrap(value, min, max);
+}
+// 
+export let FloatEquals(x: Float64, y: Float64): Int {
+    return rl.FloatEquals(x, y);
+}
+// 
+export let Vector2Zero(): Vector2 {
+    return rl.Vector2Zero();
+}
+// 
+export let Vector2One(): Vector2 {
+    return rl.Vector2One();
+}
+// 
+export let Vector2Add(v1: Vector2, v2: Vector2): Vector2 {
+    return rl.Vector2Add(v1, v2);
+}
+// 
+export let Vector2AddValue(v: Vector2, add: Float64): Vector2 {
+    return rl.Vector2AddValue(v, add);
+}
+// 
+export let Vector2Subtract(v1: Vector2, v2: Vector2): Vector2 {
+    return rl.Vector2Subtract(v1, v2);
+}
+// 
+export let Vector2SubtractValue(v: Vector2, sub: Float64): Vector2 {
+    return rl.Vector2SubtractValue(v, sub);
+}
+// 
+export let Vector2Length(v: Vector2): Float64 {
+    return rl.Vector2Length(v);
+}
+// 
+export let Vector2LengthSqr(v: Vector2): Float64 {
+    return rl.Vector2LengthSqr(v);
+}
+// 
+export let Vector2DotProduct(v1: Vector2, v2: Vector2): Float64 {
+    return rl.Vector2DotProduct(v1, v2);
+}
+// 
+export let Vector2Distance(v1: Vector2, v2: Vector2): Float64 {
+    return rl.Vector2Distance(v1, v2);
+}
+// 
+export let Vector2DistanceSqr(v1: Vector2, v2: Vector2): Float64 {
+    return rl.Vector2DistanceSqr(v1, v2);
+}
+// 
+export let Vector2Angle(v1: Vector2, v2: Vector2): Float64 {
+    return rl.Vector2Angle(v1, v2);
+}
+// 
+export let Vector2LineAngle(start: Vector2, end: Vector2): Float64 {
+    return rl.Vector2LineAngle(start, end);
+}
+// 
+export let Vector2Scale(v: Vector2, scale: Float64): Vector2 {
+    return rl.Vector2Scale(v, scale);
+}
+// 
+export let Vector2Multiply(v1: Vector2, v2: Vector2): Vector2 {
+    return rl.Vector2Multiply(v1, v2);
+}
+// 
+export let Vector2Negate(v: Vector2): Vector2 {
+    return rl.Vector2Negate(v);
+}
+// 
+export let Vector2Divide(v1: Vector2, v2: Vector2): Vector2 {
+    return rl.Vector2Divide(v1, v2);
+}
+// 
+export let Vector2Normalize(v: Vector2): Vector2 {
+    return rl.Vector2Normalize(v);
+}
+// 
+export let Vector2Transform(v: Vector2, mat: Matrix): Vector2 {
+    return rl.Vector2Transform(v, mat);
+}
+// 
+export let Vector2Lerp(v1: Vector2, v2: Vector2, amount: Float64): Vector2 {
+    return rl.Vector2Lerp(v1, v2, amount);
+}
+// 
+export let Vector2Reflect(v: Vector2, normal: Vector2): Vector2 {
+    return rl.Vector2Reflect(v, normal);
+}
+// 
+export let Vector2Rotate(v: Vector2, angle: Float64): Vector2 {
+    return rl.Vector2Rotate(v, angle);
+}
+// 
+export let Vector2MoveTowards(v: Vector2, target: Vector2, maxDistance: Float64): Vector2 {
+    return rl.Vector2MoveTowards(v, target, maxDistance);
+}
+// 
+export let Vector2Invert(v: Vector2): Vector2 {
+    return rl.Vector2Invert(v);
+}
+// 
+export let Vector2Clamp(v: Vector2, min: Vector2, max: Vector2): Vector2 {
+    return rl.Vector2Clamp(v, min, max);
+}
+// 
+export let Vector2ClampValue(v: Vector2, min: Float64, max: Float64): Vector2 {
+    return rl.Vector2ClampValue(v, min, max);
+}
+// 
+export let Vector2Equals(p: Vector2, q: Vector2): Int {
+    return rl.Vector2Equals(p, q);
+}
+// 
+export let Vector3Zero(): Vector3 {
+    return rl.Vector3Zero();
+}
+// 
+export let Vector3One(): Vector3 {
+    return rl.Vector3One();
+}
+// 
+export let Vector3Add(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Add(v1, v2);
+}
+// 
+export let Vector3AddValue(v: Vector3, add: Float64): Vector3 {
+    return rl.Vector3AddValue(v, add);
+}
+// 
+export let Vector3Subtract(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Subtract(v1, v2);
+}
+// 
+export let Vector3SubtractValue(v: Vector3, sub: Float64): Vector3 {
+    return rl.Vector3SubtractValue(v, sub);
+}
+// 
+export let Vector3Scale(v: Vector3, scalar: Float64): Vector3 {
+    return rl.Vector3Scale(v, scalar);
+}
+// 
+export let Vector3Multiply(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Multiply(v1, v2);
+}
+// 
+export let Vector3CrossProduct(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3CrossProduct(v1, v2);
+}
+// 
+export let Vector3Perpendicular(v: Vector3): Vector3 {
+    return rl.Vector3Perpendicular(v);
+}
+// 
+export let Vector3Length(v: Vector3): Float64 {
+    return rl.Vector3Length(v);
+}
+// 
+export let Vector3LengthSqr(v: Vector3): Float64 {
+    return rl.Vector3LengthSqr(v);
+}
+// 
+export let Vector3DotProduct(v1: Vector3, v2: Vector3): Float64 {
+    return rl.Vector3DotProduct(v1, v2);
+}
+// 
+export let Vector3Distance(v1: Vector3, v2: Vector3): Float64 {
+    return rl.Vector3Distance(v1, v2);
+}
+// 
+export let Vector3DistanceSqr(v1: Vector3, v2: Vector3): Float64 {
+    return rl.Vector3DistanceSqr(v1, v2);
+}
+// 
+export let Vector3Angle(v1: Vector3, v2: Vector3): Float64 {
+    return rl.Vector3Angle(v1, v2);
+}
+// 
+export let Vector3Negate(v: Vector3): Vector3 {
+    return rl.Vector3Negate(v);
+}
+// 
+export let Vector3Divide(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Divide(v1, v2);
+}
+// 
+export let Vector3Normalize(v: Vector3): Vector3 {
+    return rl.Vector3Normalize(v);
+}
+// 
+export let Vector3Project(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Project(v1, v2);
+}
+// 
+export let Vector3Reject(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Reject(v1, v2);
+}
+// 
+export let Vector3OrthoNormalize(v1: Listed<Vector3>, v2: Listed<Vector3>): Void {
+    rl.Vector3OrthoNormalize(v1, v2);
+}
+// 
+export let Vector3Transform(v: Vector3, mat: Matrix): Vector3 {
+    return rl.Vector3Transform(v, mat);
+}
+// 
+export let Vector3RotateByQuaternion(v: Vector3, q: Quaternion): Vector3 {
+    return rl.Vector3RotateByQuaternion(v, q);
+}
+// 
+export let Vector3RotateByAxisAngle(v: Vector3, axis: Vector3, angle: Float64): Vector3 {
+    return rl.Vector3RotateByAxisAngle(v, axis, angle);
+}
+// 
+export let Vector3Lerp(v1: Vector3, v2: Vector3, amount: Float64): Vector3 {
+    return rl.Vector3Lerp(v1, v2, amount);
+}
+// 
+export let Vector3Reflect(v: Vector3, normal: Vector3): Vector3 {
+    return rl.Vector3Reflect(v, normal);
+}
+// 
+export let Vector3Min(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Min(v1, v2);
+}
+// 
+export let Vector3Max(v1: Vector3, v2: Vector3): Vector3 {
+    return rl.Vector3Max(v1, v2);
+}
+// 
+export let Vector3Barycenter(p: Vector3, a: Vector3, b: Vector3, c: Vector3): Vector3 {
+    return rl.Vector3Barycenter(p, a, b, c);
+}
+// 
+export let Vector3Unproject(source: Vector3, projection: Matrix, view: Matrix): Vector3 {
+    return rl.Vector3Unproject(source, projection, view);
+}
+// 
+export let Vector3ToFloatV(v: Vector3): float3 {
+    return rl.Vector3ToFloatV(v);
+}
+// 
+export let Vector3Invert(v: Vector3): Vector3 {
+    return rl.Vector3Invert(v);
+}
+// 
+export let Vector3Clamp(v: Vector3, min: Vector3, max: Vector3): Vector3 {
+    return rl.Vector3Clamp(v, min, max);
+}
+// 
+export let Vector3ClampValue(v: Vector3, min: Float64, max: Float64): Vector3 {
+    return rl.Vector3ClampValue(v, min, max);
+}
+// 
+export let Vector3Equals(p: Vector3, q: Vector3): Int {
+    return rl.Vector3Equals(p, q);
+}
+// 
+export let Vector3Refract(v: Vector3, n: Vector3, r: Float64): Vector3 {
+    return rl.Vector3Refract(v, n, r);
+}
+// 
+export let MatrixDeterminant(mat: Matrix): Float64 {
+    return rl.MatrixDeterminant(mat);
+}
+// 
+export let MatrixTrace(mat: Matrix): Float64 {
+    return rl.MatrixTrace(mat);
+}
+// 
+export let MatrixTranspose(mat: Matrix): Matrix {
+    return rl.MatrixTranspose(mat);
+}
+// 
+export let MatrixInvert(mat: Matrix): Matrix {
+    return rl.MatrixInvert(mat);
+}
+// 
+export let MatrixIdentity(): Matrix {
+    return rl.MatrixIdentity();
+}
+// 
+export let MatrixAdd(left: Matrix, right: Matrix): Matrix {
+    return rl.MatrixAdd(left, right);
+}
+// 
+export let MatrixSubtract(left: Matrix, right: Matrix): Matrix {
+    return rl.MatrixSubtract(left, right);
+}
+// 
+export let MatrixMultiply(left: Matrix, right: Matrix): Matrix {
+    return rl.MatrixMultiply(left, right);
+}
+// 
+export let MatrixTranslate(x: Float64, y: Float64, z: Float64): Matrix {
+    return rl.MatrixTranslate(x, y, z);
+}
+// 
+export let MatrixRotate(axis: Vector3, angle: Float64): Matrix {
+    return rl.MatrixRotate(axis, angle);
+}
+// 
+export let MatrixRotateX(angle: Float64): Matrix {
+    return rl.MatrixRotateX(angle);
+}
+// 
+export let MatrixRotateY(angle: Float64): Matrix {
+    return rl.MatrixRotateY(angle);
+}
+// 
+export let MatrixRotateZ(angle: Float64): Matrix {
+    return rl.MatrixRotateZ(angle);
+}
+// 
+export let MatrixRotateXYZ(angle: Vector3): Matrix {
+    return rl.MatrixRotateXYZ(angle);
+}
+// 
+export let MatrixRotateZYX(angle: Vector3): Matrix {
+    return rl.MatrixRotateZYX(angle);
+}
+// 
+export let MatrixScale(x: Float64, y: Float64, z: Float64): Matrix {
+    return rl.MatrixScale(x, y, z);
+}
+// 
+export let MatrixFrustum(left: Float64, right: Float64, bottom: Float64, top: Float64, near: Float64, far: Float64): Matrix {
+    return rl.MatrixFrustum(left, right, bottom, top, near, far);
+}
+// 
+export let MatrixPerspective(fovY: Float64, aspect: Float64, nearPlane: Float64, farPlane: Float64): Matrix {
+    return rl.MatrixPerspective(fovY, aspect, nearPlane, farPlane);
+}
+// 
+export let MatrixOrtho(left: Float64, right: Float64, bottom: Float64, top: Float64, nearPlane: Float64, farPlane: Float64): Matrix {
+    return rl.MatrixOrtho(left, right, bottom, top, nearPlane, farPlane);
+}
+// 
+export let MatrixLookAt(eye: Vector3, target: Vector3, up: Vector3): Matrix {
+    return rl.MatrixLookAt(eye, target, up);
+}
+// 
+export let MatrixToFloatV(mat: Matrix): float16 {
+    return rl.MatrixToFloatV(mat);
+}
+// 
+export let QuaternionAdd(q1: Quaternion, q2: Quaternion): Quaternion {
+    return rl.QuaternionAdd(q1, q2);
+}
+// 
+export let QuaternionAddValue(q: Quaternion, add: Float64): Quaternion {
+    return rl.QuaternionAddValue(q, add);
+}
+// 
+export let QuaternionSubtract(q1: Quaternion, q2: Quaternion): Quaternion {
+    return rl.QuaternionSubtract(q1, q2);
+}
+// 
+export let QuaternionSubtractValue(q: Quaternion, sub: Float64): Quaternion {
+    return rl.QuaternionSubtractValue(q, sub);
+}
+// 
+export let QuaternionIdentity(): Quaternion {
+    return rl.QuaternionIdentity();
+}
+// 
+export let QuaternionLength(q: Quaternion): Float64 {
+    return rl.QuaternionLength(q);
+}
+// 
+export let QuaternionNormalize(q: Quaternion): Quaternion {
+    return rl.QuaternionNormalize(q);
+}
+// 
+export let QuaternionInvert(q: Quaternion): Quaternion {
+    return rl.QuaternionInvert(q);
+}
+// 
+export let QuaternionMultiply(q1: Quaternion, q2: Quaternion): Quaternion {
+    return rl.QuaternionMultiply(q1, q2);
+}
+// 
+export let QuaternionScale(q: Quaternion, mul: Float64): Quaternion {
+    return rl.QuaternionScale(q, mul);
+}
+// 
+export let QuaternionDivide(q1: Quaternion, q2: Quaternion): Quaternion {
+    return rl.QuaternionDivide(q1, q2);
+}
+// 
+export let QuaternionLerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+    return rl.QuaternionLerp(q1, q2, amount);
+}
+// 
+export let QuaternionNlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+    return rl.QuaternionNlerp(q1, q2, amount);
+}
+// 
+export let QuaternionSlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+    return rl.QuaternionSlerp(q1, q2, amount);
+}
+// 
+export let QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Quaternion {
+    return rl.QuaternionFromVector3ToVector3(from, to);
+}
+// 
+export let QuaternionFromMatrix(mat: Matrix): Quaternion {
+    return rl.QuaternionFromMatrix(mat);
+}
+// 
+export let QuaternionToMatrix(q: Quaternion): Matrix {
+    return rl.QuaternionToMatrix(q);
+}
+// 
+export let QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Quaternion {
+    return rl.QuaternionFromAxisAngle(axis, angle);
+}
+// 
+export let QuaternionToAxisAngle(q: Quaternion, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void {
+    rl.QuaternionToAxisAngle(q, outAxis, outAngle);
+}
+// 
+export let QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Quaternion {
+    return rl.QuaternionFromEuler(pitch, yaw, roll);
+}
+// 
+export let QuaternionToEuler(q: Quaternion): Vector3 {
+    return rl.QuaternionToEuler(q);
+}
+// 
+export let QuaternionTransform(q: Quaternion, mat: Matrix): Quaternion {
+    return rl.QuaternionTransform(q, mat);
+}
+// 
+export let QuaternionEquals(p: Quaternion, q: Quaternion): Int {
+    return rl.QuaternionEquals(p, q);
+}
+// Choose the current matrix to be transformed
+export let rlMatrixMode(mode: Int): Void {
+    rl.rlMatrixMode(mode);
+}
+// Push the current matrix to stack
+export let rlPushMatrix(): Void {
+    rl.rlPushMatrix();
+}
+// Pop latest inserted matrix from stack
+export let rlPopMatrix(): Void {
+    rl.rlPopMatrix();
+}
+// Reset current matrix to identity matrix
+export let rlLoadIdentity(): Void {
+    rl.rlLoadIdentity();
+}
+// Multiply the current matrix by a translation matrix
+export let rlTranslatef(x: Float64, y: Float64, z: Float64): Void {
+    rl.rlTranslatef(x, y, z);
+}
+// Multiply the current matrix by a rotation matrix
+export let rlRotatef(angle: Float64, x: Float64, y: Float64, z: Float64): Void {
+    rl.rlRotatef(angle, x, y, z);
+}
+// Multiply the current matrix by a scaling matrix
+export let rlScalef(x: Float64, y: Float64, z: Float64): Void {
+    rl.rlScalef(x, y, z);
+}
+// Multiply the current matrix by another matrix
+export let rlMultMatrixf(matf: Listed<Float64>): Void {
+    rl.rlMultMatrixf(matf);
+}
+// 
+export let rlFrustum(left: Float64, right: Float64, bottom: Float64, top: Float64, znear: Float64, zfar: Float64): Void {
+    rl.rlFrustum(left, right, bottom, top, znear, zfar);
+}
+// 
+export let rlOrtho(left: Float64, right: Float64, bottom: Float64, top: Float64, znear: Float64, zfar: Float64): Void {
+    rl.rlOrtho(left, right, bottom, top, znear, zfar);
+}
+// Set the viewport area
+export let rlViewport(x: Int, y: Int, width: Int, height: Int): Void {
+    rl.rlViewport(x, y, width, height);
+}
+// Initialize drawing mode (how to organize vertex)
+export let rlBegin(mode: Int): Void {
+    rl.rlBegin(mode);
+}
+// Finish vertex providing
+export let rlEnd(): Void {
+    rl.rlEnd();
+}
+// Define one vertex (position) - 2 int
+export let rlVertex2i(x: Int, y: Int): Void {
+    rl.rlVertex2i(x, y);
+}
+// Define one vertex (position) - 2 float
+export let rlVertex2f(x: Float64, y: Float64): Void {
+    rl.rlVertex2f(x, y);
+}
+// Define one vertex (position) - 3 float
+export let rlVertex3f(x: Float64, y: Float64, z: Float64): Void {
+    rl.rlVertex3f(x, y, z);
+}
+// Define one vertex (texture coordinate) - 2 float
+export let rlTexCoord2f(x: Float64, y: Float64): Void {
+    rl.rlTexCoord2f(x, y);
+}
+// Define one vertex (normal) - 3 float
+export let rlNormal3f(x: Float64, y: Float64, z: Float64): Void {
+    rl.rlNormal3f(x, y, z);
+}
+// Define one vertex (color) - 4 byte
+export let rlColor4ub(r: Int, g: Int, b: Int, a: Int): Void {
+    rl.rlColor4ub(r, g, b, a);
+}
+// Define one vertex (color) - 3 float
+export let rlColor3f(x: Float64, y: Float64, z: Float64): Void {
+    rl.rlColor3f(x, y, z);
+}
+// Define one vertex (color) - 4 float
+export let rlColor4f(x: Float64, y: Float64, z: Float64, w: Float64): Void {
+    rl.rlColor4f(x, y, z, w);
+}
+// Enable vertex array (VAO, if supported)
+export let rlEnableVertexArray(vaoId: Int): Boolean {
+    return rl.rlEnableVertexArray(vaoId);
+}
+// Disable vertex array (VAO, if supported)
+export let rlDisableVertexArray(): Void {
+    rl.rlDisableVertexArray();
+}
+// Enable vertex buffer (VBO)
+export let rlEnableVertexBuffer(id: Int): Void {
+    rl.rlEnableVertexBuffer(id);
+}
+// Disable vertex buffer (VBO)
+export let rlDisableVertexBuffer(): Void {
+    rl.rlDisableVertexBuffer();
+}
+// Enable vertex buffer element (VBO element)
+export let rlEnableVertexBufferElement(id: Int): Void {
+    rl.rlEnableVertexBufferElement(id);
+}
+// Disable vertex buffer element (VBO element)
+export let rlDisableVertexBufferElement(): Void {
+    rl.rlDisableVertexBufferElement();
+}
+// Enable vertex attribute index
+export let rlEnableVertexAttribute(index: Int): Void {
+    rl.rlEnableVertexAttribute(index);
+}
+// Disable vertex attribute index
+export let rlDisableVertexAttribute(index: Int): Void {
+    rl.rlDisableVertexAttribute(index);
+}
+// Select and active a texture slot
+export let rlActiveTextureSlot(slot: Int): Void {
+    rl.rlActiveTextureSlot(slot);
+}
+// Enable texture
+export let rlEnableTexture(id: Int): Void {
+    rl.rlEnableTexture(id);
+}
+// Disable texture
+export let rlDisableTexture(): Void {
+    rl.rlDisableTexture();
+}
+// Enable texture cubemap
+export let rlEnableTextureCubemap(id: Int): Void {
+    rl.rlEnableTextureCubemap(id);
+}
+// Disable texture cubemap
+export let rlDisableTextureCubemap(): Void {
+    rl.rlDisableTextureCubemap();
+}
+// Set texture parameters (filter, wrap)
+export let rlTextureParameters(id: Int, param: Int, value: Int): Void {
+    rl.rlTextureParameters(id, param, value);
+}
+// Set cubemap parameters (filter, wrap)
+export let rlCubemapParameters(id: Int, param: Int, value: Int): Void {
+    rl.rlCubemapParameters(id, param, value);
+}
+// Enable shader program
+export let rlEnableShader(id: Int): Void {
+    rl.rlEnableShader(id);
+}
+// Disable shader program
+export let rlDisableShader(): Void {
+    rl.rlDisableShader();
+}
+// Enable render texture (fbo)
+export let rlEnableFramebuffer(id: Int): Void {
+    rl.rlEnableFramebuffer(id);
+}
+// Disable render texture (fbo), return to default framebuffer
+export let rlDisableFramebuffer(): Void {
+    rl.rlDisableFramebuffer();
+}
+// Activate multiple draw color buffers
+export let rlActiveDrawBuffers(count: Int): Void {
+    rl.rlActiveDrawBuffers(count);
+}
+// Blit active framebuffer to main framebuffer
+export let rlBlitFramebuffer(srcX: Int, srcY: Int, srcWidth: Int, srcHeight: Int, dstX: Int, dstY: Int, dstWidth: Int, dstHeight: Int, bufferMask: Int): Void {
+    rl.rlBlitFramebuffer(srcX, srcY, srcWidth, srcHeight, dstX, dstY, dstWidth, dstHeight, bufferMask);
+}
+// Bind framebuffer (FBO) 
+export let rlBindFramebuffer(target: Int, framebuffer: Int): Void {
+    rl.rlBindFramebuffer(target, framebuffer);
+}
+// Enable color blending
+export let rlEnableColorBlend(): Void {
+    rl.rlEnableColorBlend();
+}
+// Disable color blending
+export let rlDisableColorBlend(): Void {
+    rl.rlDisableColorBlend();
+}
+// Enable depth test
+export let rlEnableDepthTest(): Void {
+    rl.rlEnableDepthTest();
+}
+// Disable depth test
+export let rlDisableDepthTest(): Void {
+    rl.rlDisableDepthTest();
+}
+// Enable depth write
+export let rlEnableDepthMask(): Void {
+    rl.rlEnableDepthMask();
+}
+// Disable depth write
+export let rlDisableDepthMask(): Void {
+    rl.rlDisableDepthMask();
+}
+// Enable backface culling
+export let rlEnableBackfaceCulling(): Void {
+    rl.rlEnableBackfaceCulling();
+}
+// Disable backface culling
+export let rlDisableBackfaceCulling(): Void {
+    rl.rlDisableBackfaceCulling();
+}
+// Color mask control
+export let rlColorMask(r: Boolean, g: Boolean, b: Boolean, a: Boolean): Void {
+    rl.rlColorMask(r, g, b, a);
+}
+// Set face culling mode
+export let rlSetCullFace(mode: Int): Void {
+    rl.rlSetCullFace(mode);
+}
+// Enable scissor test
+export let rlEnableScissorTest(): Void {
+    rl.rlEnableScissorTest();
+}
+// Disable scissor test
+export let rlDisableScissorTest(): Void {
+    rl.rlDisableScissorTest();
+}
+// Scissor test
+export let rlScissor(x: Int, y: Int, width: Int, height: Int): Void {
+    rl.rlScissor(x, y, width, height);
+}
+// Enable wire mode
+export let rlEnableWireMode(): Void {
+    rl.rlEnableWireMode();
+}
+// Enable point mode
+export let rlEnablePointMode(): Void {
+    rl.rlEnablePointMode();
+}
+// Disable wire mode ( and point ) maybe rename
+export let rlDisableWireMode(): Void {
+    rl.rlDisableWireMode();
+}
+// Set the line drawing width
+export let rlSetLineWidth(width: Float64): Void {
+    rl.rlSetLineWidth(width);
+}
+// Get the line drawing width
+export let rlGetLineWidth(): Float64 {
+    return rl.rlGetLineWidth();
+}
+// Enable line aliasing
+export let rlEnableSmoothLines(): Void {
+    rl.rlEnableSmoothLines();
+}
+// Disable line aliasing
+export let rlDisableSmoothLines(): Void {
+    rl.rlDisableSmoothLines();
+}
+// Enable stereo rendering
+export let rlEnableStereoRender(): Void {
+    rl.rlEnableStereoRender();
+}
+// Disable stereo rendering
+export let rlDisableStereoRender(): Void {
+    rl.rlDisableStereoRender();
+}
+// Check if stereo render is enabled
+export let rlIsStereoRenderEnabled(): Boolean {
+    return rl.rlIsStereoRenderEnabled();
+}
+// Clear color buffer with color
+export let rlClearColor(r: Int, g: Int, b: Int, a: Int): Void {
+    rl.rlClearColor(r, g, b, a);
+}
+// Clear used screen buffers (color and depth)
+export let rlClearScreenBuffers(): Void {
+    rl.rlClearScreenBuffers();
+}
+// Check and log OpenGL error codes
+export let rlCheckErrors(): Void {
+    rl.rlCheckErrors();
+}
+// Set blending mode
+export let rlSetBlendMode(mode: Int): Void {
+    rl.rlSetBlendMode(mode);
+}
+// Set blending mode factor and equation (using OpenGL factors)
+export let rlSetBlendFactors(glSrcFactor: Int, glDstFactor: Int, glEquation: Int): Void {
+    rl.rlSetBlendFactors(glSrcFactor, glDstFactor, glEquation);
+}
+// Set blending mode factors and equations separately (using OpenGL factors)
+export let rlSetBlendFactorsSeparate(glSrcRGB: Int, glDstRGB: Int, glSrcAlpha: Int, glDstAlpha: Int, glEqRGB: Int, glEqAlpha: Int): Void {
+    rl.rlSetBlendFactorsSeparate(glSrcRGB, glDstRGB, glSrcAlpha, glDstAlpha, glEqRGB, glEqAlpha);
+}
+// Initialize rlgl (buffers, shaders, textures, states)
+export let rlglInit(width: Int, height: Int): Void {
+    rl.rlglInit(width, height);
+}
+// De-initialize rlgl (buffers, shaders, textures)
+export let rlglClose(): Void {
+    rl.rlglClose();
+}
+// Load OpenGL extensions (loader function required)
+export let rlLoadExtensions(loader: DenseBitVector): Void {
+    rl.rlLoadExtensions(loader);
+}
+// Get current OpenGL version
+export let rlGetVersion(): Int {
+    return rl.rlGetVersion();
+}
+// Set current framebuffer width
+export let rlSetFramebufferWidth(width: Int): Void {
+    rl.rlSetFramebufferWidth(width);
+}
+// Get default framebuffer width
+export let rlGetFramebufferWidth(): Int {
+    return rl.rlGetFramebufferWidth();
+}
+// Set current framebuffer height
+export let rlSetFramebufferHeight(height: Int): Void {
+    rl.rlSetFramebufferHeight(height);
+}
+// Get default framebuffer height
+export let rlGetFramebufferHeight(): Int {
+    return rl.rlGetFramebufferHeight();
+}
+// Get default texture id
+export let rlGetTextureIdDefault(): Int {
+    return rl.rlGetTextureIdDefault();
+}
+// Get default shader id
+export let rlGetShaderIdDefault(): Int {
+    return rl.rlGetShaderIdDefault();
+}
+// Get default shader locations
+export let rlGetShaderLocsDefault(): Listed<Int> {
+    return rl.rlGetShaderLocsDefault();
+}
+// Load a render batch system
+export let rlLoadRenderBatch(numBuffers: Int, bufferElements: Int): rlRenderBatch {
+    return rl.rlLoadRenderBatch(numBuffers, bufferElements);
+}
+// Unload render batch system
+export let rlUnloadRenderBatch(batch: rlRenderBatch): Void {
+    rl.rlUnloadRenderBatch(batch);
+}
+// Draw render batch data (Update->Draw->Reset)
+export let rlDrawRenderBatch(batch: Listed<rlRenderBatch>): Void {
+    rl.rlDrawRenderBatch(batch);
+}
+// Set the active render batch for rlgl (NULL for default internal)
+export let rlSetRenderBatchActive(batch: Listed<rlRenderBatch>): Void {
+    rl.rlSetRenderBatchActive(batch);
+}
+// Update and draw internal render batch
+export let rlDrawRenderBatchActive(): Void {
+    rl.rlDrawRenderBatchActive();
+}
+// Check internal buffer overflow for a given number of vertex
+export let rlCheckRenderBatchLimit(vCount: Int): Boolean {
+    return rl.rlCheckRenderBatchLimit(vCount);
+}
+// Set current texture for render batch and check buffers limits
+export let rlSetTexture(id: Int): Void {
+    rl.rlSetTexture(id);
+}
+// Load vertex array (vao) if supported
+export let rlLoadVertexArray(): Int {
+    return rl.rlLoadVertexArray();
+}
+// Load a vertex buffer object
+export let rlLoadVertexBuffer(buffer: DenseBitVector, size: Int, dynamic: Boolean): Int {
+    return rl.rlLoadVertexBuffer(buffer, size, dynamic);
+}
+// Load vertex buffer elements object
+export let rlLoadVertexBufferElement(buffer: DenseBitVector, size: Int, dynamic: Boolean): Int {
+    return rl.rlLoadVertexBufferElement(buffer, size, dynamic);
+}
+// Update vertex buffer object data on GPU buffer
+export let rlUpdateVertexBuffer(bufferId: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void {
+    rl.rlUpdateVertexBuffer(bufferId, data, dataSize, offset);
+}
+// Update vertex buffer elements data on GPU buffer
+export let rlUpdateVertexBufferElements(id: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void {
+    rl.rlUpdateVertexBufferElements(id, data, dataSize, offset);
+}
+// Unload vertex array (vao)
+export let rlUnloadVertexArray(vaoId: Int): Void {
+    rl.rlUnloadVertexArray(vaoId);
+}
+// Unload vertex buffer object
+export let rlUnloadVertexBuffer(vboId: Int): Void {
+    rl.rlUnloadVertexBuffer(vboId);
+}
+// Set vertex attribute data configuration
+export let rlSetVertexAttribute(index: Int, compSize: Int, type: Int, normalized: Boolean, stride: Int, pointer: DenseBitVector): Void {
+    rl.rlSetVertexAttribute(index, compSize, type, normalized, stride, pointer);
+}
+// Set vertex attribute data divisor
+export let rlSetVertexAttributeDivisor(index: Int, divisor: Int): Void {
+    rl.rlSetVertexAttributeDivisor(index, divisor);
+}
+// Set vertex attribute default value, when attribute to provided
+export let rlSetVertexAttributeDefault(locIndex: Int, value: DenseBitVector, attribType: Int, count: Int): Void {
+    rl.rlSetVertexAttributeDefault(locIndex, value, attribType, count);
+}
+// Draw vertex array (currently active vao)
+export let rlDrawVertexArray(offset: Int, count: Int): Void {
+    rl.rlDrawVertexArray(offset, count);
+}
+// Draw vertex array elements
+export let rlDrawVertexArrayElements(offset: Int, count: Int, buffer: DenseBitVector): Void {
+    rl.rlDrawVertexArrayElements(offset, count, buffer);
+}
+// Draw vertex array (currently active vao) with instancing
+export let rlDrawVertexArrayInstanced(offset: Int, count: Int, instances: Int): Void {
+    rl.rlDrawVertexArrayInstanced(offset, count, instances);
+}
+// Draw vertex array elements with instancing
+export let rlDrawVertexArrayElementsInstanced(offset: Int, count: Int, buffer: DenseBitVector, instances: Int): Void {
+    rl.rlDrawVertexArrayElementsInstanced(offset, count, buffer, instances);
+}
+// Load texture data
+export let rlLoadTexture(data: DenseBitVector, width: Int, height: Int, format: Int, mipmapCount: Int): Int {
+    return rl.rlLoadTexture(data, width, height, format, mipmapCount);
+}
+// Load depth texture/renderbuffer (to be attached to fbo)
+export let rlLoadTextureDepth(width: Int, height: Int, useRenderBuffer: Boolean): Int {
+    return rl.rlLoadTextureDepth(width, height, useRenderBuffer);
+}
+// Load texture cubemap data
+export let rlLoadTextureCubemap(data: DenseBitVector, size: Int, format: Int): Int {
+    return rl.rlLoadTextureCubemap(data, size, format);
+}
+// Update texture with new data on GPU
+export let rlUpdateTexture(id: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, format: Int, data: DenseBitVector): Void {
+    rl.rlUpdateTexture(id, offsetX, offsetY, width, height, format, data);
+}
+// Get OpenGL internal formats
+export let rlGetGlTextureFormats(format: Int, glInternalFormat: Listed<Int>, glFormat: Listed<Int>, glType: Listed<Int>): Void {
+    rl.rlGetGlTextureFormats(format, glInternalFormat, glFormat, glType);
+}
+// Get name string for pixel format
+export let rlGetPixelFormatName(format: Int): String {
+    return rl.rlGetPixelFormatName(format);
+}
+// Unload texture from GPU memory
+export let rlUnloadTexture(id: Int): Void {
+    rl.rlUnloadTexture(id);
+}
+// Generate mipmap data for selected texture
+export let rlGenTextureMipmaps(id: Int, width: Int, height: Int, format: Int, mipmaps: Listed<Int>): Void {
+    rl.rlGenTextureMipmaps(id, width, height, format, mipmaps);
+}
+// Read texture pixel data
+export let rlReadTexturePixels(id: Int, width: Int, height: Int, format: Int): DenseBitVector {
+    return rl.rlReadTexturePixels(id, width, height, format);
+}
+// Read screen pixel data (color buffer)
+export let rlReadScreenPixels(width: Int, height: Int): Listed<Int> {
+    return rl.rlReadScreenPixels(width, height);
+}
+// Load an empty framebuffer
+export let rlLoadFramebuffer(width: Int, height: Int): Int {
+    return rl.rlLoadFramebuffer(width, height);
+}
+// Attach texture/renderbuffer to a framebuffer
+export let rlFramebufferAttach(fboId: Int, texId: Int, attachType: Int, texType: Int, mipLevel: Int): Void {
+    rl.rlFramebufferAttach(fboId, texId, attachType, texType, mipLevel);
+}
+// Verify framebuffer is complete
+export let rlFramebufferComplete(id: Int): Boolean {
+    return rl.rlFramebufferComplete(id);
+}
+// Delete framebuffer from GPU
+export let rlUnloadFramebuffer(id: Int): Void {
+    rl.rlUnloadFramebuffer(id);
+}
+// Load shader from code strings
+export let rlLoadShaderCode(vsCode: String, fsCode: String): Int {
+    return rl.rlLoadShaderCode(vsCode, fsCode);
+}
+// Compile custom shader and return shader id (type: RL_VERTEX_SHADER, RL_FRAGMENT_SHADER, RL_COMPUTE_SHADER)
+export let rlCompileShader(shaderCode: String, type: Int): Int {
+    return rl.rlCompileShader(shaderCode, type);
+}
+// Load custom shader program
+export let rlLoadShaderProgram(vShaderId: Int, fShaderId: Int): Int {
+    return rl.rlLoadShaderProgram(vShaderId, fShaderId);
+}
+// Unload shader program
+export let rlUnloadShaderProgram(id: Int): Void {
+    rl.rlUnloadShaderProgram(id);
+}
+// Get shader location uniform
+export let rlGetLocationUniform(shaderId: Int, uniformName: String): Int {
+    return rl.rlGetLocationUniform(shaderId, uniformName);
+}
+// Get shader location attribute
+export let rlGetLocationAttrib(shaderId: Int, attribName: String): Int {
+    return rl.rlGetLocationAttrib(shaderId, attribName);
+}
+// Set shader value uniform
+export let rlSetUniform(locIndex: Int, value: DenseBitVector, uniformType: Int, count: Int): Void {
+    rl.rlSetUniform(locIndex, value, uniformType, count);
+}
+// Set shader value matrix
+export let rlSetUniformMatrix(locIndex: Int, mat: Matrix): Void {
+    rl.rlSetUniformMatrix(locIndex, mat);
+}
+// Set shader value sampler
+export let rlSetUniformSampler(locIndex: Int, textureId: Int): Void {
+    rl.rlSetUniformSampler(locIndex, textureId);
+}
+// Set shader currently active (id and locations)
+export let rlSetShader(id: Int, locs: Listed<Int>): Void {
+    rl.rlSetShader(id, locs);
+}
+// Load compute shader program
+export let rlLoadComputeShaderProgram(shaderId: Int): Int {
+    return rl.rlLoadComputeShaderProgram(shaderId);
+}
+// Dispatch compute shader (equivalent to *draw* for graphics pipeline)
+export let rlComputeShaderDispatch(groupX: Int, groupY: Int, groupZ: Int): Void {
+    rl.rlComputeShaderDispatch(groupX, groupY, groupZ);
+}
+// Load shader storage buffer object (SSBO)
+export let rlLoadShaderBuffer(size: Int, data: DenseBitVector, usageHint: Int): Int {
+    return rl.rlLoadShaderBuffer(size, data, usageHint);
+}
+// Unload shader storage buffer object (SSBO)
+export let rlUnloadShaderBuffer(ssboId: Int): Void {
+    rl.rlUnloadShaderBuffer(ssboId);
+}
+// Update SSBO buffer data
+export let rlUpdateShaderBuffer(id: Int, data: DenseBitVector, dataSize: Int, offset: Int): Void {
+    rl.rlUpdateShaderBuffer(id, data, dataSize, offset);
+}
+// Bind SSBO buffer
+export let rlBindShaderBuffer(id: Int, index: Int): Void {
+    rl.rlBindShaderBuffer(id, index);
+}
+// Read SSBO buffer data (GPU->CPU)
+export let rlReadShaderBuffer(id: Int, dest: DenseBitVector, count: Int, offset: Int): Void {
+    rl.rlReadShaderBuffer(id, dest, count, offset);
+}
+// Copy SSBO data between buffers
+export let rlCopyShaderBuffer(destId: Int, srcId: Int, destOffset: Int, srcOffset: Int, count: Int): Void {
+    rl.rlCopyShaderBuffer(destId, srcId, destOffset, srcOffset, count);
+}
+// Get SSBO buffer size
+export let rlGetShaderBufferSize(id: Int): Int {
+    return rl.rlGetShaderBufferSize(id);
+}
+// Bind image texture
+export let rlBindImageTexture(id: Int, index: Int, format: Int, readonly: Boolean): Void {
+    rl.rlBindImageTexture(id, index, format, readonly);
+}
+// Get internal modelview matrix
+export let rlGetMatrixModelview(): Matrix {
+    return rl.rlGetMatrixModelview();
+}
+// Get internal projection matrix
+export let rlGetMatrixProjection(): Matrix {
+    return rl.rlGetMatrixProjection();
+}
+// Get internal accumulated transform matrix
+export let rlGetMatrixTransform(): Matrix {
+    return rl.rlGetMatrixTransform();
+}
+// Get internal projection matrix for stereo render (selected eye)
+export let rlGetMatrixProjectionStereo(eye: Int): Matrix {
+    return rl.rlGetMatrixProjectionStereo(eye);
+}
+// Get internal view offset matrix for stereo render (selected eye)
+export let rlGetMatrixViewOffsetStereo(eye: Int): Matrix {
+    return rl.rlGetMatrixViewOffsetStereo(eye);
+}
+// Set a custom projection matrix (replaces internal projection matrix)
+export let rlSetMatrixProjection(proj: Matrix): Void {
+    rl.rlSetMatrixProjection(proj);
+}
+// Set a custom modelview matrix (replaces internal modelview matrix)
+export let rlSetMatrixModelview(view: Matrix): Void {
+    rl.rlSetMatrixModelview(view);
+}
+// Set eyes projection matrices for stereo rendering
+export let rlSetMatrixProjectionStereo(right: Matrix, left: Matrix): Void {
+    rl.rlSetMatrixProjectionStereo(right, left);
+}
+// Set eyes view offsets matrices for stereo rendering
+export let rlSetMatrixViewOffsetStereo(right: Matrix, left: Matrix): Void {
+    rl.rlSetMatrixViewOffsetStereo(right, left);
+}
+// Load and draw a cube
+export let rlLoadDrawCube(): Void {
+    rl.rlLoadDrawCube();
+}
+// Load and draw a quad
+export let rlLoadDrawQuad(): Void {
+    rl.rlLoadDrawQuad();
+}
 
-export let RAYLIB_VERSION_MAJOR: Int = 4;
-export let RAYLIB_VERSION_MINOR: Int = 6;
+export let SUPPORT_MODULE_RSHAPES: Int = 1;
+export let SUPPORT_MODULE_RTEXTURES: Int = 1;
+export let SUPPORT_MODULE_RTEXT: Int = 1;
+export let SUPPORT_MODULE_RMODELS: Int = 1;
+export let SUPPORT_MODULE_RAUDIO: Int = 1;
+export let SUPPORT_CAMERA_SYSTEM: Int = 1;
+export let SUPPORT_GESTURES_SYSTEM: Int = 1;
+export let SUPPORT_RPRAND_GENERATOR: Int = 1;
+export let SUPPORT_MOUSE_GESTURES: Int = 1;
+export let SUPPORT_SSH_KEYBOARD_RPI: Int = 1;
+export let SUPPORT_WINMM_HIGHRES_TIMER: Int = 1;
+export let SUPPORT_PARTIALBUSY_WAIT_LOOP: Int = 1;
+export let SUPPORT_SCREEN_CAPTURE: Int = 1;
+export let SUPPORT_GIF_RECORDING: Int = 1;
+export let SUPPORT_COMPRESSION_API: Int = 1;
+export let SUPPORT_AUTOMATION_EVENTS: Int = 1;
+export let MAX_FILEPATH_CAPACITY: Int = 8192;
+export let MAX_FILEPATH_LENGTH: Int = 4096;
+export let MAX_KEYBOARD_KEYS: Int = 512;
+export let MAX_MOUSE_BUTTONS: Int = 8;
+export let MAX_GAMEPADS: Int = 4;
+export let MAX_GAMEPAD_AXIS: Int = 8;
+export let MAX_GAMEPAD_BUTTONS: Int = 32;
+export let MAX_TOUCH_POINTS: Int = 8;
+export let MAX_KEY_PRESSED_QUEUE: Int = 16;
+export let MAX_CHAR_PRESSED_QUEUE: Int = 16;
+export let MAX_DECOMPRESSION_SIZE: Int = 64;
+export let MAX_AUTOMATION_EVENTS: Int = 16384;
+export let RL_DEFAULT_BATCH_BUFFERS: Int = 1;
+export let RL_DEFAULT_BATCH_DRAWCALLS: Int = 256;
+export let RL_DEFAULT_BATCH_MAX_TEXTURE_UNITS: Int = 4;
+export let RL_MAX_MATRIX_STACK_SIZE: Int = 32;
+export let RL_MAX_SHADER_LOCATIONS: Int = 32;
+export let RL_CULL_DISTANCE_NEAR: Float64 = 0.01;
+export let RL_CULL_DISTANCE_FAR: Float64 = 1000.0;
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_POSITION: String = "vertexPosition";
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD: String = "vertexTexCoord";
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_NORMAL: String = "vertexNormal";
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_COLOR: String = "vertexColor";
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_TANGENT: String = "vertexTangent";
+export let RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD2: String = "vertexTexCoord2";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_MVP: String = "mvp";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_VIEW: String = "matView";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_PROJECTION: String = "matProjection";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_MODEL: String = "matModel";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_NORMAL: String = "matNormal";
+export let RL_DEFAULT_SHADER_UNIFORM_NAME_COLOR: String = "colDiffuse";
+export let RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE0: String = "texture0";
+export let RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE1: String = "texture1";
+export let RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE2: String = "texture2";
+export let SUPPORT_QUADS_DRAW_MODE: Int = 1;
+export let SPLINE_SEGMENT_DIVISIONS: Int = 24;
+export let SUPPORT_FILEFORMAT_PNG: Int = 1;
+export let SUPPORT_FILEFORMAT_GIF: Int = 1;
+export let SUPPORT_FILEFORMAT_QOI: Int = 1;
+export let SUPPORT_FILEFORMAT_DDS: Int = 1;
+export let SUPPORT_IMAGE_EXPORT: Int = 1;
+export let SUPPORT_IMAGE_GENERATION: Int = 1;
+export let SUPPORT_IMAGE_MANIPULATION: Int = 1;
+export let SUPPORT_DEFAULT_FONT: Int = 1;
+export let SUPPORT_FILEFORMAT_FNT: Int = 1;
+export let SUPPORT_FILEFORMAT_TTF: Int = 1;
+export let SUPPORT_TEXT_MANIPULATION: Int = 1;
+export let SUPPORT_FONT_ATLAS_WHITE_REC: Int = 1;
+export let MAX_TEXT_BUFFER_LENGTH: Int = 1024;
+export let MAX_TEXTSPLIT_COUNT: Int = 128;
+export let SUPPORT_FILEFORMAT_OBJ: Int = 1;
+export let SUPPORT_FILEFORMAT_MTL: Int = 1;
+export let SUPPORT_FILEFORMAT_IQM: Int = 1;
+export let SUPPORT_FILEFORMAT_GLTF: Int = 1;
+export let SUPPORT_FILEFORMAT_VOX: Int = 1;
+export let SUPPORT_FILEFORMAT_M3D: Int = 1;
+export let SUPPORT_MESH_GENERATION: Int = 1;
+export let MAX_MATERIAL_MAPS: Int = 12;
+export let MAX_MESH_VERTEX_BUFFERS: Int = 7;
+export let SUPPORT_FILEFORMAT_WAV: Int = 1;
+export let SUPPORT_FILEFORMAT_OGG: Int = 1;
+export let SUPPORT_FILEFORMAT_MP3: Int = 1;
+export let SUPPORT_FILEFORMAT_QOA: Int = 1;
+export let SUPPORT_FILEFORMAT_XM: Int = 1;
+export let SUPPORT_FILEFORMAT_MOD: Int = 1;
+export let AUDIO_DEVICE_CHANNELS: Int = 2;
+export let AUDIO_DEVICE_SAMPLE_RATE: Int = 0;
+export let MAX_AUDIO_BUFFER_POOL_CHANNELS: Int = 16;
+export let SUPPORT_STANDARD_FILEIO: Int = 1;
+export let SUPPORT_TRACELOG: Int = 1;
+export let MAX_TRACELOG_MSG_LENGTH: Int = 256;
+export let RAYGUI_VERSION_MAJOR: Int = 4;
+export let RAYGUI_VERSION_MINOR: Int = 0;
+export let RAYGUI_VERSION_PATCH: Int = 0;
+export let RAYGUI_VERSION: String = "4.0";
+export let SCROLLBAR_LEFT_SIDE: Int = 0;
+export let SCROLLBAR_RIGHT_SIDE: Int = 1;
+export let RAYLIB_VERSION_MAJOR: Int = 5;
+export let RAYLIB_VERSION_MINOR: Int = 1;
 export let RAYLIB_VERSION_PATCH: Int = 0;
-export let RAYLIB_VERSION: String = "4.6-dev";
+export let RAYLIB_VERSION: String = "5.1-dev";
 export let PI: Float64 = 3.141592653589793;
 export let LIGHTGRAY: Color = new Color(200, 200, 200, 255);
 export let GRAY: Color = new Color(130, 130, 130, 255);
@@ -3192,6 +5349,188 @@ export let BLACK: Color = new Color(0, 0, 0, 255);
 export let BLANK: Color = new Color(0, 0, 0, 0);
 export let MAGENTA: Color = new Color(255, 0, 255, 255);
 export let RAYWHITE: Color = new Color(245, 245, 245, 255);
+export let EPSILON: Float64 = 1e-06;
+export let RLGL_VERSION: String = "4.5";
+export let RL_TEXTURE_WRAP_S: Int = 10242;
+export let RL_TEXTURE_WRAP_T: Int = 10243;
+export let RL_TEXTURE_MAG_FILTER: Int = 10240;
+export let RL_TEXTURE_MIN_FILTER: Int = 10241;
+export let RL_TEXTURE_FILTER_NEAREST: Int = 9728;
+export let RL_TEXTURE_FILTER_LINEAR: Int = 9729;
+export let RL_TEXTURE_FILTER_MIP_NEAREST: Int = 9984;
+export let RL_TEXTURE_FILTER_NEAREST_MIP_LINEAR: Int = 9986;
+export let RL_TEXTURE_FILTER_LINEAR_MIP_NEAREST: Int = 9985;
+export let RL_TEXTURE_FILTER_MIP_LINEAR: Int = 9987;
+export let RL_TEXTURE_FILTER_ANISOTROPIC: Int = 12288;
+export let RL_TEXTURE_MIPMAP_BIAS_RATIO: Int = 16384;
+export let RL_TEXTURE_WRAP_REPEAT: Int = 10497;
+export let RL_TEXTURE_WRAP_CLAMP: Int = 33071;
+export let RL_TEXTURE_WRAP_MIRROR_REPEAT: Int = 33648;
+export let RL_TEXTURE_WRAP_MIRROR_CLAMP: Int = 34626;
+export let RL_MODELVIEW: Int = 5888;
+export let RL_PROJECTION: Int = 5889;
+export let RL_TEXTURE: Int = 5890;
+export let RL_LINES: Int = 1;
+export let RL_TRIANGLES: Int = 4;
+export let RL_QUADS: Int = 7;
+export let RL_UNSIGNED_BYTE: Int = 5121;
+export let RL_FLOAT: Int = 5126;
+export let RL_STREAM_DRAW: Int = 35040;
+export let RL_STREAM_READ: Int = 35041;
+export let RL_STREAM_COPY: Int = 35042;
+export let RL_STATIC_DRAW: Int = 35044;
+export let RL_STATIC_READ: Int = 35045;
+export let RL_STATIC_COPY: Int = 35046;
+export let RL_DYNAMIC_DRAW: Int = 35048;
+export let RL_DYNAMIC_READ: Int = 35049;
+export let RL_DYNAMIC_COPY: Int = 35050;
+export let RL_FRAGMENT_SHADER: Int = 35632;
+export let RL_VERTEX_SHADER: Int = 35633;
+export let RL_COMPUTE_SHADER: Int = 37305;
+export let RL_ZERO: Int = 0;
+export let RL_ONE: Int = 1;
+export let RL_SRC_COLOR: Int = 768;
+export let RL_ONE_MINUS_SRC_COLOR: Int = 769;
+export let RL_SRC_ALPHA: Int = 770;
+export let RL_ONE_MINUS_SRC_ALPHA: Int = 771;
+export let RL_DST_ALPHA: Int = 772;
+export let RL_ONE_MINUS_DST_ALPHA: Int = 773;
+export let RL_DST_COLOR: Int = 774;
+export let RL_ONE_MINUS_DST_COLOR: Int = 775;
+export let RL_SRC_ALPHA_SATURATE: Int = 776;
+export let RL_CONSTANT_COLOR: Int = 32769;
+export let RL_ONE_MINUS_CONSTANT_COLOR: Int = 32770;
+export let RL_CONSTANT_ALPHA: Int = 32771;
+export let RL_ONE_MINUS_CONSTANT_ALPHA: Int = 32772;
+export let RL_FUNC_ADD: Int = 32774;
+export let RL_MIN: Int = 32775;
+export let RL_MAX: Int = 32776;
+export let RL_FUNC_SUBTRACT: Int = 32778;
+export let RL_FUNC_REVERSE_SUBTRACT: Int = 32779;
+export let RL_BLEND_EQUATION: Int = 32777;
+export let RL_BLEND_EQUATION_RGB: Int = 32777;
+export let RL_BLEND_EQUATION_ALPHA: Int = 34877;
+export let RL_BLEND_DST_RGB: Int = 32968;
+export let RL_BLEND_SRC_RGB: Int = 32969;
+export let RL_BLEND_DST_ALPHA: Int = 32970;
+export let RL_BLEND_SRC_ALPHA: Int = 32971;
+export let RL_BLEND_COLOR: Int = 32773;
+export let RL_READ_FRAMEBUFFER: Int = 36008;
+export let RL_DRAW_FRAMEBUFFER: Int = 36009;
+
+// GuiState
+export let STATE_NORMAL = 0; // 
+export let STATE_FOCUSED = 1; // 
+export let STATE_PRESSED = 2; // 
+export let STATE_DISABLED = 3; // 
+
+// GuiTextAlignment
+export let TEXT_ALIGN_LEFT = 0; // 
+export let TEXT_ALIGN_CENTER = 1; // 
+export let TEXT_ALIGN_RIGHT = 2; // 
+
+// GuiTextAlignmentVertical
+export let TEXT_ALIGN_TOP = 0; // 
+export let TEXT_ALIGN_MIDDLE = 1; // 
+export let TEXT_ALIGN_BOTTOM = 2; // 
+
+// GuiTextWrapMode
+export let TEXT_WRAP_NONE = 0; // 
+export let TEXT_WRAP_CHAR = 1; // 
+export let TEXT_WRAP_WORD = 2; // 
+
+// GuiControl
+export let DEFAULT = 0; // 
+export let LABEL = 1; // Used also for: LABELBUTTON
+export let BUTTON = 2; // 
+export let TOGGLE = 3; // Used also for: TOGGLEGROUP
+export let SLIDER = 4; // Used also for: SLIDERBAR, TOGGLESLIDER
+export let PROGRESSBAR = 5; // 
+export let CHECKBOX = 6; // 
+export let COMBOBOX = 7; // 
+export let DROPDOWNBOX = 8; // 
+export let TEXTBOX = 9; // Used also for: TEXTBOXMULTI
+export let VALUEBOX = 10; // 
+export let SPINNER = 11; // Uses: BUTTON, VALUEBOX
+export let LISTVIEW = 12; // 
+export let COLORPICKER = 13; // 
+export let SCROLLBAR = 14; // 
+export let STATUSBAR = 15; // 
+
+// GuiControlProperty
+export let BORDER_COLOR_NORMAL = 0; // Control border color in STATE_NORMAL
+export let BASE_COLOR_NORMAL = 1; // Control base color in STATE_NORMAL
+export let TEXT_COLOR_NORMAL = 2; // Control text color in STATE_NORMAL
+export let BORDER_COLOR_FOCUSED = 3; // Control border color in STATE_FOCUSED
+export let BASE_COLOR_FOCUSED = 4; // Control base color in STATE_FOCUSED
+export let TEXT_COLOR_FOCUSED = 5; // Control text color in STATE_FOCUSED
+export let BORDER_COLOR_PRESSED = 6; // Control border color in STATE_PRESSED
+export let BASE_COLOR_PRESSED = 7; // Control base color in STATE_PRESSED
+export let TEXT_COLOR_PRESSED = 8; // Control text color in STATE_PRESSED
+export let BORDER_COLOR_DISABLED = 9; // Control border color in STATE_DISABLED
+export let BASE_COLOR_DISABLED = 10; // Control base color in STATE_DISABLED
+export let TEXT_COLOR_DISABLED = 11; // Control text color in STATE_DISABLED
+export let BORDER_WIDTH = 12; // Control border size, 0 for no border
+export let TEXT_PADDING = 13; // Control text padding, not considering border
+export let TEXT_ALIGNMENT = 14; // Control text horizontal alignment inside control text bound (after border and padding)
+
+// GuiDefaultProperty
+export let TEXT_SIZE = 16; // Text size (glyphs max height)
+export let TEXT_SPACING = 17; // Text spacing between glyphs
+export let LINE_COLOR = 18; // Line control color
+export let BACKGROUND_COLOR = 19; // Background color
+export let TEXT_LINE_SPACING = 20; // Text spacing between lines
+export let TEXT_ALIGNMENT_VERTICAL = 21; // Text vertical alignment inside text bounds (after border and padding)
+export let TEXT_WRAP_MODE = 22; // Text wrap-mode inside text bounds
+
+// GuiToggleProperty
+export let GROUP_PADDING = 16; // ToggleGroup separation between toggles
+
+// GuiSliderProperty
+export let SLIDER_WIDTH = 16; // Slider size of internal bar
+export let SLIDER_PADDING = 17; // Slider/SliderBar internal bar padding
+
+// GuiProgressBarProperty
+export let PROGRESS_PADDING = 16; // ProgressBar internal padding
+
+// GuiScrollBarProperty
+export let ARROWS_SIZE = 16; // ScrollBar arrows size
+export let ARROWS_VISIBLE = 17; // ScrollBar arrows visible
+export let SCROLL_SLIDER_PADDING = 18; // ScrollBar slider internal padding
+export let SCROLL_SLIDER_SIZE = 19; // ScrollBar slider size
+export let SCROLL_PADDING = 20; // ScrollBar scroll padding from arrows
+export let SCROLL_SPEED = 21; // ScrollBar scrolling speed
+
+// GuiCheckBoxProperty
+export let CHECK_PADDING = 16; // CheckBox internal check padding
+
+// GuiComboBoxProperty
+export let COMBO_BUTTON_WIDTH = 16; // ComboBox right button width
+export let COMBO_BUTTON_SPACING = 17; // ComboBox button separation
+
+// GuiDropdownBoxProperty
+export let ARROW_PADDING = 16; // DropdownBox arrow separation from border and items
+export let DROPDOWN_ITEMS_SPACING = 17; // DropdownBox items separation
+
+// GuiTextBoxProperty
+export let TEXT_READONLY = 16; // TextBox in read-only mode: 0-text editable, 1-text no-editable
+
+// GuiSpinnerProperty
+export let SPIN_BUTTON_WIDTH = 16; // Spinner left/right buttons width
+export let SPIN_BUTTON_SPACING = 17; // Spinner buttons separation
+
+// GuiListViewProperty
+export let LIST_ITEMS_HEIGHT = 16; // ListView items height
+export let LIST_ITEMS_SPACING = 17; // ListView items separation
+export let SCROLLBAR_WIDTH = 18; // ListView scrollbar size (usually width)
+export let SCROLLBAR_SIDE = 19; // ListView scrollbar side (0-SCROLLBAR_LEFT_SIDE, 1-SCROLLBAR_RIGHT_SIDE)
+
+// GuiColorPickerProperty
+export let COLOR_SELECTOR_SIZE = 16; // 
+export let HUEBAR_WIDTH = 17; // ColorPicker right hue bar width
+export let HUEBAR_PADDING = 18; // ColorPicker right hue bar separation from panel
+export let HUEBAR_SELECTOR_HEIGHT = 19; // ColorPicker right hue bar selector height
+export let HUEBAR_SELECTOR_OVERFLOW = 20; // ColorPicker right hue bar selector overflow
 
 // ConfigFlags
 export let FLAG_VSYNC_HINT = 64; // Set to try enabling V-Sync on GPU
@@ -3533,6 +5872,157 @@ export let NPATCH_NINE_PATCH = 0; // Npatch layout: 3x3 tiles
 export let NPATCH_THREE_PATCH_VERTICAL = 1; // Npatch layout: 1x3 tiles
 export let NPATCH_THREE_PATCH_HORIZONTAL = 2; // Npatch layout: 3x1 tiles
 
+// rlGlVersion
+export let RL_OPENGL_11 = 1; // OpenGL 1.1
+export let RL_OPENGL_21 = 2; // OpenGL 2.1 (GLSL 120)
+export let RL_OPENGL_33 = 3; // OpenGL 3.3 (GLSL 330)
+export let RL_OPENGL_43 = 4; // OpenGL 4.3 (using GLSL 330)
+export let RL_OPENGL_ES_20 = 5; // OpenGL ES 2.0 (GLSL 100)
+export let RL_OPENGL_ES_30 = 6; // OpenGL ES 3.0 (GLSL 300 es)
+
+// rlTraceLogLevel
+export let RL_LOG_ALL = 0; // Display all logs
+export let RL_LOG_TRACE = 1; // Trace logging, intended for internal use only
+export let RL_LOG_DEBUG = 2; // Debug logging, used for internal debugging, it should be disabled on release builds
+export let RL_LOG_INFO = 3; // Info logging, used for program execution info
+export let RL_LOG_WARNING = 4; // Warning logging, used on recoverable failures
+export let RL_LOG_ERROR = 5; // Error logging, used on unrecoverable failures
+export let RL_LOG_FATAL = 6; // Fatal logging, used to abort program: exit(EXIT_FAILURE)
+export let RL_LOG_NONE = 7; // Disable logging
+
+// rlPixelFormat
+export let RL_PIXELFORMAT_UNCOMPRESSED_GRAYSCALE = 1; // 8 bit per pixel (no alpha)
+export let RL_PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA = 2; // 8*2 bpp (2 channels)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R5G6B5 = 3; // 16 bpp
+export let RL_PIXELFORMAT_UNCOMPRESSED_R8G8B8 = 4; // 24 bpp
+export let RL_PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 = 5; // 16 bpp (1 bit alpha)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 = 6; // 16 bpp (4 bit alpha)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 = 7; // 32 bpp
+export let RL_PIXELFORMAT_UNCOMPRESSED_R32 = 8; // 32 bpp (1 channel - float)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R32G32B32 = 9; // 32*3 bpp (3 channels - float)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 = 10; // 32*4 bpp (4 channels - float)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R16 = 11; // 16 bpp (1 channel - half float)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R16G16B16 = 12; // 16*3 bpp (3 channels - half float)
+export let RL_PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 = 13; // 16*4 bpp (4 channels - half float)
+export let RL_PIXELFORMAT_COMPRESSED_DXT1_RGB = 14; // 4 bpp (no alpha)
+export let RL_PIXELFORMAT_COMPRESSED_DXT1_RGBA = 15; // 4 bpp (1 bit alpha)
+export let RL_PIXELFORMAT_COMPRESSED_DXT3_RGBA = 16; // 8 bpp
+export let RL_PIXELFORMAT_COMPRESSED_DXT5_RGBA = 17; // 8 bpp
+export let RL_PIXELFORMAT_COMPRESSED_ETC1_RGB = 18; // 4 bpp
+export let RL_PIXELFORMAT_COMPRESSED_ETC2_RGB = 19; // 4 bpp
+export let RL_PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA = 20; // 8 bpp
+export let RL_PIXELFORMAT_COMPRESSED_PVRT_RGB = 21; // 4 bpp
+export let RL_PIXELFORMAT_COMPRESSED_PVRT_RGBA = 22; // 4 bpp
+export let RL_PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA = 23; // 8 bpp
+export let RL_PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA = 24; // 2 bpp
+
+// rlTextureFilter
+export let RL_TEXTURE_FILTER_POINT = 0; // No filter, just pixel approximation
+export let RL_TEXTURE_FILTER_BILINEAR = 1; // Linear filtering
+export let RL_TEXTURE_FILTER_TRILINEAR = 2; // Trilinear filtering (linear with mipmaps)
+export let RL_TEXTURE_FILTER_ANISOTROPIC_4X = 3; // Anisotropic filtering 4x
+export let RL_TEXTURE_FILTER_ANISOTROPIC_8X = 4; // Anisotropic filtering 8x
+export let RL_TEXTURE_FILTER_ANISOTROPIC_16X = 5; // Anisotropic filtering 16x
+
+// rlBlendMode
+export let RL_BLEND_ALPHA = 0; // Blend textures considering alpha (default)
+export let RL_BLEND_ADDITIVE = 1; // Blend textures adding colors
+export let RL_BLEND_MULTIPLIED = 2; // Blend textures multiplying colors
+export let RL_BLEND_ADD_COLORS = 3; // Blend textures adding colors (alternative)
+export let RL_BLEND_SUBTRACT_COLORS = 4; // Blend textures subtracting colors (alternative)
+export let RL_BLEND_ALPHA_PREMULTIPLY = 5; // Blend premultiplied textures considering alpha
+export let RL_BLEND_CUSTOM = 6; // Blend textures using custom src/dst factors (use rlSetBlendFactors())
+export let RL_BLEND_CUSTOM_SEPARATE = 7; // Blend textures using custom src/dst factors (use rlSetBlendFactorsSeparate())
+
+// rlShaderLocationIndex
+export let RL_SHADER_LOC_VERTEX_POSITION = 0; // Shader location: vertex attribute: position
+export let RL_SHADER_LOC_VERTEX_TEXCOORD01 = 1; // Shader location: vertex attribute: texcoord01
+export let RL_SHADER_LOC_VERTEX_TEXCOORD02 = 2; // Shader location: vertex attribute: texcoord02
+export let RL_SHADER_LOC_VERTEX_NORMAL = 3; // Shader location: vertex attribute: normal
+export let RL_SHADER_LOC_VERTEX_TANGENT = 4; // Shader location: vertex attribute: tangent
+export let RL_SHADER_LOC_VERTEX_COLOR = 5; // Shader location: vertex attribute: color
+export let RL_SHADER_LOC_MATRIX_MVP = 6; // Shader location: matrix uniform: model-view-projection
+export let RL_SHADER_LOC_MATRIX_VIEW = 7; // Shader location: matrix uniform: view (camera transform)
+export let RL_SHADER_LOC_MATRIX_PROJECTION = 8; // Shader location: matrix uniform: projection
+export let RL_SHADER_LOC_MATRIX_MODEL = 9; // Shader location: matrix uniform: model (transform)
+export let RL_SHADER_LOC_MATRIX_NORMAL = 10; // Shader location: matrix uniform: normal
+export let RL_SHADER_LOC_VECTOR_VIEW = 11; // Shader location: vector uniform: view
+export let RL_SHADER_LOC_COLOR_DIFFUSE = 12; // Shader location: vector uniform: diffuse color
+export let RL_SHADER_LOC_COLOR_SPECULAR = 13; // Shader location: vector uniform: specular color
+export let RL_SHADER_LOC_COLOR_AMBIENT = 14; // Shader location: vector uniform: ambient color
+export let RL_SHADER_LOC_MAP_ALBEDO = 15; // Shader location: sampler2d texture: albedo (same as: RL_SHADER_LOC_MAP_DIFFUSE)
+export let RL_SHADER_LOC_MAP_METALNESS = 16; // Shader location: sampler2d texture: metalness (same as: RL_SHADER_LOC_MAP_SPECULAR)
+export let RL_SHADER_LOC_MAP_NORMAL = 17; // Shader location: sampler2d texture: normal
+export let RL_SHADER_LOC_MAP_ROUGHNESS = 18; // Shader location: sampler2d texture: roughness
+export let RL_SHADER_LOC_MAP_OCCLUSION = 19; // Shader location: sampler2d texture: occlusion
+export let RL_SHADER_LOC_MAP_EMISSION = 20; // Shader location: sampler2d texture: emission
+export let RL_SHADER_LOC_MAP_HEIGHT = 21; // Shader location: sampler2d texture: height
+export let RL_SHADER_LOC_MAP_CUBEMAP = 22; // Shader location: samplerCube texture: cubemap
+export let RL_SHADER_LOC_MAP_IRRADIANCE = 23; // Shader location: samplerCube texture: irradiance
+export let RL_SHADER_LOC_MAP_PREFILTER = 24; // Shader location: samplerCube texture: prefilter
+export let RL_SHADER_LOC_MAP_BRDF = 25; // Shader location: sampler2d texture: brdf
+
+// rlShaderUniformDataType
+export let RL_SHADER_UNIFORM_FLOAT = 0; // Shader uniform type: float
+export let RL_SHADER_UNIFORM_VEC2 = 1; // Shader uniform type: vec2 (2 float)
+export let RL_SHADER_UNIFORM_VEC3 = 2; // Shader uniform type: vec3 (3 float)
+export let RL_SHADER_UNIFORM_VEC4 = 3; // Shader uniform type: vec4 (4 float)
+export let RL_SHADER_UNIFORM_INT = 4; // Shader uniform type: int
+export let RL_SHADER_UNIFORM_IVEC2 = 5; // Shader uniform type: ivec2 (2 int)
+export let RL_SHADER_UNIFORM_IVEC3 = 6; // Shader uniform type: ivec3 (3 int)
+export let RL_SHADER_UNIFORM_IVEC4 = 7; // Shader uniform type: ivec4 (4 int)
+export let RL_SHADER_UNIFORM_SAMPLER2D = 8; // Shader uniform type: sampler2d
+
+// rlShaderAttributeDataType
+export let RL_SHADER_ATTRIB_FLOAT = 0; // Shader attribute type: float
+export let RL_SHADER_ATTRIB_VEC2 = 1; // Shader attribute type: vec2 (2 float)
+export let RL_SHADER_ATTRIB_VEC3 = 2; // Shader attribute type: vec3 (3 float)
+export let RL_SHADER_ATTRIB_VEC4 = 3; // Shader attribute type: vec4 (4 float)
+
+// rlFramebufferAttachType
+export let RL_ATTACHMENT_COLOR_CHANNEL0 = 0; // Framebuffer attachment type: color 0
+export let RL_ATTACHMENT_COLOR_CHANNEL1 = 1; // Framebuffer attachment type: color 1
+export let RL_ATTACHMENT_COLOR_CHANNEL2 = 2; // Framebuffer attachment type: color 2
+export let RL_ATTACHMENT_COLOR_CHANNEL3 = 3; // Framebuffer attachment type: color 3
+export let RL_ATTACHMENT_COLOR_CHANNEL4 = 4; // Framebuffer attachment type: color 4
+export let RL_ATTACHMENT_COLOR_CHANNEL5 = 5; // Framebuffer attachment type: color 5
+export let RL_ATTACHMENT_COLOR_CHANNEL6 = 6; // Framebuffer attachment type: color 6
+export let RL_ATTACHMENT_COLOR_CHANNEL7 = 7; // Framebuffer attachment type: color 7
+export let RL_ATTACHMENT_DEPTH = 100; // Framebuffer attachment type: depth
+export let RL_ATTACHMENT_STENCIL = 200; // Framebuffer attachment type: stencil
+
+// rlFramebufferAttachTextureType
+export let RL_ATTACHMENT_CUBEMAP_POSITIVE_X = 0; // Framebuffer texture attachment type: cubemap, +X side
+export let RL_ATTACHMENT_CUBEMAP_NEGATIVE_X = 1; // Framebuffer texture attachment type: cubemap, -X side
+export let RL_ATTACHMENT_CUBEMAP_POSITIVE_Y = 2; // Framebuffer texture attachment type: cubemap, +Y side
+export let RL_ATTACHMENT_CUBEMAP_NEGATIVE_Y = 3; // Framebuffer texture attachment type: cubemap, -Y side
+export let RL_ATTACHMENT_CUBEMAP_POSITIVE_Z = 4; // Framebuffer texture attachment type: cubemap, +Z side
+export let RL_ATTACHMENT_CUBEMAP_NEGATIVE_Z = 5; // Framebuffer texture attachment type: cubemap, -Z side
+export let RL_ATTACHMENT_TEXTURE2D = 100; // Framebuffer texture attachment type: texture2d
+export let RL_ATTACHMENT_RENDERBUFFER = 200; // Framebuffer texture attachment type: renderbuffer
+
+// rlCullMode
+export let RL_CULL_FACE_FRONT = 0; // 
+export let RL_CULL_FACE_BACK = 1; // 
+
+export let GuiState = Int;
+export let GuiTextAlignment = Int;
+export let GuiTextAlignmentVertical = Int;
+export let GuiTextWrapMode = Int;
+export let GuiControl = Int;
+export let GuiControlProperty = Int;
+export let GuiDefaultProperty = Int;
+export let GuiToggleProperty = Int;
+export let GuiSliderProperty = Int;
+export let GuiProgressBarProperty = Int;
+export let GuiScrollBarProperty = Int;
+export let GuiCheckBoxProperty = Int;
+export let GuiComboBoxProperty = Int;
+export let GuiDropdownBoxProperty = Int;
+export let GuiTextBoxProperty = Int;
+export let GuiSpinnerProperty = Int;
+export let GuiListViewProperty = Int;
+export let GuiColorPickerProperty = Int;
 export let ConfigFlags = Int;
 export let TraceLogLevel = Int;
 export let KeyboardKey = Int;
@@ -3554,6 +6044,41 @@ export let Gesture = Int;
 export let CameraMode = Int;
 export let CameraProjection = Int;
 export let NPatchLayout = Int;
+export let rlGlVersion = Int;
+export let rlTraceLogLevel = Int;
+export let rlPixelFormat = Int;
+export let rlTextureFilter = Int;
+export let rlBlendMode = Int;
+export let rlShaderLocationIndex = Int;
+export let rlShaderUniformDataType = Int;
+export let rlShaderAttributeDataType = Int;
+export let rlFramebufferAttachType = Int;
+export let rlFramebufferAttachTextureType = Int;
+export let rlCullMode = Int;
+// NOTE: Used when exporting style as code for convenience
+export class GuiStyleProp {
+    // Control identifier
+    public controlId: Int;
+    // Property identifier
+    public propertyId: Int;
+    // Property value
+    public propertyValue: Int;
+}
+// NOTE: Text style is defined by control
+export class GuiTextStyle {
+    // 
+    public size: Int;
+    // 
+    public charSpacing: Int;
+    // 
+    public lineSpacing: Int;
+    // 
+    public alignmentH: Int;
+    // 
+    public alignmentV: Int;
+    // 
+    public padding: Int;
+}
 // Vector2, 2 components
 export class Vector2 {
     // Vector x component
@@ -3929,8 +6454,6 @@ export class VrDeviceInfo {
     public hScreenSize: Float64;
     // Vertical size in meters
     public vScreenSize: Float64;
-    // Screen center in meters
-    public vScreenCenter: Float64;
     // Distance between eye and display in meters
     public eyeToScreenDistance: Float64;
     // Lens separation distance in meters
@@ -3969,6 +6492,75 @@ export class FilePathList {
     public count: Int;
     // Filepaths entries
     public paths: Listed<String>;
+}
+// Automation event
+export class AutomationEvent {
+    // Event frame
+    public frame: Int;
+    // Event type (AutomationEventType)
+    public type: Int;
+    // Event parameters (if required)
+    public params: Listed<Int>;
+}
+// Automation event list
+export class AutomationEventList {
+    // Events max entries (MAX_AUTOMATION_EVENTS)
+    public capacity: Int;
+    // Events entries count
+    public count: Int;
+    // Events entries
+    public events: Listed<AutomationEvent>;
+}
+// NOTE: Helper types to be used instead of array return types for *ToFloat functions
+export class float3 {
+    // 
+    public v: Listed<Float64>;
+}
+// 
+export class float16 {
+    // 
+    public v: Listed<Float64>;
+}
+// Dynamic vertex buffers (position + texcoords + colors + indices arrays)
+export class rlVertexBuffer {
+    // Number of elements in the buffer (QUADS)
+    public elementCount: Int;
+    // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
+    public vertices: Listed<Float64>;
+    // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
+    public texcoords: Listed<Float64>;
+    // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
+    public colors: Listed<Int>;
+    // OpenGL Vertex Array Object id
+    public vaoId: Int;
+    // OpenGL Vertex Buffer Objects id (4 types of vertex data)
+    public vboId: Listed<Int>;
+}
+// of those state-change happens (this is done in core module)
+export class rlDrawCall {
+    // Drawing mode: LINES, TRIANGLES, QUADS
+    public mode: Int;
+    // Number of vertex of the draw
+    public vertexCount: Int;
+    // Number of vertex required for index alignment (LINES, TRIANGLES)
+    public vertexAlignment: Int;
+    // Texture id to be used on the draw -> Use to create new draw call if changes
+    public textureId: Int;
+}
+// rlRenderBatch type
+export class rlRenderBatch {
+    // Number of vertex buffers (multi-buffering support)
+    public bufferCount: Int;
+    // Current buffer tracking in case of multi-buffering
+    public currentBuffer: Int;
+    // Dynamic buffer(s) for vertex data
+    public vertexBuffer: Listed<rlVertexBuffer>;
+    // Draw calls array, depends on textureId
+    public draws: Listed<rlDrawCall>;
+    // Draw calls counter
+    public drawCounter: Int;
+    // Current depth value for next draw
+    public currentDepth: Float64;
 }
 // Quaternion, 4 components (Vector4 alias)
 export let Quaternion = Vector4;

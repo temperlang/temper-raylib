@@ -77,7 +77,7 @@ export let main(args: Listed<String>): Void | Bubble {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(0, 0, "Pong!");
 
-  var screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64()*windowScale, GetScreenHeight().toFloat64()*windowScale);
+  var screen = new Rectangle(0.0, 0.0, 1920.0, 1080.0);
   var border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
   var top = new Rectangle(screen.x, screen.y, border.width, border.y);
   var bottom = new Rectangle(screen.x, border.height + borderSize, screen.width, screen.y);
@@ -91,6 +91,25 @@ export let main(args: Listed<String>): Void | Bubble {
   var rightRacket = new Rectangle(border.width - borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
   var scoreWidth = MeasureText("00", 60);
   var frameTime = 0.0;
+
+  let resizeWindow(): Void {
+    console.log("RESIZE");
+    var oldScreen = screen;
+    screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+    let scaleX(xPos: Float64): Float64 {
+      return xPos / oldScreen.width * screen.width;
+    }
+    let scaleY(yPos: Float64): Float64 {
+      return yPos / oldScreen.height * screen.height;
+    }
+    console.log(scaleX(0.0).toString());
+    border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
+    top = new Rectangle(screen.x, screen.y, border.width, border.y);
+    bottom = new Rectangle(screen.x, border.height + borderSize, screen.width, screen.y);
+    leftRacket = new Rectangle(scaleX(leftRacket.x), scaleY(leftRacket.y), leftRacket.width, leftRacket.height);
+    rightRacket = new Rectangle(scaleX(rightRacket.x), scaleY(rightRacket.y), rightRacket.width, rightRacket.height);
+    ball = new Rectangle(scaleX(ball.x), scaleY(ball.y), ball.width, ball.height);
+  }
 
   let setBallPos(x: Float64, y: Float64): Void {
     ball = new Rectangle(x, y, borderSize, borderSize);
@@ -152,9 +171,17 @@ export let main(args: Listed<String>): Void | Bubble {
     setBallPos(border.x + border.width / 2.0, GetRandomValue(border.y.toInt() + 10, border.height.toInt()).toFloat64());
   }
 
+  var camera = new Camera2D(
+    new Vector2(0.0, 0.0),
+    new Vector2(0.0, 0.0),
+    0.0,
+    1.0,
+  );
   var winnerMessage = "";
   var currentScreen = SCREEN_TITLE;
   while (!WindowShouldClose()) {
+    resizeWindow();
+
     frameTime = GetFrameTime() * 60.0 * gameSpeed;
 
     match (currentScreen) {
@@ -226,6 +253,7 @@ export let main(args: Listed<String>): Void | Bubble {
       };
     }
     BeginDrawing();
+    BeginMode2D(camera);
     match (currentScreen) {
       SCREEN_TITLE -> do {
         ClearBackground(new Color(0, 0, 0, 255));
@@ -253,6 +281,7 @@ export let main(args: Listed<String>): Void | Bubble {
         DrawText("Press ESCAPE to QUIT", 120, 450, 20, GRAY);
       };
     }
+    EndMode2D();
     EndDrawing();
   }
   CloseWindow();
