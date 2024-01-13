@@ -1,0 +1,32 @@
+# IDE files
+.idea/
+
+# Byte-compiled
+__pycache__/
+
+# Mypy
+.mypy_cache/
+
+# setup.py
+build/bdist.*/
+build/lib/
+raypyc.egg-info/
+
+# manual build
+raylib-build/raylib/
+raylib-build/raygui/
+raylib-build/raudio/
+!raylib-build/all/.gitkeep
+raylib-build/all/*.json
+raylib-build/all/*.dll
+raylib-build/all/*.so*
+raylib-build/tmp
+
+# python setup.py stuff
+build
+
+raypyc/*.pyi
+raypyc/*.json
+raypyc/libs/*.so
+raypyc/structures/*.py
+raypyc/structures/*.pyi

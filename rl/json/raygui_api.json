@@ -1,0 +1,1529 @@
+{
+  "defines": [
+    {
+      "name": "RAYGUI_H",
+      "type": "GUARD",
+      "value": "",
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_VERSION_MAJOR",
+      "type": "INT",
+      "value": 4,
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_VERSION_MINOR",
+      "type": "INT",
+      "value": 0,
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_VERSION_PATCH",
+      "type": "INT",
+      "value": 0,
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_VERSION",
+      "type": "STRING",
+      "value": "4.0",
+      "description": ""
+    },
+    {
+      "name": "RAYGUIAPI",
+      "type": "GUARD",
+      "value": "",
+      "description": "Functions defined as 'extern' by default (implicit specifiers)"
+    },
+    {
+      "name": "RAYGUI_MALLOC(sz)",
+      "type": "MACRO",
+      "value": "malloc(sz)",
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_CALLOC(n,sz)",
+      "type": "MACRO",
+      "value": "calloc(n,sz)",
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_FREE(p)",
+      "type": "MACRO",
+      "value": "free(p)",
+      "description": ""
+    },
+    {
+      "name": "RAYGUI_SUPPORT_LOG_INFO",
+      "type": "GUARD",
+      "value": "",
+      "description": ""
+    },
+    {
+      "name": "SCROLLBAR_LEFT_SIDE",
+      "type": "INT",
+      "value": 0,
+      "description": ""
+    },
+    {
+      "name": "SCROLLBAR_RIGHT_SIDE",
+      "type": "INT",
+      "value": 1,
+      "description": ""
+    }
+  ],
+  "structs": [
+    {
+      "name": "GuiStyleProp",
+      "description": "NOTE: Used when exporting style as code for convenience",
+      "fields": [
+        {
+          "type": "unsigned short",
+          "name": "controlId",
+          "description": "Control identifier"
+        },
+        {
+          "type": "unsigned short",
+          "name": "propertyId",
+          "description": "Property identifier"
+        },
+        {
+          "type": "int",
+          "name": "propertyValue",
+          "description": "Property value"
+        }
+      ]
+    },
+    {
+      "name": "GuiTextStyle",
+      "description": "NOTE: Text style is defined by control",
+      "fields": [
+        {
+          "type": "unsigned int",
+          "name": "size",
+          "description": ""
+        },
+        {
+          "type": "int",
+          "name": "charSpacing",
+          "description": ""
+        },
+        {
+          "type": "int",
+          "name": "lineSpacing",
+          "description": ""
+        },
+        {
+          "type": "int",
+          "name": "alignmentH",
+          "description": ""
+        },
+        {
+          "type": "int",
+          "name": "alignmentV",
+          "description": ""
+        },
+        {
+          "type": "int",
+          "name": "padding",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "aliases": [
+  ],
+  "enums": [
+    {
+      "name": "GuiState",
+      "description": "Gui control state",
+      "values": [
+        {
+          "name": "STATE_NORMAL",
+          "value": 0,
+          "description": ""
+        },
+        {
+          "name": "STATE_FOCUSED",
+          "value": 1,
+          "description": ""
+        },
+        {
+          "name": "STATE_PRESSED",
+          "value": 2,
+          "description": ""
+        },
+        {
+          "name": "STATE_DISABLED",
+          "value": 3,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "GuiTextAlignment",
+      "description": "Gui control text alignment",
+      "values": [
+        {
+          "name": "TEXT_ALIGN_LEFT",
+          "value": 0,
+          "description": ""
+        },
+        {
+          "name": "TEXT_ALIGN_CENTER",
+          "value": 1,
+          "description": ""
+        },
+        {
+          "name": "TEXT_ALIGN_RIGHT",
+          "value": 2,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "GuiTextAlignmentVertical",
+      "description": "Gui control text alignment vertical",
+      "values": [
+        {
+          "name": "TEXT_ALIGN_TOP",
+          "value": 0,
+          "description": ""
+        },
+        {
+          "name": "TEXT_ALIGN_MIDDLE",
+          "value": 1,
+          "description": ""
+        },
+        {
+          "name": "TEXT_ALIGN_BOTTOM",
+          "value": 2,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "GuiTextWrapMode",
+      "description": "Gui control text wrap mode",
+      "values": [
+        {
+          "name": "TEXT_WRAP_NONE",
+          "value": 0,
+          "description": ""
+        },
+        {
+          "name": "TEXT_WRAP_CHAR",
+          "value": 1,
+          "description": ""
+        },
+        {
+          "name": "TEXT_WRAP_WORD",
+          "value": 2,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "GuiControl",
+      "description": "Gui controls",
+      "values": [
+        {
+          "name": "DEFAULT",
+          "value": 0,
+          "description": ""
+        },
+        {
+          "name": "LABEL",
+          "value": 1,
+          "description": "Used also for: LABELBUTTON"
+        },
+        {
+          "name": "BUTTON",
+          "value": 2,
+          "description": ""
+        },
+        {
+          "name": "TOGGLE",
+          "value": 3,
+          "description": "Used also for: TOGGLEGROUP"
+        },
+        {
+          "name": "SLIDER",
+          "value": 4,
+          "description": "Used also for: SLIDERBAR, TOGGLESLIDER"
+        },
+        {
+          "name": "PROGRESSBAR",
+          "value": 5,
+          "description": ""
+        },
+        {
+          "name": "CHECKBOX",
+          "value": 6,
+          "description": ""
+        },
+        {
+          "name": "COMBOBOX",
+          "value": 7,
+          "description": ""
+        },
+        {
+          "name": "DROPDOWNBOX",
+          "value": 8,
+          "description": ""
+        },
+        {
+          "name": "TEXTBOX",
+          "value": 9,
+          "description": "Used also for: TEXTBOXMULTI"
+        },
+        {
+          "name": "VALUEBOX",
+          "value": 10,
+          "description": ""
+        },
+        {
+          "name": "SPINNER",
+          "value": 11,
+          "description": "Uses: BUTTON, VALUEBOX"
+        },
+        {
+          "name": "LISTVIEW",
+          "value": 12,
+          "description": ""
+        },
+        {
+          "name": "COLORPICKER",
+          "value": 13,
+          "description": ""
+        },
+        {
+          "name": "SCROLLBAR",
+          "value": 14,
+          "description": ""
+        },
+        {
+          "name": "STATUSBAR",
+          "value": 15,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "GuiControlProperty",
+      "description": "Gui base properties for every control",
+      "values": [
+        {
+          "name": "BORDER_COLOR_NORMAL",
+          "value": 0,
+          "description": "Control border color in STATE_NORMAL"
+        },
+        {
+          "name": "BASE_COLOR_NORMAL",
+          "value": 1,
+          "description": "Control base color in STATE_NORMAL"
+        },
+        {
+          "name": "TEXT_COLOR_NORMAL",
+          "value": 2,
+          "description": "Control text color in STATE_NORMAL"
+        },
+        {
+          "name": "BORDER_COLOR_FOCUSED",
+          "value": 3,
+          "description": "Control border color in STATE_FOCUSED"
+        },
+        {
+          "name": "BASE_COLOR_FOCUSED",
+          "value": 4,
+          "description": "Control base color in STATE_FOCUSED"
+        },
+        {
+          "name": "TEXT_COLOR_FOCUSED",
+          "value": 5,
+          "description": "Control text color in STATE_FOCUSED"
+        },
+        {
+          "name": "BORDER_COLOR_PRESSED",
+          "value": 6,
+          "description": "Control border color in STATE_PRESSED"
+        },
+        {
+          "name": "BASE_COLOR_PRESSED",
+          "value": 7,
+          "description": "Control base color in STATE_PRESSED"
+        },
+        {
+          "name": "TEXT_COLOR_PRESSED",
+          "value": 8,
+          "description": "Control text color in STATE_PRESSED"
+        },
+        {
+          "name": "BORDER_COLOR_DISABLED",
+          "value": 9,
+          "description": "Control border color in STATE_DISABLED"
+        },
+        {
+          "name": "BASE_COLOR_DISABLED",
+          "value": 10,
+          "description": "Control base color in STATE_DISABLED"
+        },
+        {
+          "name": "TEXT_COLOR_DISABLED",
+          "value": 11,
+          "description": "Control text color in STATE_DISABLED"
+        },
+        {
+          "name": "BORDER_WIDTH",
+          "value": 12,
+          "description": "Control border size, 0 for no border"
+        },
+        {
+          "name": "TEXT_PADDING",
+          "value": 13,
+          "description": "Control text padding, not considering border"
+        },
+        {
+          "name": "TEXT_ALIGNMENT",
+          "value": 14,
+          "description": "Control text horizontal alignment inside control text bound (after border and padding)"
+        }
+      ]
+    },
+    {
+      "name": "GuiDefaultProperty",
+      "description": "DEFAULT extended properties",
+      "values": [
+        {
+          "name": "TEXT_SIZE",
+          "value": 16,
+          "description": "Text size (glyphs max height)"
+        },
+        {
+          "name": "TEXT_SPACING",
+          "value": 17,
+          "description": "Text spacing between glyphs"
+        },
+        {
+          "name": "LINE_COLOR",
+          "value": 18,
+          "description": "Line control color"
+        },
+        {
+          "name": "BACKGROUND_COLOR",
+          "value": 19,
+          "description": "Background color"
+        },
+        {
+          "name": "TEXT_LINE_SPACING",
+          "value": 20,
+          "description": "Text spacing between lines"
+        },
+        {
+          "name": "TEXT_ALIGNMENT_VERTICAL",
+          "value": 21,
+          "description": "Text vertical alignment inside text bounds (after border and padding)"
+        },
+        {
+          "name": "TEXT_WRAP_MODE",
+          "value": 22,
+          "description": "Text wrap-mode inside text bounds"
+        }
+      ]
+    },
+    {
+      "name": "GuiToggleProperty",
+      "description": "Toggle/ToggleGroup",
+      "values": [
+        {
+          "name": "GROUP_PADDING",
+          "value": 16,
+          "description": "ToggleGroup separation between toggles"
+        }
+      ]
+    },
+    {
+      "name": "GuiSliderProperty",
+      "description": "Slider/SliderBar",
+      "values": [
+        {
+          "name": "SLIDER_WIDTH",
+          "value": 16,
+          "description": "Slider size of internal bar"
+        },
+        {
+          "name": "SLIDER_PADDING",
+          "value": 17,
+          "description": "Slider/SliderBar internal bar padding"
+        }
+      ]
+    },
+    {
+      "name": "GuiProgressBarProperty",
+      "description": "ProgressBar",
+      "values": [
+        {
+          "name": "PROGRESS_PADDING",
+          "value": 16,
+          "description": "ProgressBar internal padding"
+        }
+      ]
+    },
+    {
+      "name": "GuiScrollBarProperty",
+      "description": "ScrollBar",
+      "values": [
+        {
+          "name": "ARROWS_SIZE",
+          "value": 16,
+          "description": "ScrollBar arrows size"
+        },
+        {
+          "name": "ARROWS_VISIBLE",
+          "value": 17,
+          "description": "ScrollBar arrows visible"
+        },
+        {
+          "name": "SCROLL_SLIDER_PADDING",
+          "value": 18,
+          "description": "ScrollBar slider internal padding"
+        },
+        {
+          "name": "SCROLL_SLIDER_SIZE",
+          "value": 19,
+          "description": "ScrollBar slider size"
+        },
+        {
+          "name": "SCROLL_PADDING",
+          "value": 20,
+          "description": "ScrollBar scroll padding from arrows"
+        },
+        {
+          "name": "SCROLL_SPEED",
+          "value": 21,
+          "description": "ScrollBar scrolling speed"
+        }
+      ]
+    },
+    {
+      "name": "GuiCheckBoxProperty",
+      "description": "CheckBox",
+      "values": [
+        {
+          "name": "CHECK_PADDING",
+          "value": 16,
+          "description": "CheckBox internal check padding"
+        }
+      ]
+    },
+    {
+      "name": "GuiComboBoxProperty",
+      "description": "ComboBox",
+      "values": [
+        {
+          "name": "COMBO_BUTTON_WIDTH",
+          "value": 16,
+          "description": "ComboBox right button width"
+        },
+        {
+          "name": "COMBO_BUTTON_SPACING",
+          "value": 17,
+          "description": "ComboBox button separation"
+        }
+      ]
+    },
+    {
+      "name": "GuiDropdownBoxProperty",
+      "description": "DropdownBox",
+      "values": [
+        {
+          "name": "ARROW_PADDING",
+          "value": 16,
+          "description": "DropdownBox arrow separation from border and items"
+        },
+        {
+          "name": "DROPDOWN_ITEMS_SPACING",
+          "value": 17,
+          "description": "DropdownBox items separation"
+        }
+      ]
+    },
+    {
+      "name": "GuiTextBoxProperty",
+      "description": "TextBox/TextBoxMulti/ValueBox/Spinner",
+      "values": [
+        {
+          "name": "TEXT_READONLY",
+          "value": 16,
+          "description": "TextBox in read-only mode: 0-text editable, 1-text no-editable"
+        }
+      ]
+    },
+    {
+      "name": "GuiSpinnerProperty",
+      "description": "Spinner",
+      "values": [
+        {
+          "name": "SPIN_BUTTON_WIDTH",
+          "value": 16,
+          "description": "Spinner left/right buttons width"
+        },
+        {
+          "name": "SPIN_BUTTON_SPACING",
+          "value": 17,
+          "description": "Spinner buttons separation"
+        }
+      ]
+    },
+    {
+      "name": "GuiListViewProperty",
+      "description": "ListView",
+      "values": [
+        {
+          "name": "LIST_ITEMS_HEIGHT",
+          "value": 16,
+          "description": "ListView items height"
+        },
+        {
+          "name": "LIST_ITEMS_SPACING",
+          "value": 17,
+          "description": "ListView items separation"
+        },
+        {
+          "name": "SCROLLBAR_WIDTH",
+          "value": 18,
+          "description": "ListView scrollbar size (usually width)"
+        },
+        {
+          "name": "SCROLLBAR_SIDE",
+          "value": 19,
+          "description": "ListView scrollbar side (0-SCROLLBAR_LEFT_SIDE, 1-SCROLLBAR_RIGHT_SIDE)"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorPickerProperty",
+      "description": "ColorPicker",
+      "values": [
+        {
+          "name": "COLOR_SELECTOR_SIZE",
+          "value": 16,
+          "description": ""
+        },
+        {
+          "name": "HUEBAR_WIDTH",
+          "value": 17,
+          "description": "ColorPicker right hue bar width"
+        },
+        {
+          "name": "HUEBAR_PADDING",
+          "value": 18,
+          "description": "ColorPicker right hue bar separation from panel"
+        },
+        {
+          "name": "HUEBAR_SELECTOR_HEIGHT",
+          "value": 19,
+          "description": "ColorPicker right hue bar selector height"
+        },
+        {
+          "name": "HUEBAR_SELECTOR_OVERFLOW",
+          "value": 20,
+          "description": "ColorPicker right hue bar selector overflow"
+        }
+      ]
+    }
+  ],
+  "callbacks": [
+  ],
+  "functions": [
+    {
+      "name": "GuiEnable",
+      "description": "Enable gui controls (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiDisable",
+      "description": "Disable gui controls (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiLock",
+      "description": "Lock gui controls (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiUnlock",
+      "description": "Unlock gui controls (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiIsLocked",
+      "description": "Check if gui is locked (global state)",
+      "returnType": "bool"
+    },
+    {
+      "name": "GuiSetAlpha",
+      "description": "Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "float",
+          "name": "alpha"
+        }
+      ]
+    },
+    {
+      "name": "GuiSetState",
+      "description": "Set gui state (global state)",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "int",
+          "name": "state"
+        }
+      ]
+    },
+    {
+      "name": "GuiGetState",
+      "description": "Get gui state (global state)",
+      "returnType": "int"
+    },
+    {
+      "name": "GuiSetFont",
+      "description": "Set gui custom font (global state)",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "Font",
+          "name": "font"
+        }
+      ]
+    },
+    {
+      "name": "GuiGetFont",
+      "description": "Get gui custom font (global state)",
+      "returnType": "Font"
+    },
+    {
+      "name": "GuiSetStyle",
+      "description": "Set one style property",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "int",
+          "name": "control"
+        },
+        {
+          "type": "int",
+          "name": "property"
+        },
+        {
+          "type": "int",
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "name": "GuiGetStyle",
+      "description": "Get one style property",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "int",
+          "name": "control"
+        },
+        {
+          "type": "int",
+          "name": "property"
+        }
+      ]
+    },
+    {
+      "name": "GuiLoadStyle",
+      "description": "Load style file over global style variable (.rgs)",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "const char *",
+          "name": "fileName"
+        }
+      ]
+    },
+    {
+      "name": "GuiLoadStyleDefault",
+      "description": "Load style default over global style",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiEnableTooltip",
+      "description": "Enable gui tooltips (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiDisableTooltip",
+      "description": "Disable gui tooltips (global state)",
+      "returnType": "void"
+    },
+    {
+      "name": "GuiSetTooltip",
+      "description": "Set tooltip string",
+      "returnType": "void",
+      "params": [
+        {
+          "type": "const char *",
+          "name": "tooltip"
+        }
+      ]
+    },
+    {
+      "name": "GuiIconText",
+      "description": "Get text with icon id prepended (if supported)",
+      "returnType": "const char *",
+      "params": [
+        {
+          "type": "int",
+          "name": "iconId"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiWindowBox",
+      "description": "Window Box control, shows a window that can be closed",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "title"
+        }
+      ]
+    },
+    {
+      "name": "GuiGroupBox",
+      "description": "Group Box control with text name",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiLine",
+      "description": "Line separator control, could contain text",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiPanel",
+      "description": "Panel control, useful to group controls",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiTabBar",
+      "description": "Tab Bar control, returns TAB to be closed or -1",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char **",
+          "name": "text"
+        },
+        {
+          "type": "int",
+          "name": "count"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiScrollPanel",
+      "description": "Scroll Panel control",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "Rectangle",
+          "name": "content"
+        },
+        {
+          "type": "Vector2 *",
+          "name": "scroll"
+        },
+        {
+          "type": "Rectangle *",
+          "name": "view"
+        }
+      ]
+    },
+    {
+      "name": "GuiLabel",
+      "description": "Label control, shows text",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiButton",
+      "description": "Button control, returns true when clicked",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiLabelButton",
+      "description": "Label button control, show true when clicked",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiToggle",
+      "description": "Toggle Button control, returns true when active",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "bool *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiToggleGroup",
+      "description": "Toggle Group control, returns active toggle index",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiToggleSlider",
+      "description": "Toggle Slider control, returns true when clicked",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiCheckBox",
+      "description": "Check Box control, returns true when active",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "bool *",
+          "name": "checked"
+        }
+      ]
+    },
+    {
+      "name": "GuiComboBox",
+      "description": "Combo Box control, returns selected item index",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiDropdownBox",
+      "description": "Dropdown Box control, returns selected item",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        },
+        {
+          "type": "bool",
+          "name": "editMode"
+        }
+      ]
+    },
+    {
+      "name": "GuiSpinner",
+      "description": "Spinner control, returns selected value",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "value"
+        },
+        {
+          "type": "int",
+          "name": "minValue"
+        },
+        {
+          "type": "int",
+          "name": "maxValue"
+        },
+        {
+          "type": "bool",
+          "name": "editMode"
+        }
+      ]
+    },
+    {
+      "name": "GuiValueBox",
+      "description": "Value Box control, updates input text with numbers",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "value"
+        },
+        {
+          "type": "int",
+          "name": "minValue"
+        },
+        {
+          "type": "int",
+          "name": "maxValue"
+        },
+        {
+          "type": "bool",
+          "name": "editMode"
+        }
+      ]
+    },
+    {
+      "name": "GuiTextBox",
+      "description": "Text Box control, updates input text",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "char *",
+          "name": "text"
+        },
+        {
+          "type": "int",
+          "name": "textSize"
+        },
+        {
+          "type": "bool",
+          "name": "editMode"
+        }
+      ]
+    },
+    {
+      "name": "GuiSlider",
+      "description": "Slider control, returns selected value",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "textLeft"
+        },
+        {
+          "type": "const char *",
+          "name": "textRight"
+        },
+        {
+          "type": "float *",
+          "name": "value"
+        },
+        {
+          "type": "float",
+          "name": "minValue"
+        },
+        {
+          "type": "float",
+          "name": "maxValue"
+        }
+      ]
+    },
+    {
+      "name": "GuiSliderBar",
+      "description": "Slider Bar control, returns selected value",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "textLeft"
+        },
+        {
+          "type": "const char *",
+          "name": "textRight"
+        },
+        {
+          "type": "float *",
+          "name": "value"
+        },
+        {
+          "type": "float",
+          "name": "minValue"
+        },
+        {
+          "type": "float",
+          "name": "maxValue"
+        }
+      ]
+    },
+    {
+      "name": "GuiProgressBar",
+      "description": "Progress Bar control, shows current progress value",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "textLeft"
+        },
+        {
+          "type": "const char *",
+          "name": "textRight"
+        },
+        {
+          "type": "float *",
+          "name": "value"
+        },
+        {
+          "type": "float",
+          "name": "minValue"
+        },
+        {
+          "type": "float",
+          "name": "maxValue"
+        }
+      ]
+    },
+    {
+      "name": "GuiStatusBar",
+      "description": "Status Bar control, shows info text",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiDummyRec",
+      "description": "Dummy control for placeholders",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        }
+      ]
+    },
+    {
+      "name": "GuiGrid",
+      "description": "Grid control, returns mouse cell position",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "float",
+          "name": "spacing"
+        },
+        {
+          "type": "int",
+          "name": "subdivs"
+        },
+        {
+          "type": "Vector2 *",
+          "name": "mouseCell"
+        }
+      ]
+    },
+    {
+      "name": "GuiListView",
+      "description": "List View control, returns selected list item index",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "int *",
+          "name": "scrollIndex"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        }
+      ]
+    },
+    {
+      "name": "GuiListViewEx",
+      "description": "List View with extended parameters",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char **",
+          "name": "text"
+        },
+        {
+          "type": "int",
+          "name": "count"
+        },
+        {
+          "type": "int *",
+          "name": "scrollIndex"
+        },
+        {
+          "type": "int *",
+          "name": "active"
+        },
+        {
+          "type": "int *",
+          "name": "focus"
+        }
+      ]
+    },
+    {
+      "name": "GuiMessageBox",
+      "description": "Message Box control, displays a message",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "title"
+        },
+        {
+          "type": "const char *",
+          "name": "message"
+        },
+        {
+          "type": "const char *",
+          "name": "buttons"
+        }
+      ]
+    },
+    {
+      "name": "GuiTextInputBox",
+      "description": "Text Input Box control, ask for text, supports secret",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "title"
+        },
+        {
+          "type": "const char *",
+          "name": "message"
+        },
+        {
+          "type": "const char *",
+          "name": "buttons"
+        },
+        {
+          "type": "char *",
+          "name": "text"
+        },
+        {
+          "type": "int",
+          "name": "textMaxSize"
+        },
+        {
+          "type": "bool *",
+          "name": "secretViewActive"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorPicker",
+      "description": "Color Picker control (multiple color controls)",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "Color *",
+          "name": "color"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorPanel",
+      "description": "Color Panel control",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "Color *",
+          "name": "color"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorBarAlpha",
+      "description": "Color Bar Alpha control",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "float *",
+          "name": "alpha"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorBarHue",
+      "description": "Color Bar Hue control",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "float *",
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorPickerHSV",
+      "description": "Color Picker control that avoids conversion to RGB on each call (multiple color controls)",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "Vector3 *",
+          "name": "colorHsv"
+        }
+      ]
+    },
+    {
+      "name": "GuiColorPanelHSV",
+      "description": "Color Panel control that returns HSV color value, used by GuiColorPickerHSV()",
+      "returnType": "int",
+      "params": [
+        {
+          "type": "Rectangle",
+          "name": "bounds"
+        },
+        {
+          "type": "const char *",
+          "name": "text"
+        },
+        {
+          "type": "Vector3 *",
+          "name": "colorHsv"
+        }
+      ]
+    }
+  ]
+}
