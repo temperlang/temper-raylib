@@ -9,12 +9,12 @@ To build temper-raylib, make sure you have both python3 and temper on your path.
 
 First generate the raylib bindings for temper.
 ```sh
-python3 -m rl.raylib
+python3 rl/gen.py
 ```
 
 Then Build the temper files into a library.
 ```
-temper build
+temper build -b js -b py
 ```
 
 # Running
@@ -22,13 +22,19 @@ temper build
 Temper supports multiple backends for temper-raylib, currently `py` and `js` work.
 
 ```sh
-python3 -m pip install raylib-py
-python3 main.py
+python3 -m pip install raylib
+python3 launch-pyray.py pong
+```
+
+```sh
+python3 -m pip install vendor/raypyc
+python3 launch-raypyc.py conway
+
 ```
 
 ```sh
 npm i
-node main.js
+node launch.js conway
 ```
 
 [raylib]: https://www.raylib.com/
