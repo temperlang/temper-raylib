@@ -24,7 +24,7 @@ class Grid {
     old = new DenseBitVector(size.width * size.height);
     cur = new DenseBitVector(size.width * size.height);
     for (var i = 0; i < size.width * size.height; i++) {
-      var val = GetRandomValue(0, 3);
+      var val = GetRandomValue(0, 4);
       cur[i] = val == 0;
     }
   }
@@ -104,9 +104,8 @@ class Game {
 export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
 
-  if (args[0] == "--bench") {
+  if ((args[0] == "--bench") orelse false) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(0);
     args = args.slice(1, args.length);
   } else {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);

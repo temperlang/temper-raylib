@@ -5,4 +5,5 @@
     import("./demos/pong.temper");
     import("./demos/conway.temper");
     import("./demos/empty.temper");
+    import("./demos/hashlife.temper");
     

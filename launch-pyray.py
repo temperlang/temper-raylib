@@ -70,8 +70,6 @@ def main():
 
     tray.use(Raylib)
 
-    rl.set_random_seed(random.randrange(0, 2 ** 32))
-
     importlib.import_module(f'temper_raylib.demos.{argv[1]}').main(argv[2:])
 
 if __name__ == '__main__':
