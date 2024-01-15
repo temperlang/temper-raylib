@@ -4,8 +4,7 @@
   "description": "Raylib in Temper",
   "main": "main.js",
   "scripts": {
-    "build": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/*",
-    "pong": "npm run build && node launch.js pong"
+    "build": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/*"
   },
   "repository": {
     "type": "git",
@@ -16,7 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "@temperlang/core": "file:temper.out/js/temper-core",
-    "@temperlang/std": "file:temper.out/js/std",
     "raylib": "^0.14.0",
     "temper-raylib": "file:temper.out/js/temper-raylib"
   }

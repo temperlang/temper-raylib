@@ -1,0 +1,127 @@
+
+let {...} = import("../rl/raylib.temper");
+
+class GridSize {
+  public width: Int;
+  public height: Int;
+
+  public get widthToHeight(): Float64 {
+    return width.toFloat64() / height.toFloat64();
+  }
+  
+  public get heightToWidth(): Float64 {
+    return height.toFloat64() / width.toFloat64();
+  }
+}
+
+class Grid {
+  public size: GridSize;
+  public old: DenseBitVector;
+  public cur: DenseBitVector;
+
+  public constructor(sizeParam: GridSize): Void {
+    size = sizeParam;
+    old = new DenseBitVector(size.width * size.height);
+    cur = new DenseBitVector(size.width * size.height);
+    for (var i = 0; i < size.width * size.height; i++) {
+      var val = GetRandomValue(0, 3);
+      cur[i] = val == 0;
+    }
+  }
+
+  public draw(bounds: Rectangle): Void {
+    var xStep = bounds.width / size.width.toFloat64();
+    var yStep = bounds.height / size.height.toFloat64();
+    var bit = 0;
+    var yPos = bounds.y;
+    for (var y = 0; y < size.height; y++) {
+      var xPos = bounds.x;
+      for (var x = 0; x < size.width; x++) {
+        var rect = new Rectangle(xPos, yPos, xStep, yStep);
+        if (cur[x + y * size.width]) {
+          DrawRectangleRec(rect, WHITE);
+        } else {
+          DrawRectangleRec(rect, BLACK);
+        }
+        xPos += xStep;
+      }
+      yPos += yStep;
+    }
+  }
+
+  public update(): Void {
+    var next = old;
+    for (var y = 0; y < size.height; y++) {
+      for (var x = 0; x < size.width; x++) {
+        var on = 0;
+        for (var yo = -1; yo <= 1; yo++) {
+          for (var xo = -1; xo <= 1; xo++) {
+            if ((xo != 0 || yo != 0) && cur[(x+xo+size.width) % size.width + (y+yo+size.height) % size.height * size.width]) {
+              on += 1;
+            }
+          }
+        }
+        if (on == 2) {
+          next[x + y * size.width] = cur[x + y * size.width];
+        } else if (on == 3) {
+          next[x + y * size.width] = true;
+        } else {
+          next[x + y * size.width] = false;
+        }
+      }
+    }
+    old = cur;
+    cur = next;
+    // cur[GetRandomValue(0, size.width * size.height)] = true;
+  }
+}
+
+class Game {
+  public grid: Grid;
+
+  public get size(): GridSize {
+    return grid.size;
+  }
+
+  public constructor(args: Listed<String>): Void {
+    var size2d = args[0].toInt() orelse 100;
+    grid = new Grid(new GridSize(size2d, size2d));
+  }
+
+  public draw(bounds: Rectangle): Void {
+    if (bounds.width * size.widthToHeight > bounds.height) {
+      grid.draw(new Rectangle((bounds.width - bounds.height) * 0.5, 0.0, bounds.height, bounds.height))
+    } else {
+      grid.draw(new Rectangle(0.0, (bounds.height - bounds.width) * 0.5, bounds.width, bounds.width))
+    }
+  }
+
+  public update(): Void {
+    grid.update();
+  }
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  SetTraceLogLevel(LOG_WARNING);
+
+  if (args[0] == "--bench") {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetTargetFPS(0);
+    args = args.slice(1, args.length);
+  } else {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+  }
+
+  InitWindow(0, 0, "Conway's Game of LIFE");
+  var game = new Game(args);
+
+  while (!WindowShouldClose()) {
+    BeginDrawing();
+    ClearBackground(BLACK);
+    game.draw(new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64()));
+    DrawFPS(20, 20);
+    EndDrawing();
+    game.update();
+  }
+  CloseWindow();
+}

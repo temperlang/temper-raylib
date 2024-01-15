@@ -11,7 +11,7 @@ const game = argv[2];
 use(raylib);
 
 (async () => {
-    const { main } = await import(`temper-raylib/games/${game}.js`);
+    const { main } = await import(`temper-raylib/demos/${game}.js`);
     try {
         main(argv.slice(3));
     } catch (e) {

@@ -320,14 +320,6 @@ export interface Raylib {
     public MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector;
     // Internal memory free
     public MemFree(ptr: DenseBitVector): Void;
-    // Set custom file binary data loader
-    public SetLoadFileDataCallback(callback: LoadFileDataCallback): Void;
-    // Set custom file binary data saver
-    public SetSaveFileDataCallback(callback: SaveFileDataCallback): Void;
-    // Set custom file text data loader
-    public SetLoadFileTextCallback(callback: LoadFileTextCallback): Void;
-    // Set custom file text data saver
-    public SetSaveFileTextCallback(callback: SaveFileTextCallback): Void;
     // Load file data as byte array (read)
     public LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int>;
     // Unload file data allocated by LoadFileData()
@@ -1098,42 +1090,12 @@ export interface Raylib {
     public LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Wave;
     // Checks if wave data is ready
     public IsWaveReady(wave: Wave): Boolean;
-    // Load sound from file
-    public LoadSound(fileName: String): Sound;
-    // Load sound from wave data
-    public LoadSoundFromWave(wave: Wave): Sound;
-    // Create a new sound that shares the same sample data as the source sound, does not own the sound data
-    public LoadSoundAlias(source: Sound): Sound;
-    // Checks if a sound is ready
-    public IsSoundReady(sound: Sound): Boolean;
-    // Update sound buffer with new data
-    public UpdateSound(sound: Sound, data: DenseBitVector, sampleCount: Int): Void;
     // Unload wave data
     public UnloadWave(wave: Wave): Void;
-    // Unload sound
-    public UnloadSound(sound: Sound): Void;
-    // Unload a sound alias (does not deallocate sample data)
-    public UnloadSoundAlias(alias: Sound): Void;
     // Export wave data to file, returns true on success
     public ExportWave(wave: Wave, fileName: String): Boolean;
     // Export wave sample data to code (.h), returns true on success
     public ExportWaveAsCode(wave: Wave, fileName: String): Boolean;
-    // Play a sound
-    public PlaySound(sound: Sound): Void;
-    // Stop playing a sound
-    public StopSound(sound: Sound): Void;
-    // Pause a sound
-    public PauseSound(sound: Sound): Void;
-    // Resume a paused sound
-    public ResumeSound(sound: Sound): Void;
-    // Check if a sound is currently playing
-    public IsSoundPlaying(sound: Sound): Boolean;
-    // Set volume for a sound (1.0 is max level)
-    public SetSoundVolume(sound: Sound, volume: Float64): Void;
-    // Set pitch for a sound (1.0 is base level)
-    public SetSoundPitch(sound: Sound, pitch: Float64): Void;
-    // Set pan for a sound (0.5 is center)
-    public SetSoundPan(sound: Sound, pan: Float64): Void;
     // Copy a wave to a new wave
     public WaveCopy(wave: Wave): Wave;
     // Crop a wave to defined samples range
@@ -1204,16 +1166,6 @@ export interface Raylib {
     public SetAudioStreamPan(stream: AudioStream, pan: Float64): Void;
     // Default size for new audio streams
     public SetAudioStreamBufferSizeDefault(size: Int): Void;
-    // Audio thread callback to request new data
-    public SetAudioStreamCallback(stream: AudioStream, callback: AudioCallback): Void;
-    // Attach audio stream processor to stream, receives the samples as <float>s
-    public AttachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void;
-    // Detach audio stream processor from stream
-    public DetachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void;
-    // Attach audio stream processor to the entire audio pipeline, receives the samples as <float>s
-    public AttachAudioMixedProcessor(processor: AudioCallback): Void;
-    // Detach audio stream processor from the entire audio pipeline
-    public DetachAudioMixedProcessor(processor: AudioCallback): Void;
     // 
     public Clamp(value: Float64, min: Float64, max: Float64): Float64;
     // 
@@ -2383,22 +2335,6 @@ export let MemRealloc(ptr: DenseBitVector, size: Int): DenseBitVector {
 // Internal memory free
 export let MemFree(ptr: DenseBitVector): Void {
     rl.MemFree(ptr);
-}
-// Set custom file binary data loader
-export let SetLoadFileDataCallback(callback: LoadFileDataCallback): Void {
-    rl.SetLoadFileDataCallback(callback);
-}
-// Set custom file binary data saver
-export let SetSaveFileDataCallback(callback: SaveFileDataCallback): Void {
-    rl.SetSaveFileDataCallback(callback);
-}
-// Set custom file text data loader
-export let SetLoadFileTextCallback(callback: LoadFileTextCallback): Void {
-    rl.SetLoadFileTextCallback(callback);
-}
-// Set custom file text data saver
-export let SetSaveFileTextCallback(callback: SaveFileTextCallback): Void {
-    rl.SetSaveFileTextCallback(callback);
 }
 // Load file data as byte array (read)
 export let LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int> {
@@ -3940,37 +3876,9 @@ export let LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize:
 export let IsWaveReady(wave: Wave): Boolean {
     return rl.IsWaveReady(wave);
 }
-// Load sound from file
-export let LoadSound(fileName: String): Sound {
-    return rl.LoadSound(fileName);
-}
-// Load sound from wave data
-export let LoadSoundFromWave(wave: Wave): Sound {
-    return rl.LoadSoundFromWave(wave);
-}
-// Create a new sound that shares the same sample data as the source sound, does not own the sound data
-export let LoadSoundAlias(source: Sound): Sound {
-    return rl.LoadSoundAlias(source);
-}
-// Checks if a sound is ready
-export let IsSoundReady(sound: Sound): Boolean {
-    return rl.IsSoundReady(sound);
-}
-// Update sound buffer with new data
-export let UpdateSound(sound: Sound, data: DenseBitVector, sampleCount: Int): Void {
-    rl.UpdateSound(sound, data, sampleCount);
-}
 // Unload wave data
 export let UnloadWave(wave: Wave): Void {
     rl.UnloadWave(wave);
-}
-// Unload sound
-export let UnloadSound(sound: Sound): Void {
-    rl.UnloadSound(sound);
-}
-// Unload a sound alias (does not deallocate sample data)
-export let UnloadSoundAlias(alias: Sound): Void {
-    rl.UnloadSoundAlias(alias);
 }
 // Export wave data to file, returns true on success
 export let ExportWave(wave: Wave, fileName: String): Boolean {
@@ -3979,38 +3887,6 @@ export let ExportWave(wave: Wave, fileName: String): Boolean {
 // Export wave sample data to code (.h), returns true on success
 export let ExportWaveAsCode(wave: Wave, fileName: String): Boolean {
     return rl.ExportWaveAsCode(wave, fileName);
-}
-// Play a sound
-export let PlaySound(sound: Sound): Void {
-    rl.PlaySound(sound);
-}
-// Stop playing a sound
-export let StopSound(sound: Sound): Void {
-    rl.StopSound(sound);
-}
-// Pause a sound
-export let PauseSound(sound: Sound): Void {
-    rl.PauseSound(sound);
-}
-// Resume a paused sound
-export let ResumeSound(sound: Sound): Void {
-    rl.ResumeSound(sound);
-}
-// Check if a sound is currently playing
-export let IsSoundPlaying(sound: Sound): Boolean {
-    return rl.IsSoundPlaying(sound);
-}
-// Set volume for a sound (1.0 is max level)
-export let SetSoundVolume(sound: Sound, volume: Float64): Void {
-    rl.SetSoundVolume(sound, volume);
-}
-// Set pitch for a sound (1.0 is base level)
-export let SetSoundPitch(sound: Sound, pitch: Float64): Void {
-    rl.SetSoundPitch(sound, pitch);
-}
-// Set pan for a sound (0.5 is center)
-export let SetSoundPan(sound: Sound, pan: Float64): Void {
-    rl.SetSoundPan(sound, pan);
 }
 // Copy a wave to a new wave
 export let WaveCopy(wave: Wave): Wave {
@@ -4151,26 +4027,6 @@ export let SetAudioStreamPan(stream: AudioStream, pan: Float64): Void {
 // Default size for new audio streams
 export let SetAudioStreamBufferSizeDefault(size: Int): Void {
     rl.SetAudioStreamBufferSizeDefault(size);
-}
-// Audio thread callback to request new data
-export let SetAudioStreamCallback(stream: AudioStream, callback: AudioCallback): Void {
-    rl.SetAudioStreamCallback(stream, callback);
-}
-// Attach audio stream processor to stream, receives the samples as <float>s
-export let AttachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void {
-    rl.AttachAudioStreamProcessor(stream, processor);
-}
-// Detach audio stream processor from stream
-export let DetachAudioStreamProcessor(stream: AudioStream, processor: AudioCallback): Void {
-    rl.DetachAudioStreamProcessor(stream, processor);
-}
-// Attach audio stream processor to the entire audio pipeline, receives the samples as <float>s
-export let AttachAudioMixedProcessor(processor: AudioCallback): Void {
-    rl.AttachAudioMixedProcessor(processor);
-}
-// Detach audio stream processor from the entire audio pipeline
-export let DetachAudioMixedProcessor(processor: AudioCallback): Void {
-    rl.DetachAudioMixedProcessor(processor);
 }
 // 
 export let Clamp(value: Float64, min: Float64, max: Float64): Float64 {
@@ -6563,15 +6419,15 @@ export class rlRenderBatch {
     public currentDepth: Float64;
 }
 // Quaternion, 4 components (Vector4 alias)
-export let Quaternion = Vector4;
+export const Quaternion = Vector4;
 // Texture2D, same as Texture
-export let Texture2D = Texture;
+export const Texture2D = Texture;
 // TextureCubemap, same as Texture
-export let TextureCubemap = Texture;
+export const TextureCubemap = Texture;
 // RenderTexture2D, same as RenderTexture
-export let RenderTexture2D = RenderTexture;
+export const RenderTexture2D = RenderTexture;
 // Camera type fallback, defaults to Camera3D
-export let Camera = Camera3D;
+export const Camera = Camera3D;
 // FileIO: Load binary data
 export let LoadFileDataCallback = fn(String, Listed<Int>): Listed<Int>;
 // FileIO: Save binary data

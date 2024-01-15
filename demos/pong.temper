@@ -84,7 +84,6 @@ export let main(args: Listed<String>): Void | Bubble {
 
   // SetWindowPosition((screen.width * (1.0 - windowScale)).toInt(), (screen.height * (1.0 - windowScale)).toInt());
   SetWindowSize(screen.width.toInt(), screen.height.toInt());
-  SetTargetFPS(60);
 
   var ball = new Rectangle(borderSize * 5.0, border.height, borderSize, borderSize);
   var leftRacket = new Rectangle(border.x + borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
@@ -119,7 +118,7 @@ export let main(args: Listed<String>): Void | Bubble {
   var yy = borderSize / 2.0;
   let moveBall(dir1: Float64, dir2: Float64): Void {
     if (CheckCollisionRecs(ball, leftRacket)) {
-      if (xx < 0) {
+      if (xx < 0.0) {
         xx = -xx;
       }
       if (dir1 < 0.0) {
@@ -129,7 +128,7 @@ export let main(args: Listed<String>): Void | Bubble {
         yy += borderSize * leftStrength;
       }
     } else if (CheckCollisionRecs(ball, rightRacket)) {
-      if (xx > 0) {
+      if (xx > 0.0) {
         xx = -xx;
       }
       if (dir2 < 0.0) {
@@ -138,12 +137,12 @@ export let main(args: Listed<String>): Void | Bubble {
       if (dir2 > 0.0) {
         yy += borderSize * leftStrength;
       }
-    } else if (CheckCollisionRecs(ball, top) || ball.y < 0) {
-      if (yy < 0) {
+    } else if (CheckCollisionRecs(ball, top) || ball.y < 0.0) {
+      if (yy < 0.0) {
         yy = -yy
       }
     } else if (CheckCollisionRecs(ball, bottom) || ball.y > screen.height) {
-      if (yy > 0) {
+      if (yy > 0.0) {
         yy = -yy;
       }
     } else if (ball.x < screen.x) {
@@ -157,7 +156,7 @@ export let main(args: Listed<String>): Void | Bubble {
   }
 
   let moveRacket(racket: Rectangle, dir: Float64): Rectangle {
-    if ((CheckCollisionRecs(top, racket) && dir < 0) || (CheckCollisionRecs(bottom, racket) && dir > 0)) {
+    if ((CheckCollisionRecs(top, racket) && dir < 0.0) || (CheckCollisionRecs(bottom, racket) && dir > 0.0)) {
       return racket;
     } else {
       var step = borderSize * dir * frameTime * racketSpeed;

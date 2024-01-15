@@ -1,27 +1,40 @@
 #!/usr/bin/env python3
 
-from sys import argv as args
+from logging import basicConfig, INFO
+
+from sys import stdout
+
+basicConfig(stream=stdout, level=INFO, format='%(message)s')
+
+from sys import argv
 
 import pyray as rl
 
 import importlib
 
-import sys
-
 import glob
+
+import random
 
 from functools import lru_cache
 
-for i in glob.glob('temper.out/py/*'):
-    sys.path.append(i)
+from sys import path
+
+if argv[1] == '--mypyc':
+    argv = argv[1:]
+    for i in glob.glob('temper.out/mypyc/*'):
+        path.append(i)
+else:
+    for i in glob.glob('temper.out/py/*'):
+        path.append(i)
 
 import temper_raylib.rl.raylib as tray
 
-def mangle(name: str) -> str:
+def mangle(name):
     return name.replace('_3d', '3_d').replace('_2d', '2_d')
 
 @lru_cache
-def type_to_property_names(type_obj: type) -> tuple[str, ...]:
+def type_to_property_names(type_obj):
     ret = []
     for field_name in vars(type_obj):
         field = getattr(type_obj, field_name)
@@ -30,7 +43,7 @@ def type_to_property_names(type_obj: type) -> tuple[str, ...]:
     return tuple(ret)
 
 @lru_cache(typed = True)
-def object_to_dict(obj: object) -> dict | int | float | str | list  | tuple:
+def object_to_dict(obj):
     if isinstance(obj, (dict, int, float, str)) or obj is None:
         return obj
     elif isinstance(obj, (list, tuple)):
@@ -57,7 +70,9 @@ def main():
 
     tray.use(Raylib)
 
-    importlib.import_module(f'temper_raylib.games.{args[1]}').main(args[2:])
+    rl.set_random_seed(random.randrange(0, 2 ** 32))
+
+    importlib.import_module(f'temper_raylib.demos.{argv[1]}').main(argv[2:])
 
 if __name__ == '__main__':
     main()

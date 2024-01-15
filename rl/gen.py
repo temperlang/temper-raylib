@@ -46,6 +46,20 @@ def conv(t: str) -> str:
         ret = f'Listed<{ret}>'
     return ret
 
+bad_types = ['Sound', 'AudioCallback', 'SaveFileTextCallback', 'LoadFileTextCallback', 'TraceLogCallback', 'LoadFileDataCallback', 'SaveFileDataCallback']
+def is_bad_func(func):
+    if 'params' in func:
+        for spec in func['params']:
+            if spec['type'] in bad_types:
+                print(func)
+                return True
+    if func['returnType'] in bad_types:
+        return True
+    return False
+
+def filter_out_bad_funcs(funcs):
+    return [func for func in funcs if not is_bad_func(func)]
+
 def main() -> None:
     raylib_json = {}
     for name in ('config', 'raygui', 'raylib', 'raymath', 'rlgl'):
@@ -56,6 +70,8 @@ def main() -> None:
                     raylib_json[entry].extend(name_json[entry])
                 else:
                     raylib_json[entry] = name_json[entry]
+
+    raylib_json['functions'] = filter_out_bad_funcs(raylib_json['functions'])
 
     with open(f'rl/raylib.temper', 'w') as out_file:
         already_exported = set()
@@ -187,7 +203,7 @@ def main() -> None:
             alias_type = alias['type']
             alias_desc = alias['description']
             out_file.write(f'// {alias_desc}\n')
-            out_file.write(f'export let {alias_name} = {alias_type};\n')
+            out_file.write(f'export const {alias_name} = {alias_type};\n')
     
         for cb in raylib_json['callbacks']:
             cb_name = cb['name']
