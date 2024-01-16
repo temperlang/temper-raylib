@@ -1,6 +1,14 @@
 
 let {...} = import("../rl/raylib.temper");
 
+let pow2(x: Int): Int {
+  var ret = 1;
+  for (var i = 0; i < x; i++) {
+    ret *= 2;
+  }
+  return ret;
+}
+
 class GridSize {
   public width: Int;
   public height: Int;
@@ -24,7 +32,7 @@ class Grid {
     old = new DenseBitVector(size.width * size.height);
     cur = new DenseBitVector(size.width * size.height);
     for (var i = 0; i < size.width * size.height; i++) {
-      var val = GetRandomValue(0, 4);
+      var val = GetRandomValue(0, 5);
       cur[i] = val == 0;
     }
   }
@@ -72,7 +80,6 @@ class Grid {
     }
     old = cur;
     cur = next;
-    // cur[GetRandomValue(0, size.width * size.height)] = true;
   }
 }
 
@@ -84,8 +91,10 @@ class Game {
   }
 
   public constructor(args: Listed<String>): Void {
-    var size2d = args[0].toInt() orelse 100;
-    grid = new Grid(new GridSize(size2d, size2d));
+    var sizeLog2 = args[0].toInt() orelse 8;
+    var size = pow2(sizeLog2);
+    console.log("${(size * size).toString()} cells");
+    grid = new Grid(new GridSize(size, size));
   }
 
   public draw(bounds: Rectangle): Void {
@@ -104,7 +113,9 @@ class Game {
 export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
 
-  if ((args[0] == "--bench") orelse false) {
+  var bench = (args[0] == "--bench") orelse false;
+
+  if (bench) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     args = args.slice(1, args.length);
   } else {
@@ -121,6 +132,9 @@ export let main(args: Listed<String>): Void | Bubble {
     DrawFPS(20, 20);
     EndDrawing();
     game.update();
+    if (bench) {
+      console.log("FrameTime: ${(GetFrameTime() * 1000.0).toInt().toString()}ms")
+    }
   }
   CloseWindow();
 }

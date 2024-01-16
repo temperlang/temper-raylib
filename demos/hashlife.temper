@@ -1,20 +1,41 @@
 
 let {...} = import("../rl/raylib.temper");
 
-var hashtableSize = 65536;
-var hashtable = new ListBuilder<ListBuilder<Node>>();
+var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
-for (var i = 0; i < hashtableSize; i++) {
-  hashtable.add(new ListBuilder<Node>());
+let pow2(x: Int): Int {
+  var ret = 1;
+  for (var i = 0; i < x; i++) {
+    ret *= 2;
+  }
+  return ret;
 }
 
-class Node {
+interface Node {
   public level: Int;
   public pop: Int;
-  public children: List<Node>;
+  public a: Node;
+  public b: Node;
+  public c: Node;
+  public d: Node;
   public hash: Int;
   public next: Node | Null = null;
 
+  public setNext(n: Node | Null): Void;
+  public eq(other: Node): Boolean;
+  public draw(bounds: Rectangle): Void;
+}
+
+class RealNode extends Node {
+  public level: Int;
+  public pop: Int;
+  public a: Node;
+  public b: Node;
+  public c: Node;
+  public d: Node;
+  public hash: Int;
+  public next: Node | Null = null;
+  
   public setNext(n: Node | Null): Void {
     next = n;
   }
@@ -29,12 +50,12 @@ class Node {
     if (other.pop != pop) {
       return false;
     }
-    for (var i = 0; i < 4; i++) {
-      if (children[i] != other.children[i]) {
-        return false;
-      }
-    }
-    return true;
+    // for (var i = 0; i < 4; i++) {
+    //   if (children[i] != other.children[i]) {
+    //     return false;
+    //   }
+    // }
+    return a == other.a && b == other.b && c == other.c && d == other.d;
   }
 
   public draw(bounds: Rectangle): Void {
@@ -45,35 +66,67 @@ class Node {
     } else {
       var halfWidth = bounds.width * 0.5;
       var halfHeight = bounds.height * 0.5;
-      for (var x = 0; x < 2; x++) {
-        for (var y = 0; y < 2; y++) {
-          children[x * 2 + y].draw(new Rectangle(bounds.x + halfWidth * x.toFloat64(), bounds.y + halfHeight * y.toFloat64(), halfWidth, halfHeight));
-        }
-      }
+      a.draw(new Rectangle(bounds.x, bounds.y, halfWidth, halfHeight));
+      b.draw(new Rectangle(bounds.x + halfWidth, bounds.y, halfWidth, halfHeight));
+      c.draw(new Rectangle(bounds.x, bounds.y + halfHeight, halfWidth, halfHeight));
+      d.draw(new Rectangle(bounds.x + halfWidth, bounds.y + halfHeight, halfWidth, halfHeight));
     }
   }
 }
 
-var off = new Node(0, 0, [], 0);
-var on = new Node(0, 1, [], 1);
+class FakeNode extends Node {
+  public level: Int;
+  public pop: Int;
+  public a: Node;
+  public b: Node;
+  public c: Node;
+  public d: Node;
+  public hash: Int;
+  public next: Node | Null;
+
+  constructor(): Void {
+    level = -1;
+    pop = 0;
+    a = this;
+    b = this;
+    c = this;
+    d = this;
+    hash = 0;
+    next = null;
+  }
+
+  public setNext(n: Node | Null): Void {}
+  public eq(other: Node): Boolean {
+    return this == other;
+  }
+  public draw(bounds: Rectangle): Void {}
+}
+
+var fake = new FakeNode();
+var off = new RealNode(0, 0, fake, fake, fake, fake, 0);
+var on = new RealNode(0, 1, fake, fake, fake, fake, 1);
+
+let enter(node: Node): Node {
+  var sub = hashtable[node.hash] orelse new ListBuilder<Node>();
+  for (var i = sub.length - 1; i >= 0; i--) {
+    if (node.eq(sub[i])) {
+      return sub[i];
+    }
+  }
+  sub.add(node);
+  hashtable[node.hash] = sub;
+  return node;
+}
 
 let join(a: Node, b: Node, c: Node, d: Node): Node {
   var next = (
     a.level
-    + 1299811 * a.hash
-    + 1299817 * b.hash
-    + 1299821 * c.hash
-    + 1299827 * d.hash
+    + 31 * a.hash
+    + 53 * b.hash
+    + 79 * c.hash
+    + 101 * d.hash
   );
-  var tmp = new Node(a.level + 1, a.pop + b.pop + c.pop + d.pop, [a, b, c, d], next & 2147483647);
-  var sub = hashtable[tmp.hash & (hashtableSize - 1)];
-  for (var i = sub.length - 1; i >= 0; i--) {
-    if (tmp.eq(sub[i])) {
-      return sub[i];
-    }
-  }
-  sub.add(tmp);
-  return tmp;
+  return enter(new RealNode(a.level + 1, a.pop + b.pop + c.pop + d.pop, a, b, c, d, next % 2147483648));
 }
 
 let zero(level: Int): Node {
@@ -87,7 +140,7 @@ let zero(level: Int): Node {
 
 let random(level: Int): Node {
   if (level == 0) {
-    if (GetRandomValue(0, 4) == 0) {
+    if (GetRandomValue(0, 5) == 0) {
       return on
     } else {
       return off;
@@ -100,8 +153,8 @@ let random(level: Int): Node {
 let center(node: Node): Node {
   var z = zero(node.level - 1);
   return join(
-    join(z, z, z, node.children[0]), join(z, z, node.children[1], z),
-    join(z, node.children[2], z, z), join(node.children[3], z, z, z),
+    join(z, z, z, node.a), join(z, z, node.b, z),
+    join(z, node.c, z, z), join(node.d, z, z, z),
   );
 }
 
@@ -114,28 +167,29 @@ let lifeRule(a: Node, b: Node, c: Node, d: Node, e: Node, f: Node, g: Node, h: N
   }
 }
 
+
 let life2(m: Node): Node {
-    var ab = lifeRule(
-      m.children[0].children[0], m.children[0].children[1], m.children[1].children[0],
-      m.children[0].children[2], m.children[0].children[3], m.children[1].children[2],
-      m.children[2].children[0], m.children[2].children[1], m.children[3].children[0]
-    );
-    var bc = lifeRule(
-      m.children[0].children[1], m.children[1].children[0], m.children[1].children[1],
-      m.children[0].children[3], m.children[1].children[2], m.children[1].children[3],
-      m.children[2].children[1], m.children[3].children[0], m.children[3].children[1]
-    );
-    var cb = lifeRule(
-      m.children[0].children[2], m.children[0].children[3], m.children[1].children[2],
-      m.children[2].children[0], m.children[2].children[1], m.children[3].children[0],
-      m.children[2].children[2], m.children[2].children[3], m.children[3].children[2]
-    );
-    var da = lifeRule(
-      m.children[0].children[3], m.children[1].children[2], m.children[1].children[3],
-      m.children[2].children[1], m.children[3].children[0], m.children[3].children[1],
-      m.children[2].children[3], m.children[3].children[2], m.children[3].children[3]
-    );
-    return join(ab, bc, cb, da);
+  var ad = lifeRule(
+    m.a.a, m.a.b, m.b.a,
+    m.a.c, m.a.d, m.b.c,
+    m.c.a, m.c.b, m.d.a
+  );
+  var bc = lifeRule(
+    m.a.b, m.b.a, m.b.b,
+    m.a.d, m.b.c, m.b.d,
+    m.c.b, m.d.a, m.d.b
+  );
+  var cb = lifeRule(
+    m.a.c, m.a.d, m.b.c,
+    m.c.a, m.c.b, m.d.a,
+    m.c.c, m.c.d, m.d.c
+  );
+  var da = lifeRule(
+    m.a.d, m.b.c, m.b.d,
+    m.c.b, m.d.a, m.d.b,
+    m.c.d, m.d.c, m.d.d
+  );
+  return join(ad, bc, cb, da);
 }
 
 let nextGen(m: Node): Node {
@@ -150,51 +204,96 @@ let nextGen(m: Node): Node {
 
 let nextGenImpl(m: Node): Node {
   if (m.pop == 0) {
-    return m.children[0];
+    return m.a;
   } else if (m.level == 2) {
     return life2(m);
   } else {
-    var c1 = nextGen(join(m.children[0].children[0], m.children[0].children[1], m.children[0].children[2], m.children[0].children[3]));
-    var c2 = nextGen(join(m.children[0].children[1], m.children[1].children[0], m.children[0].children[3], m.children[1].children[2]));
-    var c3 = nextGen(join(m.children[1].children[0], m.children[1].children[1], m.children[1].children[2], m.children[1].children[3]));
-    var c4 = nextGen(join(m.children[0].children[2], m.children[0].children[3], m.children[2].children[0], m.children[2].children[1]));
-    var c5 = nextGen(join(m.children[0].children[3], m.children[1].children[2], m.children[2].children[1], m.children[3].children[0]));
-    var c6 = nextGen(join(m.children[1].children[2], m.children[1].children[3], m.children[3].children[0], m.children[3].children[1]));
-    var c7 = nextGen(join(m.children[2].children[0], m.children[2].children[1], m.children[2].children[2], m.children[2].children[3]));
-    var c8 = nextGen(join(m.children[2].children[1], m.children[3].children[0], m.children[2].children[3], m.children[3].children[2]));
-    var c9 = nextGen(join(m.children[3].children[0], m.children[3].children[1], m.children[3].children[2], m.children[3].children[3]));
+    var c1 = nextGen(join(m.a.a, m.a.b, m.a.c, m.a.d));
+    var c2 = nextGen(join(m.a.b, m.b.a, m.a.d, m.b.c));
+    var c3 = nextGen(join(m.b.a, m.b.b, m.b.c, m.b.d));
+    var c4 = nextGen(join(m.a.c, m.a.d, m.c.a, m.c.b));
+    var c5 = nextGen(join(m.a.d, m.b.c, m.c.b, m.d.a));
+    var c6 = nextGen(join(m.b.c, m.b.d, m.d.a, m.d.b));
+    var c7 = nextGen(join(m.c.a, m.c.b, m.c.c, m.c.d));
+    var c8 = nextGen(join(m.c.b, m.d.a, m.c.d, m.d.c));
+    var c9 = nextGen(join(m.d.a, m.d.b, m.d.c, m.d.d));
 
     return join(
-        (join(c1.children[3], c2.children[2], c4.children[1], c5.children[0])),
-        (join(c2.children[3], c3.children[2], c5.children[1], c6.children[0])),
-        (join(c4.children[3], c5.children[2], c7.children[1], c8.children[0])),
-        (join(c5.children[3], c6.children[2], c8.children[1], c9.children[0])),
+      (join(c1.d, c2.c, c4.b, c5.a)),
+      (join(c2.d, c3.c, c5.b, c6.a)),
+      (join(c4.d, c5.c, c7.b, c8.a)),
+      (join(c5.d, c6.c, c8.b, c9.a)),
     );
   }
 }
 
-let pow2(x: Int): Int {
-  var ret = 1;
-  for (var i = 0; i < x; i++) {
-    ret *= 2;
+let subRandom(n: Int, subs: Int): Node {
+  if (subs == 0) {
+    return random(n);
+  } else {
+    var v1 = subRandom(n - 1, subs-1);
+    var v2 = subRandom(n - 1, subs-1);
+    return join(v1, v2, v2, v1);
   }
-  return ret;
 }
 
-// raylib
+let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>, data: List<Boolean>): Node {
+  var size = pow2(grid.level);
+  if (pos[0] >= high[0] || pos[0] + size <= low[0]) {
+    return grid;
+  }
+  if (pos[1] >= high[1] || pos[1] + size <= low[1]) {
+    return grid;
+  }
+  if (grid.level == 0) {
+    if (data[(pos[0] - low[0]) + (pos[1] - low[1]) * (high[0] - low[0])]) {
+      return on;
+    } else {
+      return off;
+    }
+  }
+  var size2 = size / 2;
+  return join(
+    copyWithRangeSet(grid.a, pos, low, high, data),
+    copyWithRangeSet(grid.b, [pos[0] + size2, pos[1]], low, high, data),
+    copyWithRangeSet(grid.c, [pos[0], pos[1] + size2], low, high, data),
+    copyWithRangeSet(grid.d, [pos[0] + size2, pos[1] + size2], low, high, data),
+  );
+}
 
 class Game {
   public grid: Node;
   
   constructor(args: Listed<String>) {
-    var size = args[0].toInt() orelse 8;
-    grid = random(size - 2);
-    grid = join(grid, grid, grid, grid);
-    grid = join(grid, grid, grid, grid);
-    // var centers = args[1].toInt() orelse 1;
-    // for (var i = 0; i < centers; i++) {
-    //   grid = center(grid);
-    // }
+    var sizeLog2 = args[0].toInt() orelse 8;
+    var size = pow2(sizeLog2);
+    console.log("${(size * size).toString()} cells");
+    grid = zero(sizeLog2);
+  }
+
+  public resetNode(n: Node): Node {
+    if (n.level == 0) {
+      return n;
+    }
+    n.setNext(null);
+    return join(resetNode(n.a), resetNode(n.b), resetNode(n.c), resetNode(n.d));
+  }
+
+  public resetHash(): Void {
+    hashtable = new MapBuilder<Int, ListBuilder<Node>>();
+    grid = resetNode(grid);
+  }
+
+  public clearRange(low: List<Int>, high: List<Int>): Void {
+    var list = new ListBuilder<Boolean>();
+    for (var i = 0; i < (high[0] - low[0]) * (high[1] - low[1]); i++) {
+      list.add(false);
+    }
+    setRange(low, high, list.toList());
+  }
+
+  public setRange(low: List<Int>, high: List<Int>, data: List<Boolean>): Void {
+    grid = copyWithRangeSet(grid, [0, 0], low, high, data);
   }
 
   public draw(bounds: Rectangle): Void {
@@ -203,23 +302,25 @@ class Game {
     } else {
       new Rectangle(0.0, (bounds.height - bounds.width) * 0.5, bounds.width, bounds.width)
     };
-    var hx = rec.width * 0.5;
-    var hy = rec.height * 0.5;
-    grid.children[0].children[3].draw(new Rectangle(rec.x, rec.y, hx, hy));
-    grid.children[2].children[1].draw(new Rectangle(rec.x + hx, rec.y, hx, hy));
-    grid.children[1].children[2].draw(new Rectangle(rec.x, rec.y + hy, hx, hy));
-    grid.children[3].children[0].draw(new Rectangle(rec.x + hx, rec.y + hy, hx, hy));
+    grid.draw(rec);
+    // var hx = rec.width * 0.5;
+    // var hy = rec.height * 0.5;
+    // grid.a.d.draw(new Rectangle(rec.x     , rec.y     , hx, hy));
+    // grid.b.c.draw(new Rectangle(rec.x + hx, rec.y     , hx, hy));
+    // grid.c.b.draw(new Rectangle(rec.x     , rec.y + hy, hx, hy));
+    // grid.d.a.draw(new Rectangle(rec.x + hx, rec.y + hy, hx, hy));
   }
 
   public update(): Void {
-    grid = center(nextGen(grid));
+    grid = nextGen(center(grid));
   }
 }
 
 export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
 
-  if ((args[0] == "--bench") orelse false) {
+  var bench = (args[0] == "--bench") orelse false;
+  if (bench) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     args = args.slice(1, args.length);
   } else {
@@ -229,7 +330,7 @@ export let main(args: Listed<String>): Void | Bubble {
   InitWindow(0, 0, "Conway's Game of LIFE");
   var game = new Game(args);
 
-  var n = 0;
+  var x = 0;
 
   while (!WindowShouldClose()) {
     BeginDrawing();
@@ -237,8 +338,43 @@ export let main(args: Listed<String>): Void | Bubble {
     game.draw(new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64()));
     DrawFPS(20, 20);
     EndDrawing();
+    if (IsKeyPressed(KEY_X)) {
+      console.log("Resetting Hashtable");
+      game.resetHash();
+    }
     game.update();
-    n += 1;
+    if (IsKeyPressed(KEY_C)) {
+      let size = pow2(game.grid.level);
+      game.clearRange([0, 0], [size, size]);
+    }
+    if (IsKeyPressed(KEY_ONE)) {
+      game.clearRange([0, 0], [4, 4]);
+      game.setRange([0, 0], [3, 3], [false, false, true, true, false, true, false, true, true]);
+    }
+    if (IsKeyPressed(KEY_TWO)) {
+      var strs = new ListBuilder<Boolean>();
+      var h = 0;
+      var add(s: String): Void {
+        strs.addAll(s.split("").map(fn(s: String): Boolean {
+          return s != " " && s != ".";
+        }));
+        h += 1;
+      }
+      add("........................O...........");
+      add("......................O.O...........");
+      add("............OO......OO............OO");
+      add("...........O...O....OO............OO");
+      add("OO........O.....O...OO..............");
+      add("OO........O...O.OO....O.O...........");
+      add("..........O.....O.......O...........");
+      add("...........O...O....................");
+      add("............OO......................");
+      game.setRange([0, x], [strs.length / h, x + h], strs.toList());
+      x += 32;
+    }
+    if (bench) {
+      console.log("FrameTime: ${(GetFrameTime() * 1000.0).toInt().toString()}ms")
+    }
   }
   CloseWindow();
 }

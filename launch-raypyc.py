@@ -12,7 +12,6 @@ import importlib
 import glob
 
 import typing
-import types
 import re
 import abc
 
@@ -22,25 +21,17 @@ from types import SimpleNamespace
 
 from sys import path
 
-import ctypes
-
 old = False
+mypyc = False
 
-if argv[1] == '--mypyc':
-    argv = argv[1:]
-    for i in glob.glob('temper.out/mypyc/*'):
-        path.append(i)
-else:
-    for i in glob.glob('temper.out/py/*'):
-        path.append(i)
+for i in glob.glob('temper.out/py/*'):
+    path.append(i)
 
 if argv[1] == '--old':
     argv = argv[1:]
     old = True
 
 import temper_raylib.rl.raylib as temper_raylib
-
-import random
 
 name_map = {
     'rl_color3f': 'rl_color3_f',
