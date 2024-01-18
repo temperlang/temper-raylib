@@ -51,7 +51,6 @@ def is_bad_func(func):
     if 'params' in func:
         for spec in func['params']:
             if spec['type'] in bad_types:
-                print(func)
                 return True
     if func['returnType'] in bad_types:
         return True
@@ -195,7 +194,7 @@ def main() -> None:
                 field_desc = field['description']
                 field_name = field['name']
                 out_file.write(f'{tab}// {field_desc}\n')
-                out_file.write(f'{tab}public {field_name}: {conv(field_type)};\n')
+                out_file.write(f'{tab}public var {field_name}: {conv(field_type)};\n')
             out_file.write('}\n')
 
         for alias in raylib_json['aliases']:
