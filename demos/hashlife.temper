@@ -12,7 +12,6 @@ let pow2(x: Int): Int {
 }
 
 class DrawConfig {
-  public minSize: Vector2;
   public screen: Rectangle;
 }
 
@@ -99,7 +98,7 @@ class RealNode extends Node {
         ),
         BLACK,
       );
-    } else if (level == 0 || base.width < config.minSize.x || base.height < config.minSize.y) {
+    } else if (level == 0 || base.width < 2.0) {
       DrawRectangleRec(
         new Rectangle(
           base.x.max(config.screen.x),
@@ -379,9 +378,8 @@ class Game {
   }
 
   public draw(bounds: Rectangle): Void {
-    var minSize = 1.0;
     var screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
-    var config = new DrawConfig(new Vector2(minSize, minSize), screen);
+    var config = new DrawConfig(screen);
     grid.draw(config, bounds);
   }
 
@@ -481,12 +479,13 @@ export let main(args: Listed<String>): Void | Bubble {
 
     BeginDrawing();
     ClearBackground(new Color(32, 32, 32, 255));
+    var size = GetScreenWidth().toFloat64().max(GetScreenHeight().toFloat64());
     game.draw(
       new Rectangle(
         -target.x * zoom,
         -target.y * zoom,
-        GetScreenWidth().toFloat64() * zoom,
-        GetScreenHeight().toFloat64() * zoom,
+        size * zoom,
+        size * zoom,
       ),
     );
     DrawFPS(20, 20);
