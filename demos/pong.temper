@@ -75,7 +75,7 @@ export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(0, 0, "Pong!");
+  InitWindow(960, 540, "Pong!");
 
   var screen = new Rectangle(0.0, 0.0, 1920.0, 1080.0);
   var border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
