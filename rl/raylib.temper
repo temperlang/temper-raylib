@@ -321,13 +321,13 @@ export interface Raylib {
     // Internal memory free
     public MemFree(ptr: DenseBitVector): Void;
     // Load file data as byte array (read)
-    public LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int>;
+    public LoadFileData(fileName: String, dataSize: Listed<Int>): String;
     // Unload file data allocated by LoadFileData()
-    public UnloadFileData(data: Listed<Int>): Void;
+    public UnloadFileData(data: String): Void;
     // Save data to file from byte array (write), returns true on success
     public SaveFileData(fileName: String, data: DenseBitVector, dataSize: Int): Boolean;
     // Export data to code (.h), returns true on success
-    public ExportDataAsCode(data: Listed<Int>, dataSize: Int, fileName: String): Boolean;
+    public ExportDataAsCode(data: String, dataSize: Int, fileName: String): Boolean;
     // Load text data from file (read), returns a '\0' terminated string
     public LoadFileText(fileName: String): String;
     // Unload file text data allocated by LoadFileText()
@@ -375,13 +375,13 @@ export interface Raylib {
     // Get file modification time (last write time)
     public GetFileModTime(fileName: String): Int;
     // Compress data (DEFLATE algorithm), memory must be MemFree()
-    public CompressData(data: Listed<Int>, dataSize: Int, compDataSize: Listed<Int>): Listed<Int>;
+    public CompressData(data: String, dataSize: Int, compDataSize: Listed<Int>): String;
     // Decompress data (DEFLATE algorithm), memory must be MemFree()
-    public DecompressData(compData: Listed<Int>, compDataSize: Int, dataSize: Listed<Int>): Listed<Int>;
+    public DecompressData(compData: String, compDataSize: Int, dataSize: Listed<Int>): String;
     // Encode data to Base64 string, memory must be MemFree()
-    public EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed<Int>): String;
+    public EncodeDataBase64(data: String, dataSize: Int, outputSize: Listed<Int>): String;
     // Decode Base64 string data, memory must be MemFree()
-    public DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int>;
+    public DecodeDataBase64(data: String, outputSize: Listed<Int>): String;
     // Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
     public LoadAutomationEventList(fileName: String): AutomationEventList;
     // Unload automation events list from file
@@ -629,9 +629,9 @@ export interface Raylib {
     // Load image sequence from file (frames appended to image.data)
     public LoadImageAnim(fileName: String, frames: Listed<Int>): Image;
     // Load image sequence from memory buffer
-    public LoadImageAnimFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, frames: Listed<Int>): Image;
+    public LoadImageAnimFromMemory(fileType: String, fileData: String, dataSize: Int, frames: Listed<Int>): Image;
     // Load image from memory buffer, fileType refers to extension: i.e. '.png'
-    public LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image;
+    public LoadImageFromMemory(fileType: String, fileData: String, dataSize: Int): Image;
     // Load image from GPU texture data
     public LoadImageFromTexture(texture: Texture2D): Image;
     // Load image from screen buffer and (screenshot)
@@ -643,7 +643,7 @@ export interface Raylib {
     // Export image data to file, returns true on success
     public ExportImage(image: Image, fileName: String): Boolean;
     // Export image to memory buffer
-    public ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): Listed<Int>;
+    public ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): String;
     // Export image as code file defining an array of bytes, returns true on success
     public ExportImageAsCode(image: Image, fileName: String): Boolean;
     // Generate image: plain color
@@ -843,11 +843,11 @@ export interface Raylib {
     // Load font from Image (XNA style)
     public LoadFontFromImage(image: Image, key: Color, firstChar: Int): Font;
     // Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
-    public LoadFontFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font;
+    public LoadFontFromMemory(fileType: String, fileData: String, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font;
     // Check if a font is ready
     public IsFontReady(font: Font): Boolean;
     // Load font data for further use
-    public LoadFontData(fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo>;
+    public LoadFontData(fileData: String, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo>;
     // Generate image font atlas using chars info
     public GenImageFontAtlas(glyphs: Listed<GlyphInfo>, glyphRecs: Listed<Listed<Rectangle>>, glyphCount: Int, fontSize: Int, padding: Int, packMethod: Int): Image;
     // Unload font chars info data (RAM)
@@ -1087,7 +1087,7 @@ export interface Raylib {
     // Load wave data from file
     public LoadWave(fileName: String): Wave;
     // Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
-    public LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Wave;
+    public LoadWaveFromMemory(fileType: String, fileData: String, dataSize: Int): Wave;
     // Checks if wave data is ready
     public IsWaveReady(wave: Wave): Boolean;
     // Unload wave data
@@ -1109,7 +1109,7 @@ export interface Raylib {
     // Load music stream from file
     public LoadMusicStream(fileName: String): Music;
     // Load music stream from data
-    public LoadMusicStreamFromMemory(fileType: String, data: Listed<Int>, dataSize: Int): Music;
+    public LoadMusicStreamFromMemory(fileType: String, data: String, dataSize: Int): Music;
     // Checks if a music stream is ready
     public IsMusicReady(music: Music): Boolean;
     // Unload music stream
@@ -1621,7 +1621,7 @@ export interface Raylib {
     // Read texture pixel data
     public rlReadTexturePixels(id: Int, width: Int, height: Int, format: Int): DenseBitVector;
     // Read screen pixel data (color buffer)
-    public rlReadScreenPixels(width: Int, height: Int): Listed<Int>;
+    public rlReadScreenPixels(width: Int, height: Int): String;
     // Load an empty framebuffer
     public rlLoadFramebuffer(width: Int, height: Int): Int;
     // Attach texture/renderbuffer to a framebuffer
@@ -2337,11 +2337,11 @@ export let MemFree(ptr: DenseBitVector): Void {
     rl.MemFree(ptr);
 }
 // Load file data as byte array (read)
-export let LoadFileData(fileName: String, dataSize: Listed<Int>): Listed<Int> {
+export let LoadFileData(fileName: String, dataSize: Listed<Int>): String {
     return rl.LoadFileData(fileName, dataSize);
 }
 // Unload file data allocated by LoadFileData()
-export let UnloadFileData(data: Listed<Int>): Void {
+export let UnloadFileData(data: String): Void {
     rl.UnloadFileData(data);
 }
 // Save data to file from byte array (write), returns true on success
@@ -2349,7 +2349,7 @@ export let SaveFileData(fileName: String, data: DenseBitVector, dataSize: Int): 
     return rl.SaveFileData(fileName, data, dataSize);
 }
 // Export data to code (.h), returns true on success
-export let ExportDataAsCode(data: Listed<Int>, dataSize: Int, fileName: String): Boolean {
+export let ExportDataAsCode(data: String, dataSize: Int, fileName: String): Boolean {
     return rl.ExportDataAsCode(data, dataSize, fileName);
 }
 // Load text data from file (read), returns a '\0' terminated string
@@ -2445,19 +2445,19 @@ export let GetFileModTime(fileName: String): Int {
     return rl.GetFileModTime(fileName);
 }
 // Compress data (DEFLATE algorithm), memory must be MemFree()
-export let CompressData(data: Listed<Int>, dataSize: Int, compDataSize: Listed<Int>): Listed<Int> {
+export let CompressData(data: String, dataSize: Int, compDataSize: Listed<Int>): String {
     return rl.CompressData(data, dataSize, compDataSize);
 }
 // Decompress data (DEFLATE algorithm), memory must be MemFree()
-export let DecompressData(compData: Listed<Int>, compDataSize: Int, dataSize: Listed<Int>): Listed<Int> {
+export let DecompressData(compData: String, compDataSize: Int, dataSize: Listed<Int>): String {
     return rl.DecompressData(compData, compDataSize, dataSize);
 }
 // Encode data to Base64 string, memory must be MemFree()
-export let EncodeDataBase64(data: Listed<Int>, dataSize: Int, outputSize: Listed<Int>): String {
+export let EncodeDataBase64(data: String, dataSize: Int, outputSize: Listed<Int>): String {
     return rl.EncodeDataBase64(data, dataSize, outputSize);
 }
 // Decode Base64 string data, memory must be MemFree()
-export let DecodeDataBase64(data: Listed<Int>, outputSize: Listed<Int>): Listed<Int> {
+export let DecodeDataBase64(data: String, outputSize: Listed<Int>): String {
     return rl.DecodeDataBase64(data, outputSize);
 }
 // Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS
@@ -2953,11 +2953,11 @@ export let LoadImageAnim(fileName: String, frames: Listed<Int>): Image {
     return rl.LoadImageAnim(fileName, frames);
 }
 // Load image sequence from memory buffer
-export let LoadImageAnimFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, frames: Listed<Int>): Image {
+export let LoadImageAnimFromMemory(fileType: String, fileData: String, dataSize: Int, frames: Listed<Int>): Image {
     return rl.LoadImageAnimFromMemory(fileType, fileData, dataSize, frames);
 }
 // Load image from memory buffer, fileType refers to extension: i.e. '.png'
-export let LoadImageFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Image {
+export let LoadImageFromMemory(fileType: String, fileData: String, dataSize: Int): Image {
     return rl.LoadImageFromMemory(fileType, fileData, dataSize);
 }
 // Load image from GPU texture data
@@ -2981,7 +2981,7 @@ export let ExportImage(image: Image, fileName: String): Boolean {
     return rl.ExportImage(image, fileName);
 }
 // Export image to memory buffer
-export let ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): Listed<Int> {
+export let ExportImageToMemory(image: Image, fileType: String, fileSize: Listed<Int>): String {
     return rl.ExportImageToMemory(image, fileType, fileSize);
 }
 // Export image as code file defining an array of bytes, returns true on success
@@ -3381,7 +3381,7 @@ export let LoadFontFromImage(image: Image, key: Color, firstChar: Int): Font {
     return rl.LoadFontFromImage(image, key, firstChar);
 }
 // Load font from memory buffer, fileType refers to extension: i.e. '.ttf'
-export let LoadFontFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font {
+export let LoadFontFromMemory(fileType: String, fileData: String, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int): Font {
     return rl.LoadFontFromMemory(fileType, fileData, dataSize, fontSize, codepoints, codepointCount);
 }
 // Check if a font is ready
@@ -3389,7 +3389,7 @@ export let IsFontReady(font: Font): Boolean {
     return rl.IsFontReady(font);
 }
 // Load font data for further use
-export let LoadFontData(fileData: Listed<Int>, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo> {
+export let LoadFontData(fileData: String, dataSize: Int, fontSize: Int, codepoints: Listed<Int>, codepointCount: Int, type: Int): Listed<GlyphInfo> {
     return rl.LoadFontData(fileData, dataSize, fontSize, codepoints, codepointCount, type);
 }
 // Generate image font atlas using chars info
@@ -3869,7 +3869,7 @@ export let LoadWave(fileName: String): Wave {
     return rl.LoadWave(fileName);
 }
 // Load wave from memory buffer, fileType refers to extension: i.e. '.wav'
-export let LoadWaveFromMemory(fileType: String, fileData: Listed<Int>, dataSize: Int): Wave {
+export let LoadWaveFromMemory(fileType: String, fileData: String, dataSize: Int): Wave {
     return rl.LoadWaveFromMemory(fileType, fileData, dataSize);
 }
 // Checks if wave data is ready
@@ -3913,7 +3913,7 @@ export let LoadMusicStream(fileName: String): Music {
     return rl.LoadMusicStream(fileName);
 }
 // Load music stream from data
-export let LoadMusicStreamFromMemory(fileType: String, data: Listed<Int>, dataSize: Int): Music {
+export let LoadMusicStreamFromMemory(fileType: String, data: String, dataSize: Int): Music {
     return rl.LoadMusicStreamFromMemory(fileType, data, dataSize);
 }
 // Checks if a music stream is ready
@@ -4937,7 +4937,7 @@ export let rlReadTexturePixels(id: Int, width: Int, height: Int, format: Int): D
     return rl.rlReadTexturePixels(id, width, height, format);
 }
 // Read screen pixel data (color buffer)
-export let rlReadScreenPixels(width: Int, height: Int): Listed<Int> {
+export let rlReadScreenPixels(width: Int, height: Int): String {
     return rl.rlReadScreenPixels(width, height);
 }
 // Load an empty framebuffer
@@ -6138,7 +6138,7 @@ export class Mesh {
     // Vertex tangents (XYZW - 4 components per vertex) (shader-location = 4)
     public var tangents: Listed<Float64>;
     // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
-    public var colors: Listed<Int>;
+    public var colors: String;
     // Vertex indices (in case vertex data comes indexed)
     public var indices: Listed<Int>;
     // Animated vertex positions (after bones transformations)
@@ -6146,7 +6146,7 @@ export class Mesh {
     // Animated normals (after bones transformations)
     public var animNormals: Listed<Float64>;
     // Vertex bone ids, max 255 bone ids, up to 4 bones influence by vertex (skinning)
-    public var boneIds: Listed<Int>;
+    public var boneIds: String;
     // Vertex bone weight, up to 4 bones influence by vertex (skinning)
     public var boneWeights: Listed<Float64>;
     // OpenGL Vertex Array Object id
@@ -6386,7 +6386,7 @@ export class rlVertexBuffer {
     // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
     public var texcoords: Listed<Float64>;
     // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
-    public var colors: Listed<Int>;
+    public var colors: String;
     // OpenGL Vertex Array Object id
     public var vaoId: Int;
     // OpenGL Vertex Buffer Objects id (4 types of vertex data)
@@ -6429,7 +6429,7 @@ export const RenderTexture2D = RenderTexture;
 // Camera type fallback, defaults to Camera3D
 export const Camera = Camera3D;
 // FileIO: Load binary data
-export let LoadFileDataCallback = fn(String, Listed<Int>): Listed<Int>;
+export let LoadFileDataCallback = fn(String, Listed<Int>): String;
 // FileIO: Save binary data
 export let SaveFileDataCallback = fn(String, DenseBitVector, Int): Boolean;
 // FileIO: Load text data

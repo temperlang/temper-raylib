@@ -22,13 +22,8 @@ temper build -b js -b py
 Temper supports multiple backends for temper-raylib, currently `py` and `js` work.
 
 ```sh
-python3 -m pip install raylib
-python3 launch-pyray.py pong
-```
-
-```sh
 python3 -m pip install vendor/raypyc
-python3 launch-raypyc.py conway
+python3 launch.py conway
 
 ```
 

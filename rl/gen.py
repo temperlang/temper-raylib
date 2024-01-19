@@ -10,7 +10,7 @@ def conv(t: str) -> str:
     n = 0
     t = t.strip()
     while t[-1] == '*':
-        if t == 'char *':
+        if t == 'char *' or t == 'unsigned char *':
             break
         if t == 'void *':
             break
@@ -24,7 +24,7 @@ def conv(t: str) -> str:
             ret = 'Int'
         case 'void *':
             ret = 'DenseBitVector'
-        case 'char *' |  'char[32]':
+        case 'char *' | 'unsigned char *' |  'char[32]':
             ret = 'String'
         case 'Matrix[2]':
             ret = 'Listed<Matrix>'

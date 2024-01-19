@@ -3,13 +3,15 @@ let {...} = import("../rl/raylib.temper");
 
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
-let pow2(x: Int): Int {
-  var ret = 1;
-  for (var i = 0; i < x; i++) {
-    ret *= 2;
+var pow2 = do {
+  var builder = new ListBuilder<Int>();
+  var cur = 1;
+  for (var i = 0; i < 32; i++) {
+    builder.add(cur);
+    cur += cur;
   }
-  return ret;
-}
+  builder.toList()
+};
 
 class DrawConfig {
   public screen: Rectangle;
@@ -89,15 +91,15 @@ class RealNode extends Node {
       return;
     }
     if (pop == 0) {
-      DrawRectangleRec(
-        new Rectangle(
-          base.x.max(config.screen.x),
-          base.y.max(config.screen.y),
-          base.width.min(config.screen.width),
-          base.height.min(config.screen.height),
-        ),
-        BLACK,
-      );
+      // DrawRectangleRec(
+      //   new Rectangle(
+      //     base.x.max(config.screen.x),
+      //     base.y.max(config.screen.y),
+      //     base.width.min(config.screen.width),
+      //     base.height.min(config.screen.height),
+      //   ),
+      //   BLACK,
+      // );
     } else if (level == 0 || base.width < 2.0) {
       DrawRectangleRec(
         new Rectangle(
@@ -155,26 +157,30 @@ var off = new RealNode(0, 0, fake, fake, fake, fake, 0);
 var on = new RealNode(0, 1, fake, fake, fake, fake, 1);
 
 let enter(node: Node): Node {
-  var sub = hashtable[node.hash] orelse new ListBuilder<Node>();
-  for (var i = sub.length - 1; i >= 0; i--) {
-    if (node.eq(sub[i])) {
-      return sub[i];
+  var got = hashtable[node.hash] orelse new ListBuilder<Node>();
+  for (var i = got.length - 1; i >= 0; i--) {
+    var cur = got.getOr(i, node);
+    if (node.eq(cur)) {
+      return cur;
     }
   }
-  sub.add(node);
-  hashtable[node.hash] = sub;
+  got.add(node);
+  hashtable[node.hash] = got;
   return node;
 }
 
+
 let join(a: Node, b: Node, c: Node, d: Node): Node {
+  var pop = a.pop + b.pop + c.pop + d.pop;
   var next = (
     a.level
+    + 2531198185803 * pop
     + 5131830419411 * a.hash
     + 3758991985019 * b.hash
     + 8973110871315 * c.hash
     + 4318490180473 * d.hash
   );
-  return enter(new RealNode(a.level + 1, a.pop + b.pop + c.pop + d.pop, a, b, c, d, next % 2147483648));
+  return enter(new RealNode(a.level + 1, pop, a, b, c, d, next % 2251799813685248));
 }
 
 let zero(level: Int): Node {
@@ -334,7 +340,7 @@ let subRandom(n: Int, subs: Int): Node {
 }
 
 let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>, data: DenseBitVector): Node {
-  var size = pow2(grid.level);
+  var size = pow2[grid.level];
   if (pos[0] >= high[0] || pos[0] + size <= low[0]) {
     return grid;
   }
@@ -362,8 +368,7 @@ class Game {
   
   constructor(args: Listed<String>) {
     var sizeLog2 = args[0].toInt() orelse 8;
-    var size = pow2(sizeLog2);
-    console.log("${(size * size).toString()} cells");
+    var size = pow2[sizeLog2];
     grid = zero(sizeLog2);
   }
 
@@ -371,15 +376,18 @@ class Game {
     grid = zero(grid.level);
   }
 
-  public add(builder: LifeBuilder, pos: List<Int>): Void {
-    var size = builder.size();
-    var high = [pos[0] + size[0], pos[1] + size[1]];
-    grid = copyWithRangeSet(grid, [0, 0], pos, high, builder.build());
+  public addData(size: List<Int>, data: DenseBitVector, pos: List<Int>): Void {
+    grid = copyWithRangeSet(grid, [0, 0], pos, [pos[0] + size[0], pos[1] + size[1]], data);
+  }
+
+  public addBuilder(builder: LifeBuilder, pos: List<Int>): Void {
+    addData(builder.size, builder.buildBits(), pos);
   }
 
   public draw(bounds: Rectangle): Void {
     var screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
     var config = new DrawConfig(screen);
+    DrawRectangleRec(bounds, BLACK);
     grid.draw(config, bounds);
   }
 
@@ -398,16 +406,62 @@ class Game {
 }
 
 class LifeBuilder {
-  var width: Int;
-  var data: ListBuilder<List<Boolean>>;
+  private width: Int;
+  private data: ListBuilder<List<Boolean>>;
+  
+  private doFlipX: Boolean;
+  private doFlipY: Boolean;
 
-  constructor() {
+  private builtBits: Boolean;
+  private bits: DenseBitVector;
+  
+  private node: Node;
+  private builtNode: Boolean;
+
+  public constructor() {
     width = 0;
     data = new ListBuilder<String>();
+    doFlipX = false;
+    doFlipY = false;
+    clear();
   }
 
-  public size(): List<Int> {
+  private clear(): Void {
+    builtBits = false;
+    builtNode = false;
+  }
+
+  public flipX(): Void {
+    clear();
+    doFlipX = !doFlipX;
+  }
+
+  public flipY(): Void {
+    clear();
+    doFlipY = !doFlipY;
+  }
+
+  public get size(): List<Int> {
     return [width, data.length];
+  }
+
+  public buildNode(): Node {
+    if (!builtNode) {
+      var startTime = GetTime();
+      builtNode = true;
+      var sizeMax = if (size[0] < size[1]) { size[1] } else { size[0] };
+      var empty: Node = off;
+      while (pow2[empty.level] < sizeMax) {
+        empty = join(empty, empty, empty, empty);
+      }
+      var start = [
+        (size[0] - sizeMax) / 2,
+        (size[1] - sizeMax) / 2,
+      ];
+      node = copyWithRangeSet(empty, [0, 0], start, size, buildBits());
+      var endTime = GetTime();
+    }
+    return node;
   }
 
   public add(t: String): Void {
@@ -420,25 +474,248 @@ class LifeBuilder {
     }));
   }
   
-  public build(): DenseBitVector {
-    var ret = new DenseBitVector(width * data.length);
-    var n = 0;
-    for (var i = 0; i < data.length; i++) {
-      var split = data[i];
-      for (var j = 0; j < width; j++) {
-        ret[n++] = split[j] orelse false;
+  public buildBits(): DenseBitVector {
+    if (!builtBits) {
+      var stopWidth = width - 1;
+      var stopHeight = data.length - 1;
+      bits = new DenseBitVector(data.length);
+      builtBits = true;
+      var n = 0;
+      for (var i = 0; i < data.length; i++) {
+        var split = if (doFlipY) { data[stopHeight - i] } else { data[i] };
+        for (var j = 0; j < width; j++) {
+          bits[n++] = if (doFlipX) { split[stopWidth - j] } else { split[j] } orelse false;
+        }
       }
     }
-    return ret;
+    return bits;
   }
 }
 
-let getScreenSize(): Vector2 {
-  return new Vector2(GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+class Pattern {
+  public name: String;
+  public builder: LifeBuilder;
+  public doNotDraw: Boolean;
+
+  public get size(): List<Int> {
+    return builder.size;
+  }
+
+  public constructor(nameArg: String, builderArg: LifeBuilder) {
+    name = nameArg;
+    builder = builderArg;
+    doNotDraw = false;
+  }
+
+  public noDraw(v: Boolean): Void {
+    doNotDraw = v;
+  }
+
+  public drawTool(bounds: Rectangle, selected: Boolean): Boolean {
+    if (doNotDraw) {
+      DrawRectangleRec(bounds, new Color(255, 128, 32, 255));
+    } else {
+      if (selected) {
+        DrawRectangleRec(bounds, new Color(32, 128, 32, 255));
+      } else {
+        DrawRectangleRec(bounds, new Color(32, 32, 32, 255));
+      }
+      var border = 0.1;
+      bounds = new Rectangle(
+        bounds.x + bounds.width * border,
+        bounds.y + bounds.height * border,
+        bounds.width * (1.0 - border * 2.0),
+        bounds.height * (1.0 - border * 2.0),
+      );
+      DrawRectangleRec(bounds, BLACK);
+      var size = builder.size;
+      var built = builder.buildBits();
+      var maxSize = size[0].toFloat64().max(size[1].toFloat64()).toInt();
+      var xSize = bounds.width / maxSize.toFloat64();
+      var ySize = bounds.height / maxSize.toFloat64();
+      var xOff = (maxSize - size[0]).toFloat64() * xSize * 0.5;
+      var yOff = (maxSize - size[1]).toFloat64() * ySize * 0.5;
+      if (xSize < 2.0 || ySize < 2.0) {
+        DrawRectangleRec(bounds, BLACK);
+        builder.buildNode().draw(new DrawConfig(bounds), bounds);
+      } else {
+        for (var y = 0; y < size[1]; y++) {
+          for (var x = 0; x < size[0]; x++) {
+            var rec = new Rectangle(
+              bounds.x + xSize * x.toFloat64() + xOff,
+              bounds.y + ySize * y.toFloat64() + yOff,
+              xSize,
+              ySize,
+            );
+            if (x < 0 || x >= size[0] || y < 0 || y >= size[1]) {
+              DrawRectangleRec(rec, BLACK);
+            } else if (built[x + y * size[0]]) {
+              DrawRectangleRec(rec, WHITE);
+            } else {
+              DrawRectangleRec(rec, BLACK);
+            }
+          }
+        }
+      }
+    }
+    var mouse = GetMousePosition();
+    if (CheckCollisionPointRec(mouse, bounds)) {
+      var width = MeasureText(name, 20);
+      DrawRectangleRec(new Rectangle(mouse.x + 2.0, mouse.y - 16.0, width.toFloat64() + 4.0, 24.0), new Color(0, 0, 0, 192));
+      DrawText(name, mouse.x.toInt() + 8, mouse.y.toInt() - 16, 20, WHITE);
+      if (IsMouseButtonPressed(0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+let repeat(s: String, n: Int): String {
+  var tmp = new ListBuilder<String>();
+  for (var i = 0; i < n; i++) {
+    tmp.add(s);
+  }
+  return tmp.join("", fn(s: String): String { s });
+}
+
+let stringToPattern(text: String): Pattern {
+  var name = "???";
+  var cs = new ListBuilder<String>();
+  var builder = new LifeBuilder();
+  var split = text.split("\n");
+  for (var i = 0; i < split.length; i++) {
+    var cur = split[i].split("").filter(fn(s: String): Boolean {
+      s != "\r"
+    });
+    if (cur.length >= 2 && cur[0] == "#" && cur[1] == "N") {
+      name = cur.slice(3, cur.length).join("", fn(s: String): String { s });
+    }
+    if (cur.length >= 1 && (cur[0] == "#" || cur[0] == "x")) {
+      continue;
+    }
+    var n = 0;
+    for (var j = 0; j < cur.length; j++) {
+      var char = cur[j];
+      var code = char.codePoints.read();
+      if (code <= 32 || code >= 127) {
+        continue;
+      }
+      if (48 <= code && code < 58) {
+        n *= 10;
+        n += code - 48;
+      } else if (char == "b") {
+        if (n <= 1) {
+          cs.add(" ");
+        } else {
+          cs.add(repeat(" ", n));
+        }
+        n = 0;
+      } else if (char == "o") {
+        if (n <= 1) {
+          cs.add("#");
+        } else {
+          cs.add(repeat("#", n));
+        }
+        n = 0;
+      } else if (char == "$" || char == "!") {
+        var csj = cs.join("", fn(s: String): String { s });
+        builder.add(csj);
+        for (var i = 1; i < n; i++) {
+          builder.add("");
+        }
+        cs = new ListBuilder<String>();
+        n = 0;
+      }
+    }
+  }
+  return new Pattern(name, builder);
+}
+
+class SimpleCamera {
+  public target: Vector2;
+  public zoom: Float64;
+  public cells: Int;
+  public screenSize: Vector2;
+
+  constructor(maxLevel: Int) {
+    zoom = 1.0;
+    target = new Vector2(0.0, 0.0);
+    cells = pow2[maxLevel];
+  }
+
+  public update(): Void {
+    screenSize = new Vector2(GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+  }
+
+  public get size(): Float64 {
+    return screenSize.x.max(screenSize.y);
+  }
+
+  public screenToLife(x: Float64, y: Float64): List<Int> {
+    var xProgress = (x / zoom - target.x) / size;
+    var yProgress = (y / zoom - target.y) / size;
+    return [
+      (xProgress * cells.toFloat64()).toInt(),
+      (yProgress * cells.toFloat64()).toInt(),
+    ];
+  }
+
+  public lifeToScreen(life: List<Int>): Vector2 {
+    var xProgress = life[0].toFloat64() / cells.toFloat64();
+    var yProgress = life[1].toFloat64() / cells.toFloat64();
+    return new Vector2(
+      xProgress * (size * zoom) - target.x * zoom,
+      yProgress * (size * zoom) - target.y * zoom,
+    );
+  }
+
+  public zoomBy(wheel: Float64, center: Vector2): Void {
+    var next = wheel * 0.2;
+    target.x = target.x - next * center.x / zoom;
+    target.y = target.y - next * center.y / zoom;
+    zoom = zoom * (1.0 + next);
+  }
+
+  public moveBy(dist: Vector2): Void {
+    target.x = target.x + dist.x / zoom;
+    target.y = target.y + dist.y / zoom;
+  }
 }
 
 export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
+  
+  var patterns = new ListBuilder<Pattern>();
+  var files = [
+    "demos/life/glider.rle",
+    "demos/life/glidergun.rle",
+    "demos/life/c5greyship.rle",
+    "demos/life/primer.rle",
+    "demos/life/tlogtgrowth.rle",
+    "demos/life/hacksaw.rle",
+    "demos/life/3enginecordershipgun.rle",
+    "demos/life/glidergun.rle",
+    "demos/life/tetheredrake.rle",
+    "demos/life/p94s.rle",
+    "demos/life/breeder1.rle",
+    // "demos/life/logt2growth.rle",
+    // "demos/life/infinitegliderhotel.rle",
+    // "demos/life/turingmachine.rle",
+    "demos/life/infinitelwsshotel.rle",
+    "demos/life/gunstar.rle",
+  ];
+  for (var i = 0; i < files.length; i++) {
+    var pattern = stringToPattern(LoadFileText(files[i]));
+    patterns.add(pattern);
+  }
+  if (args[0] == "--clock") {
+    var pattern = stringToPattern(LoadFileText("demos/life/clock.rle"));
+    pattern.noDraw(true);
+    patterns.add(pattern);
+    args = args.slice(1, args.length);
+  }
+  var selectedEnt: Pattern | Null = null;
 
   var bench = (args[0] == "--bench") orelse false;
   if (bench) {
@@ -451,69 +728,108 @@ export let main(args: Listed<String>): Void | Bubble {
   InitWindow(960, 540, "Conway's Game of LIFE");
   var game = new Game(args);
 
-  var x = 0;
-
   var paused = false;
   var rate = 1.0;
+  var steps = 0;
 
-  var target = new Vector2(0.0, 0.0);
-  var zoom = 1.0;
+  var camera = new SimpleCamera(game.grid.level);
 
   var nextTime = GetTime() + 1.0 / rate;
 
-  var centerOfScreen = new Vector2(0.5, 0.5);
-
   while (!WindowShouldClose()) {
+    camera.update();
+
     var wheel = GetMouseWheelMove();
     if (wheel != 0.0) {
-      var next = wheel * 0.2;
-      var offset = new Vector2(next * GetMouseX().toFloat64() / zoom, next * GetMouseY().toFloat64() / zoom);
-      target = Vector2Add(target, offset);
-      zoom = zoom * (1.0 + next);
+      camera.zoomBy(wheel, new Vector2(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
     }
 
-    if (IsMouseButtonDown(0)) {
-      var move = GetMouseDelta();
-      target = Vector2Add(target, new Vector2(-move.x / zoom, -move.y / zoom));
+    if (IsMouseButtonDown(1)) {
+      camera.moveBy(GetMouseDelta());
     }
 
     BeginDrawing();
     ClearBackground(new Color(32, 32, 32, 255));
-    var size = GetScreenWidth().toFloat64().max(GetScreenHeight().toFloat64());
-    game.draw(
-      new Rectangle(
-        -target.x * zoom,
-        -target.y * zoom,
-        size * zoom,
-        size * zoom,
-      ),
+    var gameBounds = new Rectangle(
+      camera.target.x * camera.zoom,
+      camera.target.y * camera.zoom,
+      camera.size * camera.zoom,
+      camera.size * camera.zoom,
     );
+    game.draw(gameBounds);
     DrawFPS(20, 20);
-    // if (GuiLabelButton(new Rectangle(10.0, 10.0, 80.0, 80.0), "Toggle") != 0) {
-    //   modeNum = "Toggle";
-    // }
-    DrawText(rate.toString(), 120, 20, 20, WHITE);
-    EndDrawing();
-    if (!paused) {
-      var steps = 0;
-      var time = GetTime();
-      while (nextTime <= time) {
-        var iters = 0;
-        while (nextTime + pow2(iters).toFloat64() / rate * 2.0 <= time) {
-          iters += 1;
+    DrawText("${rate.toString()} hz * ${pow2[steps].toString()} warp", 120, 20, 20, WHITE);
+    var entWidth = (GetScreenHeight().toFloat64() * 0.1).min(GetScreenWidth().toFloat64() / patterns.length.toFloat64());
+    var mouse = GetMousePosition();
+    var drawSelectedEnt = true;
+    var clickWasEnts = false;
+    for (var i = 0; i < patterns.length; i++) {
+      var bounds = new Rectangle(i.toFloat64() * entWidth, GetScreenHeight().toFloat64() - entWidth, entWidth, entWidth);
+      if (CheckCollisionPointRec(mouse, bounds)) {
+        clickWasEnts = true;
+        drawSelectedEnt = false;
+      }
+      if (patterns[i].drawTool(bounds, selectedEnt == patterns[i])) {
+        if (selectedEnt == patterns[i]) {
+          selectedEnt = null;
+        } else {
+          selectedEnt = patterns[i];
         }
-        var warps = 1;
-        if (iters == 0) {
+      }
+    }
+    if (!clickWasEnts && selectedEnt != null) {
+      var boundsFlipX1 = new Rectangle(GetScreenWidth().toFloat64() - 50.0, 10.0, 20.0, 40.0);
+      var boundsFlipX2 = new Rectangle(GetScreenWidth().toFloat64() - 30.0, 10.0, 20.0, 40.0);
+      DrawRectangleRec(boundsFlipX1, GREEN);
+      DrawRectangleRec(boundsFlipX2, RED);
+      var inBounds = CheckCollisionPointRec(mouse, boundsFlipX1) || CheckCollisionPointRec(mouse, boundsFlipX2);
+      if (inBounds) {
+        drawSelectedEnt = false;
+        if (IsMouseButtonPressed(0)) {
+          selectedEnt.as<Pattern>().builder.flipX();
+          clickWasEnts = true;  
+        }
+      }
+    }
+    if (!clickWasEnts && selectedEnt != null) {
+      var boundsFlipY1 = new Rectangle(GetScreenWidth().toFloat64() - 100.0, 10.0, 40.0, 20.0);
+      var boundsFlipY2 = new Rectangle(GetScreenWidth().toFloat64() - 100.0, 30.0, 40.0, 20.0);
+      DrawRectangleRec(boundsFlipY1, GREEN);
+      DrawRectangleRec(boundsFlipY2, RED);
+      var inBounds = CheckCollisionPointRec(mouse, boundsFlipY1) || CheckCollisionPointRec(mouse, boundsFlipY2);
+      if (inBounds) {
+        drawSelectedEnt = false;
+        if (IsMouseButtonPressed(0)) {
+          selectedEnt.as<Pattern>().builder.flipY();
+          clickWasEnts = true;
+        }
+      }
+    }
+    if (drawSelectedEnt && selectedEnt != null && CheckCollisionPointRec(mouse, gameBounds)) {
+      var pat = selectedEnt.as<Pattern>();
+      DrawText("Selected: ${pat.name}", GetMouseX(), GetMouseY(), 20, GREEN);
+    }
+    EndDrawing();
+    if (paused) {
+      nextTime = GetTime() + 1.0 / rate;
+    }
+    if (!paused) {
+      var time = GetTime();
+      if (nextTime <= time) {
+        if (steps == 0) {
           game.update();
         } else {
-          warps = pow2(game.warp(iters));
+          game.warp(steps);
         }
-        nextTime += warps.toFloat64() / rate;
-        steps += warps;
+        nextTime = time + 1.0 / rate;
       }
-      var end = GetTime();
-      if (steps != 0) {
-        // console.log("Ran ${(steps.toFloat64() / (end - time)).toString()} steps/second");
+    }
+    if (IsKeyPressed(KEY_APOSTROPHE)) {
+      steps += 1;
+    }
+    if (IsKeyPressed(KEY_SEMICOLON)) {
+      if (steps > 0) {
+        steps -= 1;
       }
     }
     if (IsKeyPressed(KEY_PERIOD)) {
@@ -526,49 +842,13 @@ export let main(args: Listed<String>): Void | Bubble {
       paused = !paused;
     }
     if (IsKeyPressed(KEY_C)) {
-      let size = pow2(game.grid.level);
       game.clear();
     }
-    if (IsKeyPressed(KEY_ONE)) {
-      var builder = new LifeBuilder();
-      builder.add("  #");
-      builder.add("# #");
-      builder.add(" ##");
-      game.add(builder, [0, 0]);
+    if (drawSelectedEnt && selectedEnt != null) {
+      if (IsMouseButtonPressed(0)) {
+        game.addBuilder(selectedEnt.as<Pattern>().builder, camera.screenToLife(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
+      }
     }
-    if (IsKeyPressed(KEY_TWO)) {
-      var builder = new LifeBuilder();
-      builder.add("                        #           ");
-      builder.add("                      # #           ");
-      builder.add("            ##      ##            ##");
-      builder.add("           #   #    ##            ##");
-      builder.add("##        #     #   ##              ");
-      builder.add("##        #   # ##    # #           ");
-      builder.add("          #     #       #           ");
-      builder.add("           #   #                    ");
-      builder.add("            ##                      ");
-      game.add(builder, [0, x]);
-      x += 32;
-    }
-    // if (IsKeyPressed(KEY_THREE)) {
-    //   var size = pow2(game.grid.level);
-    //   var builder = new LifeBuilder();
-    //   for (var i = 0; i < size; i++) {
-    //     builder.add("#");
-    //   }
-    //   game.add(builder, [size / 2, 0]);
-    // }
-    if (IsKeyPressed(KEY_THREE)) {
-      var pos = pow2(game.grid.level) * 2 / 3;
-      var builder = new LifeBuilder();
-      builder.add(" #");
-      builder.add("   #");
-      builder.add("##  ###");
-      game.add(builder, [pos, pos]);
-    }
-    // if (bench) {
-    //   console.log("FrameTime: ${(GetFrameTime() * 1000.0).toInt().toString()}ms")
-    // }
   }
   CloseWindow();
 }

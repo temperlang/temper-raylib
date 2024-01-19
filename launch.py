@@ -125,6 +125,12 @@ def wrap_slow(func, proto):
     eval_text = f'lambda {args}: func({args_converted_joined})'
     return eval(eval_text, eval_env)
 
+def unbytes(obj):
+    if isinstance(obj, bytes):
+        return obj.decode('utf-8')
+    else:
+        return obj
+
 def wrap_fast(func, proto):
     if not callable(func):
         return func
@@ -133,18 +139,24 @@ def wrap_fast(func, proto):
     py_type_map = proto.__annotations__
     arg_names = proto.__code__.co_varnames[0:proto.__code__.co_argcount]
     should_wrap = False
+    return_wrap = re.match('(str)\\d+', py_type_map['return'])
+    if return_wrap:
+        should_wrap = True
     new_args = []
     for arg_name in arg_names:
         if re.match('(str)\\d+', py_type_map[arg_name]):
-            new_args.append(f'{arg_name}.encode("utf-8")')
+            new_args.append(f'{arg_name}.encode("utf-8") if isinstance({arg_name}, str) else {arg_name}')
             should_wrap = True
         else:
             new_args.append(arg_name)
     if should_wrap:
         params = ', '.join(arg_names)
         args = ', '.join(new_args)
-        eval_text = f'lambda {params}: func({args})'
-        return eval(eval_text, {'func':func})
+        ret = f'func({args})'
+        if return_wrap:
+            ret = f'unbytes({ret})'
+        eval_text = f'lambda {params}: {ret}'
+        return eval(eval_text, {'func':func, 'unbytes': unbytes})
     return func
 
 def main():
