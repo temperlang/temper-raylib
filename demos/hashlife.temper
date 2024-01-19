@@ -2,6 +2,8 @@
 let {...} = import("../rl/raylib.temper");
 let { files } = import("./life/all.temper");
 
+var files: List<String> = [];
+
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
 var pow2 = do {
