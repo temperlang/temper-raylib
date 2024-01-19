@@ -367,7 +367,7 @@ class Game {
   public grid: Node;
   
   constructor(args: Listed<String>) {
-    var sizeLog2 = args[0].toInt() orelse 8;
+    var sizeLog2 = args[0].toInt() orelse 16;
     var size = pow2[sizeLog2];
     grid = zero(sizeLog2);
   }
@@ -407,7 +407,7 @@ class Game {
 
 class LifeBuilder {
   private width: Int;
-  private data: ListBuilder<List<Boolean>>;
+  private data: ListBuilder<DenseBitVector>;
   
   private doFlipX: Boolean;
   private doFlipY: Boolean;
@@ -458,35 +458,44 @@ class LifeBuilder {
         (size[0] - sizeMax) / 2,
         (size[1] - sizeMax) / 2,
       ];
-      node = copyWithRangeSet(empty, [0, 0], start, size, buildBits());
+      var stop = [
+        start[0] + size[0],
+        start[1] + size[1],
+      ];
+      node = copyWithRangeSet(empty, [0, 0], start, stop, buildBits());
       var endTime = GetTime();
     }
     return node;
   }
 
-  public add(t: String): Void {
-    var s = t.split("");
-    if (width < s.length) {
-      width = s.length;
+  public add(t: DenseBitVector, len: Int): Void {
+    if (len > width) {
+      width = len;
     }
-    data.add(s.map(fn(s: String): Boolean {
-      return s != " ";
-    }));
+    data.add(t);
   }
   
   public buildBits(): DenseBitVector {
     if (!builtBits) {
       var stopWidth = width - 1;
       var stopHeight = data.length - 1;
-      bits = new DenseBitVector(data.length);
+      var tmp = new DenseBitVector(data.length * width);
       builtBits = true;
       var n = 0;
       for (var i = 0; i < data.length; i++) {
-        var split = if (doFlipY) { data[stopHeight - i] } else { data[i] };
+        var iindex = if (doFlipY) { stopHeight - i } else { i };
+        var split = data[iindex]; 
         for (var j = 0; j < width; j++) {
-          bits[n++] = if (doFlipX) { split[stopWidth - j] } else { split[j] } orelse false;
+          var jindex = if (doFlipX) { stopWidth - j } else { j };
+          if (0 <= jindex && jindex <= stopWidth) {
+            tmp[n] = split[jindex];
+          } else {
+            tmp[n] = false;
+          }
+          n += 1;
         }
       }
+      bits = tmp;
     }
     return bits;
   }
@@ -504,7 +513,7 @@ class Pattern {
   public constructor(nameArg: String, builderArg: LifeBuilder) {
     name = nameArg;
     builder = builderArg;
-    doNotDraw = false;
+    doNotDraw = builder.size[0] * builder.size[1] > 65536;
   }
 
   public noDraw(v: Boolean): Void {
@@ -571,61 +580,63 @@ class Pattern {
   }
 }
 
-let repeat(s: String, n: Int): String {
-  var tmp = new ListBuilder<String>();
-  for (var i = 0; i < n; i++) {
-    tmp.add(s);
-  }
-  return tmp.join("", fn(s: String): String { s });
-}
-
 let stringToPattern(text: String): Pattern {
   var name = "???";
-  var cs = new ListBuilder<String>();
+  var csl = 0;
+  var cs = new DenseBitVector(0);
   var builder = new LifeBuilder();
   var split = text.split("\n");
   for (var i = 0; i < split.length; i++) {
-    var cur = split[i].split("").filter(fn(s: String): Boolean {
-      s != "\r"
-    });
-    if (cur.length >= 2 && cur[0] == "#" && cur[1] == "N") {
-      name = cur.slice(3, cur.length).join("", fn(s: String): String { s });
-    }
-    if (cur.length >= 1 && (cur[0] == "#" || cur[0] == "x")) {
-      continue;
-    }
-    var n = 0;
-    for (var j = 0; j < cur.length; j++) {
-      var char = cur[j];
-      var code = char.codePoints.read();
-      if (code <= 32 || code >= 127) {
+    var cur = split[i].codePoints;
+    if (cur.hasAtLeast(1)) {
+      if (cur.read() == /* x */ 120) {
         continue;
       }
+      if (cur.read() == /* # */ 35) {
+        var type = cur.advance(1).read();
+        if (type == /* N */ 78) {
+          var hack = split[i].split("#N");
+          name = hack[hack.length - 1];
+        }
+        continue;
+      }
+    } else {
+      continue;
+    }
+    while (true) {
+      var code = cur.read();
+      var n = 1;
       if (48 <= code && code < 58) {
-        n *= 10;
-        n += code - 48;
-      } else if (char == "b") {
-        if (n <= 1) {
-          cs.add(" ");
-        } else {
-          cs.add(repeat(" ", n));
-        }
         n = 0;
-      } else if (char == "o") {
-        if (n <= 1) {
-          cs.add("#");
-        } else {
-          cs.add(repeat("#", n));
+        while (48 <= code && code < 58) {
+          n *= 10;
+          n += code - 48;
+          cur = cur.advance(1);
+          code = cur.read();
+          if (cur.isEmpty) {
+            break;
+          }
         }
-        n = 0;
-      } else if (char == "$" || char == "!") {
-        var csj = cs.join("", fn(s: String): String { s });
-        builder.add(csj);
+      }
+      cur = cur.advance(1);
+      if (cur.isEmpty) {
+        break;
+      }
+      if (code == /* b */ 98) {
+        cs[csl++] = false;
+      }
+      if (code == /* o */ 111) {
+        for (var i = 0; i < n; i++) {
+          cs[csl++] = true;
+        }
+      }
+      if (code == /* $ */ 36 || code == /* ! */ 33) {
+        builder.add(cs, csl);
+        csl = 0;
+        cs = new DenseBitVector(0);
         for (var i = 1; i < n; i++) {
-          builder.add("");
+          builder.add(cs, csl);
         }
-        cs = new ListBuilder<String>();
-        n = 0;
       }
     }
   }
@@ -688,6 +699,7 @@ export let main(args: Listed<String>): Void | Bubble {
   
   var patterns = new ListBuilder<Pattern>();
   var files = [
+    "demos/life/clock.rle",
     "demos/life/glider.rle",
     "demos/life/glidergun.rle",
     "demos/life/c5greyship.rle",
@@ -699,9 +711,9 @@ export let main(args: Listed<String>): Void | Bubble {
     "demos/life/tetheredrake.rle",
     "demos/life/p94s.rle",
     "demos/life/breeder1.rle",
-    // "demos/life/logt2growth.rle",
-    // "demos/life/infinitegliderhotel.rle",
-    // "demos/life/turingmachine.rle",
+    "demos/life/logt2growth.rle",
+    "demos/life/infinitegliderhotel.rle",
+    "demos/life/turingmachine.rle",
     "demos/life/infinitelwsshotel.rle",
     "demos/life/gunstar.rle",
   ];
@@ -709,7 +721,7 @@ export let main(args: Listed<String>): Void | Bubble {
     var pattern = stringToPattern(LoadFileText(files[i]));
     patterns.add(pattern);
   }
-  if (args[0] == "--clock") {
+  if ((args[0] == "--clock") orelse false) {
     var pattern = stringToPattern(LoadFileText("demos/life/clock.rle"));
     pattern.noDraw(true);
     patterns.add(pattern);
