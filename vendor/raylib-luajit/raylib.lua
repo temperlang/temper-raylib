@@ -11,7 +11,8 @@ local rl = require('vendor.raylib-luajit.generated')
 rl.lib = lib
 
 function rl.char_ptr(s)
-    return ffi.new('const char[?]', string.len(s) + 1, s)
+    -- return ffi.new('const char[?]', string.len(s) + 1, s .. string.char(0))
+    return s
 end
 
 return rl

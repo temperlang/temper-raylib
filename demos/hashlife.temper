@@ -1,5 +1,6 @@
 
 let {...} = import("../rl/raylib.temper");
+let { files } = import("./life/all.temper");
 
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
@@ -339,7 +340,7 @@ let subRandom(n: Int, subs: Int): Node {
   }
 }
 
-let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>, data: DenseBitVector): Node {
+let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>, data: Listed<DenseBitVector>): Node {
   var size = pow2[grid.level];
   if (pos[0] >= high[0] || pos[0] + size <= low[0]) {
     return grid;
@@ -348,7 +349,7 @@ let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>
     return grid;
   }
   if (grid.level == 0) {
-    if (data[(pos[0] - low[0]) + (pos[1] - low[1]) * (high[0] - low[0])]) {
+    if (data[pos[1] - low[1]][pos[0] - low[0]]) {
       return on;
     } else {
       return off;
@@ -376,7 +377,7 @@ class Game {
     grid = zero(grid.level);
   }
 
-  public addData(size: List<Int>, data: DenseBitVector, pos: List<Int>): Void {
+  public addData(size: List<Int>, data: Listed<DenseBitVector>, pos: List<Int>): Void {
     grid = copyWithRangeSet(grid, [0, 0], pos, [pos[0] + size[0], pos[1] + size[1]], data);
   }
 
@@ -406,14 +407,11 @@ class Game {
 }
 
 class LifeBuilder {
-  private width: Int;
+  public width: Int;
   private data: ListBuilder<DenseBitVector>;
   
   private doFlipX: Boolean;
   private doFlipY: Boolean;
-
-  private builtBits: Boolean;
-  private bits: DenseBitVector;
   
   private node: Node;
   private builtNode: Boolean;
@@ -427,7 +425,6 @@ class LifeBuilder {
   }
 
   private clear(): Void {
-    builtBits = false;
     builtNode = false;
   }
 
@@ -441,8 +438,12 @@ class LifeBuilder {
     doFlipY = !doFlipY;
   }
 
+  public get height(): Int {
+    return data.length;
+  }
+
   public get size(): List<Int> {
-    return [width, data.length];
+    return [width, height];
   }
 
   public buildNode(): Node {
@@ -475,36 +476,17 @@ class LifeBuilder {
     data.add(t);
   }
   
-  public buildBits(): DenseBitVector {
-    if (!builtBits) {
-      var stopWidth = width - 1;
-      var stopHeight = data.length - 1;
-      var tmp = new DenseBitVector(data.length * width);
-      builtBits = true;
-      var n = 0;
-      for (var i = 0; i < data.length; i++) {
-        var iindex = if (doFlipY) { stopHeight - i } else { i };
-        var split = data[iindex]; 
-        for (var j = 0; j < width; j++) {
-          var jindex = if (doFlipX) { stopWidth - j } else { j };
-          if (0 <= jindex && jindex <= stopWidth) {
-            tmp[n] = split[jindex];
-          } else {
-            tmp[n] = false;
-          }
-          n += 1;
-        }
-      }
-      bits = tmp;
-    }
-    return bits;
+  public buildBits(): Listed<DenseBitVector> {
+    return data;
   }
 }
 
 class Pattern {
   public name: String;
   public builder: LifeBuilder;
-  public doNotDraw: Boolean;
+  private doNotDraw: Boolean;
+  private hasTexture: Boolean;
+  private texture: RenderTexture2D;
 
   public get size(): List<Int> {
     return builder.size;
@@ -513,7 +495,8 @@ class Pattern {
   public constructor(nameArg: String, builderArg: LifeBuilder) {
     name = nameArg;
     builder = builderArg;
-    doNotDraw = builder.size[0] * builder.size[1] > 65536;
+    doNotDraw = builder.size[0] * builder.size[1] > 1000000;
+    hasTexture = false;
   }
 
   public noDraw(v: Boolean): Void {
@@ -521,57 +504,45 @@ class Pattern {
   }
 
   public drawTool(bounds: Rectangle, selected: Boolean): Boolean {
+    if (selected) {
+      DrawRectangleRec(bounds, new Color(32, 128, 32, 255));
+    } else {
+      DrawRectangleRec(bounds, new Color(32, 32, 32, 255));
+    }
+    var border = 0.1;
+    bounds = new Rectangle(
+      bounds.x + bounds.width * border,
+      bounds.y + bounds.height * border,
+      bounds.width * (1.0 - border * 2.0),
+      bounds.height * (1.0 - border * 2.0),
+    );
     if (doNotDraw) {
       DrawRectangleRec(bounds, new Color(255, 128, 32, 255));
     } else {
-      if (selected) {
-        DrawRectangleRec(bounds, new Color(32, 128, 32, 255));
-      } else {
-        DrawRectangleRec(bounds, new Color(32, 32, 32, 255));
-      }
-      var border = 0.1;
-      bounds = new Rectangle(
-        bounds.x + bounds.width * border,
-        bounds.y + bounds.height * border,
-        bounds.width * (1.0 - border * 2.0),
-        bounds.height * (1.0 - border * 2.0),
-      );
-      DrawRectangleRec(bounds, BLACK);
-      var size = builder.size;
-      var built = builder.buildBits();
-      var maxSize = size[0].toFloat64().max(size[1].toFloat64()).toInt();
-      var xSize = bounds.width / maxSize.toFloat64();
-      var ySize = bounds.height / maxSize.toFloat64();
-      var xOff = (maxSize - size[0]).toFloat64() * xSize * 0.5;
-      var yOff = (maxSize - size[1]).toFloat64() * ySize * 0.5;
-      if (xSize < 2.0 || ySize < 2.0) {
-        DrawRectangleRec(bounds, BLACK);
-        builder.buildNode().draw(new DrawConfig(bounds), bounds);
-      } else {
-        for (var y = 0; y < size[1]; y++) {
-          for (var x = 0; x < size[0]; x++) {
-            var rec = new Rectangle(
-              bounds.x + xSize * x.toFloat64() + xOff,
-              bounds.y + ySize * y.toFloat64() + yOff,
-              xSize,
-              ySize,
-            );
-            if (x < 0 || x >= size[0] || y < 0 || y >= size[1]) {
-              DrawRectangleRec(rec, BLACK);
-            } else if (built[x + y * size[0]]) {
-              DrawRectangleRec(rec, WHITE);
-            } else {
-              DrawRectangleRec(rec, BLACK);
+      var size = builder.width.toFloat64().max(builder.height.toFloat64());
+      var textureBounds = new Rectangle(0.0, 0.0, size, size);
+      if (!hasTexture) {
+        hasTexture = true;
+        texture = LoadRenderTexture(builder.width, builder.height);
+        BeginTextureMode(texture);
+        DrawRectangleRec(textureBounds, BLACK);
+        var built = builder.buildBits();
+        var xo = (size.toInt() - builder.width) / 2;
+        var yo = (size.toInt() - builder.height) / 2;
+        for (var y = 0; y < builder.height; y += 1) {
+          var row = built[y];
+          for (var x = 0; x < builder.width; x += 1) {
+            if (row[x]) {
+              DrawPixel(x + xo, y + yo, WHITE);
             }
           }
         }
+        EndTextureMode();
       }
+      DrawTexturePro(texture.texture, textureBounds, bounds, new Vector2(0.0, 0.0), 0.0, WHITE);
     }
     var mouse = GetMousePosition();
     if (CheckCollisionPointRec(mouse, bounds)) {
-      var width = MeasureText(name, 20);
-      DrawRectangleRec(new Rectangle(mouse.x + 2.0, mouse.y - 16.0, width.toFloat64() + 4.0, 24.0), new Color(0, 0, 0, 192));
-      DrawText(name, mouse.x.toInt() + 8, mouse.y.toInt() - 16, 20, WHITE);
       if (IsMouseButtonPressed(0)) {
         return true;
       }
@@ -623,7 +594,9 @@ let stringToPattern(text: String): Pattern {
         break;
       }
       if (code == /* b */ 98) {
-        cs[csl++] = false;
+        for (var i = 0; i < n; i++) {
+          cs[csl++] = false;
+        }
       }
       if (code == /* o */ 111) {
         for (var i = 0; i < n; i++) {
@@ -640,6 +613,7 @@ let stringToPattern(text: String): Pattern {
       }
     }
   }
+  builder.add(cs, csl);
   return new Pattern(name, builder);
 }
 
@@ -697,35 +671,15 @@ class SimpleCamera {
 export let main(args: Listed<String>): Void | Bubble {
   SetTraceLogLevel(LOG_WARNING);
   
-  var patterns = new ListBuilder<Pattern>();
-  var files = [
-    "demos/life/clock.rle",
-    "demos/life/glider.rle",
-    "demos/life/glidergun.rle",
-    "demos/life/c5greyship.rle",
-    "demos/life/primer.rle",
-    "demos/life/tlogtgrowth.rle",
-    "demos/life/hacksaw.rle",
-    "demos/life/3enginecordershipgun.rle",
-    "demos/life/glidergun.rle",
-    "demos/life/tetheredrake.rle",
-    "demos/life/p94s.rle",
-    "demos/life/breeder1.rle",
-    "demos/life/logt2growth.rle",
-    "demos/life/infinitegliderhotel.rle",
-    "demos/life/turingmachine.rle",
-    "demos/life/infinitelwsshotel.rle",
-    "demos/life/gunstar.rle",
-  ];
+  var allPatterns = new ListBuilder<Pattern>();
   for (var i = 0; i < files.length; i++) {
     var pattern = stringToPattern(LoadFileText(files[i]));
-    patterns.add(pattern);
+    allPatterns.add(pattern);
   }
-  if ((args[0] == "--clock") orelse false) {
-    var pattern = stringToPattern(LoadFileText("demos/life/clock.rle"));
-    pattern.noDraw(true);
-    patterns.add(pattern);
-    args = args.slice(1, args.length);
+  var patternHead = 0;
+  var patterns = new ListBuilder<Pattern>();
+  for (var i = patternHead; i < patternHead + 10; i++) {
+    patterns.add(allPatterns[i % allPatterns.length]);
   }
   var selectedEnt: Pattern | Null = null;
 
@@ -775,11 +729,13 @@ export let main(args: Listed<String>): Void | Bubble {
     var mouse = GetMousePosition();
     var drawSelectedEnt = true;
     var clickWasEnts = false;
+    var toolText = "";
     for (var i = 0; i < patterns.length; i++) {
       var bounds = new Rectangle(i.toFloat64() * entWidth, GetScreenHeight().toFloat64() - entWidth, entWidth, entWidth);
       if (CheckCollisionPointRec(mouse, bounds)) {
         clickWasEnts = true;
         drawSelectedEnt = false;
+        toolText = patterns[i].name;
       }
       if (patterns[i].drawTool(bounds, selectedEnt == patterns[i])) {
         if (selectedEnt == patterns[i]) {
@@ -788,6 +744,11 @@ export let main(args: Listed<String>): Void | Bubble {
           selectedEnt = patterns[i];
         }
       }
+    }
+    if (toolText != "") {
+      var width = MeasureText(toolText, 20);
+      DrawRectangleRec(new Rectangle(mouse.x + 2.0, mouse.y - 16.0, width.toFloat64() + 4.0, 24.0), new Color(0, 0, 0, 192));
+      DrawText(toolText, mouse.x.toInt() + 8, mouse.y.toInt() - 16, 20, WHITE);
     }
     if (!clickWasEnts && selectedEnt != null) {
       var boundsFlipX1 = new Rectangle(GetScreenWidth().toFloat64() - 50.0, 10.0, 20.0, 40.0);
@@ -855,6 +816,20 @@ export let main(args: Listed<String>): Void | Bubble {
     }
     if (IsKeyPressed(KEY_C)) {
       game.clear();
+    }
+    if (IsKeyPressed(KEY_O)) {
+      patternHead -= 1;
+      patterns = new ListBuilder<Pattern>();
+      for (var i = patternHead; i < patternHead + 10; i++) {
+        patterns.add(allPatterns[i % allPatterns.length]);
+      }
+    }
+    if (IsKeyPressed(KEY_P)) {
+      patternHead += 1;
+      patterns = new ListBuilder<Pattern>();
+      for (var i = patternHead; i < patternHead + 10; i++) {
+        patterns.add(allPatterns[i % allPatterns.length]);
+      }
     }
     if (drawSelectedEnt && selectedEnt != null) {
       if (IsMouseButtonPressed(0)) {
