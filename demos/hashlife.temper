@@ -1,6 +1,5 @@
 
 let {...} = import("../rl/raylib.temper");
-let { files } = import("./life/all.temper");
 
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
@@ -678,8 +677,10 @@ export let main(args: Listed<String>): Void | Bubble {
   var allPatterns = patterns();
   var patternHead = 0;
   var patterns = new ListBuilder<Pattern>();
-  for (var i = patternHead; i < patternHead + 10; i++) {
-    patterns.add(allPatterns[i % allPatterns.length]);
+  if (allPatterns.length != 0) {
+    for (var i = patternHead; i < patternHead + 10; i++) {
+      patterns.add(allPatterns[i % allPatterns.length]);
+    }
   }
   var selectedEnt: Pattern | Null = null;
 
@@ -817,18 +818,20 @@ export let main(args: Listed<String>): Void | Bubble {
     if (IsKeyPressed(KEY_C)) {
       game.clear();
     }
-    if (IsKeyPressed(KEY_O)) {
-      patternHead -= 1;
-      patterns = new ListBuilder<Pattern>();
-      for (var i = patternHead; i < patternHead + 10; i++) {
-        patterns.add(allPatterns[i % allPatterns.length]);
+    if (allPatterns.length != 0) {
+      if (IsKeyPressed(KEY_O)) {
+        patternHead -= 1;
+        patterns = new ListBuilder<Pattern>();
+        for (var i = patternHead; i < patternHead + 10; i++) {
+          patterns.add(allPatterns[i % allPatterns.length]);
+        }
       }
-    }
-    if (IsKeyPressed(KEY_P)) {
-      patternHead += 1;
-      patterns = new ListBuilder<Pattern>();
-      for (var i = patternHead; i < patternHead + 10; i++) {
-        patterns.add(allPatterns[i % allPatterns.length]);
+      if (IsKeyPressed(KEY_P)) {
+        patternHead += 1;
+        patterns = new ListBuilder<Pattern>();
+        for (var i = patternHead; i < patternHead + 10; i++) {
+          patterns.add(allPatterns[i % allPatterns.length]);
+        }
       }
     }
     if (drawSelectedEnt && selectedEnt != null) {
