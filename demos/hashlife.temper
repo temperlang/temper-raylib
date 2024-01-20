@@ -3,18 +3,44 @@ let {...} = import("../rl/raylib.temper");
 
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
 
-var pow2 = do {
-  var builder = new ListBuilder<Int>();
-  var cur = 1;
-  for (var i = 0; i < 32; i++) {
-    builder.add(cur);
-    cur += cur;
+var pow2 = new ListBuilder<Int>();
+var cur = 1;
+for (var i = 0; i < 32; i++) {
+  pow2.add(cur);
+  cur += cur;
+}
+
+let idString(s: String): String {
+  return s;
+}
+
+let saveTable(): String {
+  var ret = new ListBuilder<String>();
+  var items = hashtable.toList();
+  for (var i = 0; i < items.length; i++) {
+    var key = items[i].key;
+    var values = hashtable[key];
+    if (i != 0) {
+      ret.add("#");
+    }
+    ret.add(key.toString());
+    ret.add("=");
+    for (var j = 0; j < values.length; j++) {
+      if (j != 0) {
+        ret.add(".")
+      }
+      ret.add(values[j].toJson());
+    }
   }
-  builder.toList()
-};
+  return ret.join("", idString);
+}
 
 class DrawConfig {
   public screen: Rectangle;
+}
+
+let nodeToJsonRef(n: Node): String {
+  return n.toJsonRef();
 }
 
 interface Node {
@@ -25,13 +51,16 @@ interface Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node | Null = null;
-  public succ: ListBuilder<Node | Null>;
+  public next: Node = null;
+  public succ: ListBuilder<Node>;
 
-  public setNext(n: Node | Null): Void;
+  public setNext(n: Node): Void;
   public setSucc(j: Int, n: Node): Void;
   public eq(other: Node): Boolean;
   public draw(config: DrawConfig, bounds: Rectangle): Void;
+  
+  public toJson(): String;
+  public toJsonRef(): String;
 }
 
 class RealNode extends Node {
@@ -42,8 +71,8 @@ class RealNode extends Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node | Null;
-  public succ: ListBuilder<Node | Null>;
+  public next: Node;
+  public succ: ListBuilder<Node>;
   
   constructor(level: Int, pop: Int, a: Node, b: Node, c: Node, d: Node, hash: Int): Void {
     this.level = level;
@@ -53,17 +82,41 @@ class RealNode extends Node {
     this.c = c;
     this.d = d;
     this.hash = hash;
-    next = null;
-    succ = new ListBuilder<Node | Null>();
+    next = fake;
+    succ = new ListBuilder<Node>();
   }
 
-  public setNext(n: Node | Null): Void {
+  public toJson(): String {
+    var parts = [
+      level.toString(),
+      pop.toString(),
+      a.toJsonRef(),
+      b.toJsonRef(),
+      c.toJsonRef(),
+      d.toJsonRef(),
+      next.toJsonRef(),
+      succ.join(",", nodeToJsonRef),
+    ];
+    return parts.join(";", idString);
+  }
+
+  public toJsonRef(): String {
+    var ent = hashtable[hash];
+    for (var i = 0; i < ent.length; i++) {
+      if (ent[i] == this) {
+        return "${hash.toString()}>${i.toString()}";
+      }
+    }
+    return "???";
+  }
+
+  public setNext(n: Node): Void {
     next = n;
   }
 
-  public setSucc(j: Int, n: Node | Null): Void {
+  public setSucc(j: Int, n: Node): Void {
     while (succ.length <= j) {
-      succ.add(null);
+      succ.add(fake);
     }
     succ[j] = n;
   }
@@ -129,23 +182,21 @@ class FakeNode extends Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node | Null;
-  public succ: ListBuilder<Node | Null>;
+  public next: Node;
+  public succ: ListBuilder<Node>;
 
-  constructor(): Void {
-    level = -1;
-    pop = 0;
-    a = this;
-    b = this;
-    c = this;
-    d = this;
-    hash = 0;
-    next = null;
-    succ = new ListBuilder<Node | Null>();
+  constructor(): Void {}
+
+  public toJson(): String {
+    return "???";
   }
-
-  public setNext(n: Node | Null): Void {}
-  public setSucc(j: Int, n: Node | Null): Void {}
+  
+  public toJsonRef(): String {
+    return "???";
+  }
+  
+  public setNext(n: Node): Void {}
+  public setSucc(j: Int, n: Node): Void {}
   public eq(other: Node): Boolean {
     return this == other;
   }
@@ -153,8 +204,11 @@ class FakeNode extends Node {
 }
 
 var fake = new FakeNode();
-var off = new RealNode(0, 0, fake, fake, fake, fake, 0);
-var on = new RealNode(0, 1, fake, fake, fake, fake, 1);
+var off = new RealNode(0, 0, fake, fake, fake, fake, 1);
+var on = new RealNode(0, 1, fake, fake, fake, fake, 2);
+
+enter(on);
+enter(off);
 
 let enter(node: Node): Node {
   var got = hashtable[node.hash] orelse new ListBuilder<Node>();
@@ -247,12 +301,12 @@ let life2(m: Node): Node {
 }
 
 let nextGen(m: Node): Node {
-  if (m.next == null) {
+  if (m.next == fake) {
     var next = nextGenImpl(m);
     m.setNext(next);
     return next;
   } else {
-    return m.next.as<Node>();
+    return m.next;
   }
 }
 
@@ -282,13 +336,16 @@ let nextGenImpl(m: Node): Node {
 }
 
 let successor(m: Node, j: Int): Node {
-  var mSucc = m.succ.getOr(j, null); 
-  if (mSucc == null) {
+  if (j == 0) {
+    return nextGen(m);
+  }
+  var mSucc = m.succ.getOr(j, fake); 
+  if (mSucc == fake) {
     var succ = successorImpl(m, j);
     m.setSucc(j, succ);
     return succ;
   } else {
-    return mSucc.as<Node>();
+    return mSucc;
   }
 }
 
@@ -339,28 +396,45 @@ let subRandom(n: Int, subs: Int): Node {
   }
 }
 
-let copyWithRangeSet(grid: Node, pos: List<Int>, low: List<Int>, high: List<Int>, data: Listed<DenseBitVector>): Node {
-  var size = pow2[grid.level];
-  if (pos[0] >= high[0] || pos[0] + size <= low[0]) {
-    return grid;
+let nodeForBit(n: Boolean): Node {
+  if (n) {
+    return on;
+  } else {
+    return off;
   }
-  if (pos[1] >= high[1] || pos[1] + size <= low[1]) {
-    return grid;
-  }
-  if (grid.level == 0) {
-    if (data[pos[1] - low[1]][pos[0] - low[0]]) {
-      return on;
-    } else {
-      return off;
+}
+
+let copyWithRangeSet(grid0: Node, low: List<Int>, high: List<Int>, data: Listed<DenseBitVector>): Node {
+  var low0 = low[0];
+  var low1 = low[1];
+  var high0 = high[0];
+  var high1 = high[1];
+
+  let go(grid: Node, x: Int, y: Int, size: Int): Node {
+    if (x >= high0 || x + size <= low0 || y >= high1 || y + size <= low1) {
+      return grid;
     }
+    
+    if (grid.level == 0) {
+      if (data[y - low1][x - low0]) {
+        return on;
+      } else {
+        return off;
+      }
+    }
+    
+    var halfSize = size / 2;
+    var xh = x + halfSize;
+    var yh = y + halfSize;
+    return join(
+      go(grid.a, x, y, halfSize),
+      go(grid.b, xh, y, halfSize),
+      go(grid.c, x, yh, halfSize),
+      go(grid.d, xh, yh, halfSize),
+    );
   }
-  var size2 = size / 2;
-  return join(
-    copyWithRangeSet(grid.a, pos, low, high, data),
-    copyWithRangeSet(grid.b, [pos[0] + size2, pos[1]], low, high, data),
-    copyWithRangeSet(grid.c, [pos[0], pos[1] + size2], low, high, data),
-    copyWithRangeSet(grid.d, [pos[0] + size2, pos[1] + size2], low, high, data),
-  );
+
+  return go(grid0, 0, 0, pow2[grid0.level]);
 }
 
 class Game {
@@ -377,7 +451,7 @@ class Game {
   }
 
   public addData(size: List<Int>, data: Listed<DenseBitVector>, pos: List<Int>): Void {
-    grid = copyWithRangeSet(grid, [0, 0], pos, [pos[0] + size[0], pos[1] + size[1]], data);
+    grid = copyWithRangeSet(grid, pos, [pos[0] + size[0], pos[1] + size[1]], data);
   }
 
   public addBuilder(builder: LifeBuilder, pos: List<Int>): Void {
@@ -409,15 +483,15 @@ class LifeBuilder {
   public width: Int;
   private data: ListBuilder<DenseBitVector>;
   
-  private doFlipX: Boolean;
-  private doFlipY: Boolean;
+  public doFlipX: Boolean;
+  public doFlipY: Boolean;
   
   private node: Node;
   private builtNode: Boolean;
 
   public constructor() {
     width = 0;
-    data = new ListBuilder<String>();
+    data = new ListBuilder<DenseBitVector>();
     doFlipX = false;
     doFlipY = false;
     clear();
@@ -462,7 +536,7 @@ class LifeBuilder {
         start[0] + size[0],
         start[1] + size[1],
       ];
-      node = copyWithRangeSet(empty, [0, 0], start, stop, buildBits());
+      node = copyWithRangeSet(empty, start, stop, buildBits());
       var endTime = GetTime();
     }
     return node;
@@ -498,10 +572,6 @@ class Pattern {
     hasTexture = false;
   }
 
-  public noDraw(v: Boolean): Void {
-    doNotDraw = v;
-  }
-
   public drawTool(bounds: Rectangle, selected: Boolean): Boolean {
     if (selected) {
       DrawRectangleRec(bounds, new Color(32, 128, 32, 255));
@@ -526,19 +596,26 @@ class Pattern {
         BeginTextureMode(texture);
         DrawRectangleRec(textureBounds, BLACK);
         var built = builder.buildBits();
-        var xo = (size.toInt() - builder.width) / 2;
-        var yo = (size.toInt() - builder.height) / 2;
         for (var y = 0; y < builder.height; y += 1) {
           var row = built[y];
           for (var x = 0; x < builder.width; x += 1) {
             if (row[x]) {
-              DrawPixel(x + xo, y + yo, WHITE);
+              DrawPixel(x, y, WHITE);
             }
           }
         }
         EndTextureMode();
       }
-      DrawTexturePro(texture.texture, textureBounds, bounds, new Vector2(0.0, 0.0), 0.0, WHITE);
+      var b = new Rectangle(0.0, 0.0, builder.width.toFloat64(), builder.height.toFloat64());
+      if (builder.doFlipX) {
+        b.x = b.width - 1.0;
+        b.width = -b.width;
+      }
+      if (builder.doFlipY) {
+        b.y = b.height - 1.0;
+        b.height = -b.height;
+      }
+      DrawTexturePro(texture.texture, b, bounds, new Vector2(0.0, 0.0), 0.0, WHITE);
     }
     var mouse = GetMousePosition();
     if (CheckCollisionPointRec(mouse, bounds)) {
@@ -556,6 +633,7 @@ let stringToPattern(text: String): Pattern {
   var cs = new DenseBitVector(0);
   var builder = new LifeBuilder();
   var split = text.split("\n");
+  var numEmpty = 0;
   for (var i = 0; i < split.length; i++) {
     var cur = split[i].codePoints;
     if (cur.hasAtLeast(1)) {
@@ -570,10 +648,8 @@ let stringToPattern(text: String): Pattern {
         }
         continue;
       }
-    } else {
-      continue;
     }
-    while (true) {
+    while (!cur.isEmpty) {
       var code = cur.read();
       var n = 1;
       if (48 <= code && code < 58) {
@@ -589,9 +665,6 @@ let stringToPattern(text: String): Pattern {
         }
       }
       cur = cur.advance(1);
-      if (cur.isEmpty) {
-        break;
-      }
       if (code == /* b */ 98) {
         for (var i = 0; i < n; i++) {
           cs[csl++] = false;
@@ -603,16 +676,21 @@ let stringToPattern(text: String): Pattern {
         }
       }
       if (code == /* $ */ 36 || code == /* ! */ 33) {
-        builder.add(cs, csl);
-        csl = 0;
-        cs = new DenseBitVector(0);
-        for (var i = 1; i < n; i++) {
+        for (var i = 0; i < n; i++) {
+          if (csl == 0) {
+            numEmpty += 1;
+          }
           builder.add(cs, csl);
+          csl = 0;
+          cs = new DenseBitVector(0);
         }
       }
     }
   }
-  builder.add(cs, csl);
+  if (csl != 0) {
+    console.log("${name} failed with ${csl.toString()} data");
+    bubble();
+  }
   return new Pattern(name, builder);
 }
 
@@ -679,7 +757,7 @@ export let main(args: Listed<String>): Void | Bubble {
   var patterns = new ListBuilder<Pattern>();
   if (allPatterns.length != 0) {
     for (var i = patternHead; i < patternHead + 10; i++) {
-      patterns.add(allPatterns[i % allPatterns.length]);
+      patterns.add(allPatterns[(i + allPatterns.length) % allPatterns.length]);
     }
   }
   var selectedEnt: Pattern | Null = null;
@@ -823,14 +901,14 @@ export let main(args: Listed<String>): Void | Bubble {
         patternHead -= 1;
         patterns = new ListBuilder<Pattern>();
         for (var i = patternHead; i < patternHead + 10; i++) {
-          patterns.add(allPatterns[i % allPatterns.length]);
+          patterns.add(allPatterns[(i + allPatterns.length) % allPatterns.length]);
         }
       }
       if (IsKeyPressed(KEY_P)) {
         patternHead += 1;
         patterns = new ListBuilder<Pattern>();
         for (var i = patternHead; i < patternHead + 10; i++) {
-          patterns.add(allPatterns[i % allPatterns.length]);
+          patterns.add(allPatterns[(i + allPatterns.length) % allPatterns.length]);
         }
       }
     }
@@ -839,6 +917,7 @@ export let main(args: Listed<String>): Void | Bubble {
         game.addBuilder(selectedEnt.as<Pattern>().builder, camera.screenToLife(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
       }
     }
+    // SaveFileText("out.save", saveTable());
   }
   CloseWindow();
 }
