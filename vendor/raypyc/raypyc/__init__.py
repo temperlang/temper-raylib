@@ -15,14 +15,15 @@ current_module = __import__(__name__)
 
 DYNAMIC_LIBRARIES_PATH = pathlib.Path(__file__).parent / 'libs'
 
-if sys.platform == 'emscripten':
-	dllname = 'wasmraylib.so'
-elif sys.platform == 'linux':
+system = platform.system()
+if system == 'Linux':
 	dllname = 'libraylib.so'
-elif platform.machine() == 'aarch64': # pydroid
-	dllname = 'libraylibandroid.so'
-else:  # windows
+elif system == 'Darwin':
+    dllname = 'libraylib.dylib'
+elif system == 'Windows':
 	dllname = 'raylib.dll'
+else:
+    raise Exception(f'raypyc: unsupported platform: {system}')
 
 _raylib_dynamic_library = ctypes.cdll.LoadLibrary(str(pathlib.Path(__file__).parent / DYNAMIC_LIBRARIES_PATH / dllname))
 

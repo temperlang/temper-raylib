@@ -1,7 +1,7 @@
 import ctypes
 import json
 import re
-import sys
+import platform
 from pathlib import WindowsPath, Path
 from typing import Any, Dict, List, Union
 
@@ -22,10 +22,15 @@ wrapped_aliases_names = []
 
 wrapped_functions_names_stub = []
 
-if sys.platform == 'linux':
+system = platform.system()
+if system == 'Linux':
 	_raylib_dynamic_library_name = 'libraylib.so'
-else:  # windows
+elif system == 'Darwin':
+	_raylib_dynamic_library_name = 'libraylib.dylib'
+elif system == 'Windows':
 	_raylib_dynamic_library_name = 'raylib.dll'
+else:
+    raise Exception(f'raypyc: unsupported platform: {system}')
 
 _raypyc_extra_functions = ctypes.cdll.LoadLibrary(str(DYNAMIC_LIBRARIES_PATH / _raylib_dynamic_library_name))
 

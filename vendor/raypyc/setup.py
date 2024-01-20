@@ -4,7 +4,16 @@ from subprocess import call as proc_call
 
 from pathlib import Path
 
-proc_call(['bash', str(Path(__file__).parent / 'raylib-build' / 'build_all_linux.sh')])
+import platform
+
+system = platform.system()
+
+if system == 'Darwin':
+    proc_call(['bash', str(Path(__file__).parent / 'raylib-build' / 'build_all_macos.sh')])
+elif system == 'Linux':
+    proc_call(['bash', str(Path(__file__).parent / 'raylib-build' / 'build_all_linux.sh')])
+else:
+    raise Exception(f'raypyc: unsupported platform: {system}')
 
 import filesGeneration
 

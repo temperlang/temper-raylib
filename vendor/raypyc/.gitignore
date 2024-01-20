@@ -28,5 +28,7 @@ build
 raypyc/*.pyi
 raypyc/*.json
 raypyc/libs/*.so
+raypyc/libs/*.dylib
+raypyc/libs/*.dll
 raypyc/structures/*.py
 raypyc/structures/*.pyi

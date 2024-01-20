@@ -12,14 +12,8 @@ test -d raylib || git clone --depth 1 https://github.com/raysan5/raylib
 test -d raygui || git clone --depth 1 https://github.com/raysan5/raygui
 
 # compile raudio
-# cc -c raylib/src/raudio.c -std=c99 -Iraudio/src
-# ar rcs raudio.a raudio.o
 
 test -f raylib/src/raudio-patch-is-done || cat extra_audio.c >> raylib/src/raudio.c && touch raylib/src/raudio-patch-is-done
-
-# $cc $opt -c raygui/src/raygui.h -o raypyc_raygui.o -std=c99 -DRAYGUI_IMPLEMENTATION -Iraylib/src
-# cc -O3 -shared -o raypyc.so raypyc_raudio.o raypyc_raygui.o
-# mv raypyc.so all
 
 # compile raylib as dynamic library
 cd "./raylib/src"
