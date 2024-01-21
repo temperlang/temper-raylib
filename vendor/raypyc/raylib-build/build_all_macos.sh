@@ -3,7 +3,7 @@
 set -ex
 
 cc=clang
-opt="-O1"
+opt="-O3"
 
 cd $(dirname ${BASH_SOURCE[0]})
 

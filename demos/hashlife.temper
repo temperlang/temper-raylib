@@ -2,6 +2,7 @@
 let {...} = import("../rl/raylib.temper");
 
 var hashtable = new MapBuilder<Int, ListBuilder<Node>>();
+var heat = 0;
 
 var pow2 = new ListBuilder<Int>();
 var cur = 1;
@@ -218,6 +219,7 @@ let enter(node: Node): Node {
       return cur;
     }
   }
+  heat += 1;
   got.add(node);
   hashtable[node.hash] = got;
   return node;
@@ -234,7 +236,7 @@ let join(a: Node, b: Node, c: Node, d: Node): Node {
     + 8973110871315 * c.hash
     + 4318490180473 * d.hash
   );
-  return enter(new RealNode(a.level + 1, pop, a, b, c, d, next % 2251799813685248));
+  return enter(new RealNode(a.level + 1, pop, a, b, c, d, next % 2147483648));
 }
 
 let zero(level: Int): Node {
@@ -568,7 +570,8 @@ class Pattern {
   public constructor(nameArg: String, builderArg: LifeBuilder) {
     name = nameArg;
     builder = builderArg;
-    doNotDraw = builder.size[0] * builder.size[1] > 1000000;
+    // doNotDraw = builder.size[0] * builder.size[1] > 1000000;
+    doNotDraw = false;
     hasTexture = false;
   }
 
@@ -781,6 +784,8 @@ export let main(args: Listed<String>): Void | Bubble {
 
   var nextTime = GetTime() + 1.0 / rate;
 
+  var realHeat = heat;
+
   while (!WindowShouldClose()) {
     camera.update();
 
@@ -803,6 +808,11 @@ export let main(args: Listed<String>): Void | Bubble {
     );
     game.draw(gameBounds);
     DrawFPS(20, 20);
+    var n = 1;
+    for (var i = 0; n < realHeat; i += 1) {
+      DrawRectangleRec(new Rectangle(20.0, 50.0 + i.toFloat64() * 30.0, 20.0, 20.0), RED);
+      n *= 2;
+    }
     DrawText("${rate.toString()} hz * ${pow2[steps].toString()} warp", 120, 20, 20, WHITE);
     var entWidth = (GetScreenHeight().toFloat64() * 0.1).min(GetScreenWidth().toFloat64() / patterns.length.toFloat64());
     var mouse = GetMousePosition();
@@ -917,6 +927,10 @@ export let main(args: Listed<String>): Void | Bubble {
         game.addBuilder(selectedEnt.as<Pattern>().builder, camera.screenToLife(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
       }
     }
+    if (heat != 0) {
+      realHeat = heat;
+    }
+    heat = 0;
     // SaveFileText("out.save", saveTable());
   }
   CloseWindow();
