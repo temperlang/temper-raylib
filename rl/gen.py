@@ -4,6 +4,8 @@ import re
 
 tab = '    '
 
+aliased = {}
+
 def conv(t: str) -> str:
     while 'const' in t:
         t = t.replace('const', '')
@@ -17,6 +19,10 @@ def conv(t: str) -> str:
         t = t[:-1]
         n += 1
     t = t.strip()
+    comment = ''
+    while t in aliased:
+        comment = f' /* from alias {t} */'
+        t = aliased[t]
     match t:
         case 'bool':
             ret = 'Boolean'
@@ -44,7 +50,7 @@ def conv(t: str) -> str:
             ret = t
     for i in range(n):
         ret = f'Listed<{ret}>'
-    return ret
+    return ret + comment
 
 bad_types = ['Sound', 'AudioCallback', 'SaveFileTextCallback', 'LoadFileTextCallback', 'TraceLogCallback', 'LoadFileDataCallback', 'SaveFileDataCallback']
 def is_bad_func(func):
@@ -71,6 +77,11 @@ def main() -> None:
                     raylib_json[entry] = name_json[entry]
 
     raylib_json['functions'] = filter_out_bad_funcs(raylib_json['functions'])
+
+    for alias in raylib_json['aliases']:
+        alias_name = alias['name']
+        alias_type = alias['type']
+        aliased[alias_name] = alias_type
 
     with open(f'rl/raylib.temper', 'w') as out_file:
         already_exported = set()
@@ -184,6 +195,7 @@ def main() -> None:
         for enum in raylib_json['enums']:
             name = enum['name']
             out_file.write(f'export let {name} = Int;\n')
+
         for struct in raylib_json['structs']:
             name = struct['name']
             desc = struct['description']
@@ -197,13 +209,6 @@ def main() -> None:
                 out_file.write(f'{tab}public var {field_name}: {conv(field_type)};\n')
             out_file.write('}\n')
 
-        for alias in raylib_json['aliases']:
-            alias_name = alias['name']
-            alias_type = alias['type']
-            alias_desc = alias['description']
-            out_file.write(f'// {alias_desc}\n')
-            out_file.write(f'export const {alias_name} = {alias_type};\n')
-    
         for cb in raylib_json['callbacks']:
             cb_name = cb['name']
             cb_ret = conv(cb['returnType'])

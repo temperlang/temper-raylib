@@ -160,51 +160,39 @@ def wrap_fast(func, proto):
     return func
 
 def main():
-    if old:
-        wrapped_raylib = SimpleNamespace()
-
-        for name in vars(raypyc):
-            if name.startswith('_'):
+    temper_raylib_color = temper_raylib.Color
+    temper_raylib_raylib = temper_raylib.Raylib
+    demangle = {}
+    for name in dir(raypyc):
+        demangle[mangle(name)] = name
+    for name in dir(temper_raylib):
+        if name.startswith('_'):
+            continue
+        if name in ['use']:
+            continue
+        temper_obj = getattr(temper_raylib, name)
+        if isinstance(temper_obj, (type(NotImplemented), str, int, float, bool)):
+            continue
+        elif isinstance(temper_obj, temper_raylib_color):
+            setattr(temper_raylib, name, raypyc.Color(temper_obj.r, temper_obj.g, temper_obj.b, temper_obj.a))
+            continue
+        elif temper_obj in vars(typing).values():
+            continue
+        elif isinstance(temper_obj, type):
+            if issubclass(temper_obj, BaseException):
                 continue
-            mangled = mangle(name)
-            if hasattr(raypyc, name) and hasattr(temper_raylib.Raylib, mangled):
-                setattr(wrapped_raylib, mangled, wrap_slow(getattr(raypyc, name), getattr(temper_raylib.Raylib, mangled)))
-
-        temper_raylib.use(wrapped_raylib)
-    else:
-        temper_raylib_color = temper_raylib.Color
-        temper_raylib_raylib = temper_raylib.Raylib
-        demangle = {}
-        for name in dir(raypyc):
-            demangle[mangle(name)] = name
-        for name in dir(temper_raylib):
-            if name.startswith('_'):
+            if temper_obj in (abc.ABCMeta, bool, float, int, str, temper_raylib_raylib):
                 continue
-            if name in ['use']:
-                continue
-            temper_obj = getattr(temper_raylib, name)
-            if isinstance(temper_obj, (type(NotImplemented), str, int, float, bool)):
-                continue
-            elif isinstance(temper_obj, temper_raylib_color):
-                setattr(temper_raylib, name, raypyc.Color(temper_obj.r, temper_obj.g, temper_obj.b, temper_obj.a))
-                continue
-            elif temper_obj in vars(typing).values():
-                continue
-            elif isinstance(temper_obj, type):
-                if issubclass(temper_obj, BaseException):
-                    continue
-                if temper_obj in (abc.ABCMeta, bool, float, int, str, temper_raylib_raylib):
-                    continue
-                setattr(temper_raylib, name, getattr(raypyc, name))
-                continue
-            if name in demangle:
-                raypyc_obj = getattr(raypyc, demangle[name])
-                if callable(raypyc_obj):
-                    setattr(temper_raylib, name, wrap_fast(raypyc_obj, temper_obj))
-                else:
-                    print('1', name, raypyc_obj)
+            setattr(temper_raylib, name, getattr(raypyc, name))
+            continue
+        if name in demangle:
+            raypyc_obj = getattr(raypyc, demangle[name])
+            if callable(raypyc_obj):
+                setattr(temper_raylib, name, wrap_fast(raypyc_obj, temper_obj))
             else:
-                print('2', name, temper_obj)
+                raise Exception(f'dont know what {name} is')
+        else:
+            raise Exception(f'dont know what {name} is')
     
     importlib.import_module(f'temper_raylib.demos.{argv[1]}').main(argv[2:])
 

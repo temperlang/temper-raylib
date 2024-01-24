@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "description": "Raylib in Temper",
   "main": "main.js",
-  "scripts": {
-    "build": "temper build -b js && rm -rf node_modules/temper-raylib && npm i temper.out/js/*"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "./"

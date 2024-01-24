@@ -1,5 +1,5 @@
 
-TEMPER_LUA_DEBUG_PCALL = true
+-- TEMPER_LUA_DEBUG_PCALL = true
 
 package.path = package.path .. ';temper.out/lua/?.lua'
 
@@ -10,16 +10,21 @@ local raylib = require('vendor.raylib-luajit.raylib')
 local Color = temper_raylib.Color
 
 for k,v in pairs(temper_raylib) do
-    if type(v) == 'table' and k ~= 'Raylib' then
-        if raylib[k] == nil then
-            temper_raylib[k] = raylib.Color(v.r, v.g, v.b, v.a)
-        else
+    if k ~= 'Raylib' and k ~= 'use' then
+        if type(v) == 'table' then
+            if raylib[k] == nil then
+                temper_raylib[k] = raylib.Color(v.r, v.g, v.b, v.a)
+            else
+                temper_raylib[k] = raylib[k]
+            end
+        elseif type(v) == 'function' then
+            assert(raylib[k], k)
             temper_raylib[k] = raylib[k]
+        elseif type(v) ~= 'number' and type(v) ~= 'string' then
+            error(k)
         end
     end
 end
-
-temper_raylib.use(raylib)
 
 if type(arg[1]) == 'string' then
     local demo = require('temper-raylib.demos.' .. arg[1])

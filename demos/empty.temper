@@ -1,2 +1,9 @@
 
-export let main(args: Listed<String>): Void | Bubble {}
+class App {
+  public constructor() {}
+  public loop(): Void {}
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  console.log("This does nothing!");
+}

@@ -227,7 +227,7 @@ export interface Raylib {
     // Ends 3D mode and returns to default 2D orthographic mode
     public EndMode3D(): Void;
     // Begin drawing to render texture
-    public BeginTextureMode(target: RenderTexture2D): Void;
+    public BeginTextureMode(target: RenderTexture /* from alias RenderTexture2D */): Void;
     // Ends drawing to render texture
     public EndTextureMode(): Void;
     // Begin custom shader drawing
@@ -267,21 +267,21 @@ export interface Raylib {
     // Set shader uniform value (matrix 4x4)
     public SetShaderValueMatrix(shader: Shader, locIndex: Int, mat: Matrix): Void;
     // Set shader uniform value for texture (sampler2d)
-    public SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture2D): Void;
+    public SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture /* from alias Texture2D */): Void;
     // Unload shader from GPU memory (VRAM)
     public UnloadShader(shader: Shader): Void;
     // Get a ray trace from mouse position
-    public GetMouseRay(mousePosition: Vector2, camera: Camera): Ray;
+    public GetMouseRay(mousePosition: Vector2, camera: Camera3D /* from alias Camera */): Ray;
     // Get camera transform matrix (view matrix)
-    public GetCameraMatrix(camera: Camera): Matrix;
+    public GetCameraMatrix(camera: Camera3D /* from alias Camera */): Matrix;
     // Get camera 2d transform matrix
     public GetCameraMatrix2D(camera: Camera2D): Matrix;
     // Get the screen space position for a 3d world space position
-    public GetWorldToScreen(position: Vector3, camera: Camera): Vector2;
+    public GetWorldToScreen(position: Vector3, camera: Camera3D /* from alias Camera */): Vector2;
     // Get the world space position for a 2d camera screen space position
     public GetScreenToWorld2D(position: Vector2, camera: Camera2D): Vector2;
     // Get size position for a 3d world space position
-    public GetWorldToScreenEx(position: Vector3, camera: Camera, width: Int, height: Int): Vector2;
+    public GetWorldToScreenEx(position: Vector3, camera: Camera3D /* from alias Camera */, width: Int, height: Int): Vector2;
     // Get the screen space position for a 2d camera world space position
     public GetWorldToScreen2D(position: Vector2, camera: Camera2D): Vector2;
     // Set target FPS (maximum)
@@ -489,13 +489,13 @@ export interface Raylib {
     // Get gesture pinch angle
     public GetGesturePinchAngle(): Float64;
     // Update camera position for selected mode
-    public UpdateCamera(camera: Listed<Camera>, mode: Int): Void;
+    public UpdateCamera(camera: Listed<Camera3D> /* from alias Camera */, mode: Int): Void;
     // Update camera movement/rotation
-    public UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: Vector3, zoom: Float64): Void;
+    public UpdateCameraPro(camera: Listed<Camera3D> /* from alias Camera */, movement: Vector3, rotation: Vector3, zoom: Float64): Void;
     // Set texture and rectangle to be used on shapes drawing
-    public SetShapesTexture(texture: Texture2D, source: Rectangle): Void;
+    public SetShapesTexture(texture: Texture /* from alias Texture2D */, source: Rectangle): Void;
     // Get texture that is used for shapes drawing
-    public GetShapesTexture(): Texture2D;
+    public GetShapesTexture(): Texture /* from alias Texture2D */;
     // Get texture source rectangle that is used for shapes drawing
     public GetShapesTextureRectangle(): Rectangle;
     // Draw a pixel
@@ -633,7 +633,7 @@ export interface Raylib {
     // Load image from memory buffer, fileType refers to extension: i.e. '.png'
     public LoadImageFromMemory(fileType: String, fileData: String, dataSize: Int): Image;
     // Load image from GPU texture data
-    public LoadImageFromTexture(texture: Texture2D): Image;
+    public LoadImageFromTexture(texture: Texture /* from alias Texture2D */): Image;
     // Load image from screen buffer and (screenshot)
     public LoadImageFromScreen(): Image;
     // Check if an image is ready
@@ -767,43 +767,43 @@ export interface Raylib {
     // Draw text (custom sprite font) within an image (destination)
     public ImageDrawTextEx(dst: Listed<Image>, font: Font, text: String, position: Vector2, fontSize: Float64, spacing: Float64, tint: Color): Void;
     // Load texture from file into GPU memory (VRAM)
-    public LoadTexture(fileName: String): Texture2D;
+    public LoadTexture(fileName: String): Texture /* from alias Texture2D */;
     // Load texture from image data
-    public LoadTextureFromImage(image: Image): Texture2D;
+    public LoadTextureFromImage(image: Image): Texture /* from alias Texture2D */;
     // Load cubemap from image, multiple image cubemap layouts supported
-    public LoadTextureCubemap(image: Image, layout: Int): TextureCubemap;
+    public LoadTextureCubemap(image: Image, layout: Int): Texture /* from alias TextureCubemap */;
     // Load texture for rendering (framebuffer)
-    public LoadRenderTexture(width: Int, height: Int): RenderTexture2D;
+    public LoadRenderTexture(width: Int, height: Int): RenderTexture /* from alias RenderTexture2D */;
     // Check if a texture is ready
-    public IsTextureReady(texture: Texture2D): Boolean;
+    public IsTextureReady(texture: Texture /* from alias Texture2D */): Boolean;
     // Unload texture from GPU memory (VRAM)
-    public UnloadTexture(texture: Texture2D): Void;
+    public UnloadTexture(texture: Texture /* from alias Texture2D */): Void;
     // Check if a render texture is ready
-    public IsRenderTextureReady(target: RenderTexture2D): Boolean;
+    public IsRenderTextureReady(target: RenderTexture /* from alias RenderTexture2D */): Boolean;
     // Unload render texture from GPU memory (VRAM)
-    public UnloadRenderTexture(target: RenderTexture2D): Void;
+    public UnloadRenderTexture(target: RenderTexture /* from alias RenderTexture2D */): Void;
     // Update GPU texture with new data
-    public UpdateTexture(texture: Texture2D, pixels: DenseBitVector): Void;
+    public UpdateTexture(texture: Texture /* from alias Texture2D */, pixels: DenseBitVector): Void;
     // Update GPU texture rectangle with new data
-    public UpdateTextureRec(texture: Texture2D, rec: Rectangle, pixels: DenseBitVector): Void;
+    public UpdateTextureRec(texture: Texture /* from alias Texture2D */, rec: Rectangle, pixels: DenseBitVector): Void;
     // Generate GPU mipmaps for a texture
-    public GenTextureMipmaps(texture: Listed<Texture2D>): Void;
+    public GenTextureMipmaps(texture: Listed<Texture> /* from alias Texture2D */): Void;
     // Set texture scaling filter mode
-    public SetTextureFilter(texture: Texture2D, filter: Int): Void;
+    public SetTextureFilter(texture: Texture /* from alias Texture2D */, filter: Int): Void;
     // Set texture wrapping mode
-    public SetTextureWrap(texture: Texture2D, wrap: Int): Void;
+    public SetTextureWrap(texture: Texture /* from alias Texture2D */, wrap: Int): Void;
     // Draw a Texture2D
-    public DrawTexture(texture: Texture2D, posX: Int, posY: Int, tint: Color): Void;
+    public DrawTexture(texture: Texture /* from alias Texture2D */, posX: Int, posY: Int, tint: Color): Void;
     // Draw a Texture2D with position defined as Vector2
-    public DrawTextureV(texture: Texture2D, position: Vector2, tint: Color): Void;
+    public DrawTextureV(texture: Texture /* from alias Texture2D */, position: Vector2, tint: Color): Void;
     // Draw a Texture2D with extended parameters
-    public DrawTextureEx(texture: Texture2D, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void;
+    public DrawTextureEx(texture: Texture /* from alias Texture2D */, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void;
     // Draw a part of a texture defined by a rectangle
-    public DrawTextureRec(texture: Texture2D, source: Rectangle, position: Vector2, tint: Color): Void;
+    public DrawTextureRec(texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector2, tint: Color): Void;
     // Draw a part of a texture defined by a rectangle with 'pro' parameters
-    public DrawTexturePro(texture: Texture2D, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
+    public DrawTexturePro(texture: Texture /* from alias Texture2D */, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
     // Draws a texture (or part of it) that stretches or shrinks nicely
-    public DrawTextureNPatch(texture: Texture2D, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
+    public DrawTextureNPatch(texture: Texture /* from alias Texture2D */, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void;
     // Get color with alpha applied, alpha goes from 0.0f to 1.0f
     public Fade(color: Color, alpha: Float64): Color;
     // Get hexadecimal value for a Color
@@ -991,11 +991,11 @@ export interface Raylib {
     // Draw bounding box (wires)
     public DrawBoundingBox(box: BoundingBox, color: Color): Void;
     // Draw a billboard texture
-    public DrawBillboard(camera: Camera, texture: Texture2D, position: Vector3, size: Float64, tint: Color): Void;
+    public DrawBillboard(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, position: Vector3, size: Float64, tint: Color): Void;
     // Draw a billboard texture defined by source
-    public DrawBillboardRec(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void;
+    public DrawBillboardRec(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void;
     // Draw a billboard texture defined by source and rotation
-    public DrawBillboardPro(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void;
+    public DrawBillboardPro(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void;
     // Upload mesh vertex data in GPU and provide VAO/VBO ids
     public UploadMesh(mesh: Listed<Mesh>, dynamic: Boolean): Void;
     // Update mesh vertex data in GPU for a specific buffer index
@@ -1045,7 +1045,7 @@ export interface Raylib {
     // Unload material from GPU memory (VRAM)
     public UnloadMaterial(material: Material): Void;
     // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
-    public SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture2D): Void;
+    public SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture /* from alias Texture2D */): Void;
     // Set material for a mesh
     public SetModelMeshMaterial(model: Listed<Model>, meshId: Int, materialId: Int): Void;
     // Load model animations from file
@@ -1279,7 +1279,7 @@ export interface Raylib {
     // 
     public Vector3Transform(v: Vector3, mat: Matrix): Vector3;
     // 
-    public Vector3RotateByQuaternion(v: Vector3, q: Quaternion): Vector3;
+    public Vector3RotateByQuaternion(v: Vector3, q: Vector4 /* from alias Quaternion */): Vector3;
     // 
     public Vector3RotateByAxisAngle(v: Vector3, axis: Vector3, angle: Float64): Vector3;
     // 
@@ -1349,51 +1349,51 @@ export interface Raylib {
     // 
     public MatrixToFloatV(mat: Matrix): float16;
     // 
-    public QuaternionAdd(q1: Quaternion, q2: Quaternion): Quaternion;
+    public QuaternionAdd(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionAddValue(q: Quaternion, add: Float64): Quaternion;
+    public QuaternionAddValue(q: Vector4 /* from alias Quaternion */, add: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionSubtract(q1: Quaternion, q2: Quaternion): Quaternion;
+    public QuaternionSubtract(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionSubtractValue(q: Quaternion, sub: Float64): Quaternion;
+    public QuaternionSubtractValue(q: Vector4 /* from alias Quaternion */, sub: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionIdentity(): Quaternion;
+    public QuaternionIdentity(): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionLength(q: Quaternion): Float64;
+    public QuaternionLength(q: Vector4 /* from alias Quaternion */): Float64;
     // 
-    public QuaternionNormalize(q: Quaternion): Quaternion;
+    public QuaternionNormalize(q: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionInvert(q: Quaternion): Quaternion;
+    public QuaternionInvert(q: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionMultiply(q1: Quaternion, q2: Quaternion): Quaternion;
+    public QuaternionMultiply(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionScale(q: Quaternion, mul: Float64): Quaternion;
+    public QuaternionScale(q: Vector4 /* from alias Quaternion */, mul: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionDivide(q1: Quaternion, q2: Quaternion): Quaternion;
+    public QuaternionDivide(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionLerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    public QuaternionLerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionNlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    public QuaternionNlerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionSlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion;
+    public QuaternionSlerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Quaternion;
+    public QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionFromMatrix(mat: Matrix): Quaternion;
+    public QuaternionFromMatrix(mat: Matrix): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionToMatrix(q: Quaternion): Matrix;
+    public QuaternionToMatrix(q: Vector4 /* from alias Quaternion */): Matrix;
     // 
-    public QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Quaternion;
+    public QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionToAxisAngle(q: Quaternion, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void;
+    public QuaternionToAxisAngle(q: Vector4 /* from alias Quaternion */, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void;
     // 
-    public QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Quaternion;
+    public QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionToEuler(q: Quaternion): Vector3;
+    public QuaternionToEuler(q: Vector4 /* from alias Quaternion */): Vector3;
     // 
-    public QuaternionTransform(q: Quaternion, mat: Matrix): Quaternion;
+    public QuaternionTransform(q: Vector4 /* from alias Quaternion */, mat: Matrix): Vector4 /* from alias Quaternion */;
     // 
-    public QuaternionEquals(p: Quaternion, q: Quaternion): Int;
+    public QuaternionEquals(p: Vector4 /* from alias Quaternion */, q: Vector4 /* from alias Quaternion */): Int;
     // Choose the current matrix to be transformed
     public rlMatrixMode(mode: Int): Void;
     // Push the current matrix to stack
@@ -2149,7 +2149,7 @@ export let EndMode3D(): Void {
     rl.EndMode3D();
 }
 // Begin drawing to render texture
-export let BeginTextureMode(target: RenderTexture2D): Void {
+export let BeginTextureMode(target: RenderTexture /* from alias RenderTexture2D */): Void {
     rl.BeginTextureMode(target);
 }
 // Ends drawing to render texture
@@ -2229,7 +2229,7 @@ export let SetShaderValueMatrix(shader: Shader, locIndex: Int, mat: Matrix): Voi
     rl.SetShaderValueMatrix(shader, locIndex, mat);
 }
 // Set shader uniform value for texture (sampler2d)
-export let SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture2D): Void {
+export let SetShaderValueTexture(shader: Shader, locIndex: Int, texture: Texture /* from alias Texture2D */): Void {
     rl.SetShaderValueTexture(shader, locIndex, texture);
 }
 // Unload shader from GPU memory (VRAM)
@@ -2237,11 +2237,11 @@ export let UnloadShader(shader: Shader): Void {
     rl.UnloadShader(shader);
 }
 // Get a ray trace from mouse position
-export let GetMouseRay(mousePosition: Vector2, camera: Camera): Ray {
+export let GetMouseRay(mousePosition: Vector2, camera: Camera3D /* from alias Camera */): Ray {
     return rl.GetMouseRay(mousePosition, camera);
 }
 // Get camera transform matrix (view matrix)
-export let GetCameraMatrix(camera: Camera): Matrix {
+export let GetCameraMatrix(camera: Camera3D /* from alias Camera */): Matrix {
     return rl.GetCameraMatrix(camera);
 }
 // Get camera 2d transform matrix
@@ -2249,7 +2249,7 @@ export let GetCameraMatrix2D(camera: Camera2D): Matrix {
     return rl.GetCameraMatrix2D(camera);
 }
 // Get the screen space position for a 3d world space position
-export let GetWorldToScreen(position: Vector3, camera: Camera): Vector2 {
+export let GetWorldToScreen(position: Vector3, camera: Camera3D /* from alias Camera */): Vector2 {
     return rl.GetWorldToScreen(position, camera);
 }
 // Get the world space position for a 2d camera screen space position
@@ -2257,7 +2257,7 @@ export let GetScreenToWorld2D(position: Vector2, camera: Camera2D): Vector2 {
     return rl.GetScreenToWorld2D(position, camera);
 }
 // Get size position for a 3d world space position
-export let GetWorldToScreenEx(position: Vector3, camera: Camera, width: Int, height: Int): Vector2 {
+export let GetWorldToScreenEx(position: Vector3, camera: Camera3D /* from alias Camera */, width: Int, height: Int): Vector2 {
     return rl.GetWorldToScreenEx(position, camera, width, height);
 }
 // Get the screen space position for a 2d camera world space position
@@ -2673,19 +2673,19 @@ export let GetGesturePinchAngle(): Float64 {
     return rl.GetGesturePinchAngle();
 }
 // Update camera position for selected mode
-export let UpdateCamera(camera: Listed<Camera>, mode: Int): Void {
+export let UpdateCamera(camera: Listed<Camera3D> /* from alias Camera */, mode: Int): Void {
     rl.UpdateCamera(camera, mode);
 }
 // Update camera movement/rotation
-export let UpdateCameraPro(camera: Listed<Camera>, movement: Vector3, rotation: Vector3, zoom: Float64): Void {
+export let UpdateCameraPro(camera: Listed<Camera3D> /* from alias Camera */, movement: Vector3, rotation: Vector3, zoom: Float64): Void {
     rl.UpdateCameraPro(camera, movement, rotation, zoom);
 }
 // Set texture and rectangle to be used on shapes drawing
-export let SetShapesTexture(texture: Texture2D, source: Rectangle): Void {
+export let SetShapesTexture(texture: Texture /* from alias Texture2D */, source: Rectangle): Void {
     rl.SetShapesTexture(texture, source);
 }
 // Get texture that is used for shapes drawing
-export let GetShapesTexture(): Texture2D {
+export let GetShapesTexture(): Texture /* from alias Texture2D */ {
     return rl.GetShapesTexture();
 }
 // Get texture source rectangle that is used for shapes drawing
@@ -2961,7 +2961,7 @@ export let LoadImageFromMemory(fileType: String, fileData: String, dataSize: Int
     return rl.LoadImageFromMemory(fileType, fileData, dataSize);
 }
 // Load image from GPU texture data
-export let LoadImageFromTexture(texture: Texture2D): Image {
+export let LoadImageFromTexture(texture: Texture /* from alias Texture2D */): Image {
     return rl.LoadImageFromTexture(texture);
 }
 // Load image from screen buffer and (screenshot)
@@ -3229,79 +3229,79 @@ export let ImageDrawTextEx(dst: Listed<Image>, font: Font, text: String, positio
     rl.ImageDrawTextEx(dst, font, text, position, fontSize, spacing, tint);
 }
 // Load texture from file into GPU memory (VRAM)
-export let LoadTexture(fileName: String): Texture2D {
+export let LoadTexture(fileName: String): Texture /* from alias Texture2D */ {
     return rl.LoadTexture(fileName);
 }
 // Load texture from image data
-export let LoadTextureFromImage(image: Image): Texture2D {
+export let LoadTextureFromImage(image: Image): Texture /* from alias Texture2D */ {
     return rl.LoadTextureFromImage(image);
 }
 // Load cubemap from image, multiple image cubemap layouts supported
-export let LoadTextureCubemap(image: Image, layout: Int): TextureCubemap {
+export let LoadTextureCubemap(image: Image, layout: Int): Texture /* from alias TextureCubemap */ {
     return rl.LoadTextureCubemap(image, layout);
 }
 // Load texture for rendering (framebuffer)
-export let LoadRenderTexture(width: Int, height: Int): RenderTexture2D {
+export let LoadRenderTexture(width: Int, height: Int): RenderTexture /* from alias RenderTexture2D */ {
     return rl.LoadRenderTexture(width, height);
 }
 // Check if a texture is ready
-export let IsTextureReady(texture: Texture2D): Boolean {
+export let IsTextureReady(texture: Texture /* from alias Texture2D */): Boolean {
     return rl.IsTextureReady(texture);
 }
 // Unload texture from GPU memory (VRAM)
-export let UnloadTexture(texture: Texture2D): Void {
+export let UnloadTexture(texture: Texture /* from alias Texture2D */): Void {
     rl.UnloadTexture(texture);
 }
 // Check if a render texture is ready
-export let IsRenderTextureReady(target: RenderTexture2D): Boolean {
+export let IsRenderTextureReady(target: RenderTexture /* from alias RenderTexture2D */): Boolean {
     return rl.IsRenderTextureReady(target);
 }
 // Unload render texture from GPU memory (VRAM)
-export let UnloadRenderTexture(target: RenderTexture2D): Void {
+export let UnloadRenderTexture(target: RenderTexture /* from alias RenderTexture2D */): Void {
     rl.UnloadRenderTexture(target);
 }
 // Update GPU texture with new data
-export let UpdateTexture(texture: Texture2D, pixels: DenseBitVector): Void {
+export let UpdateTexture(texture: Texture /* from alias Texture2D */, pixels: DenseBitVector): Void {
     rl.UpdateTexture(texture, pixels);
 }
 // Update GPU texture rectangle with new data
-export let UpdateTextureRec(texture: Texture2D, rec: Rectangle, pixels: DenseBitVector): Void {
+export let UpdateTextureRec(texture: Texture /* from alias Texture2D */, rec: Rectangle, pixels: DenseBitVector): Void {
     rl.UpdateTextureRec(texture, rec, pixels);
 }
 // Generate GPU mipmaps for a texture
-export let GenTextureMipmaps(texture: Listed<Texture2D>): Void {
+export let GenTextureMipmaps(texture: Listed<Texture> /* from alias Texture2D */): Void {
     rl.GenTextureMipmaps(texture);
 }
 // Set texture scaling filter mode
-export let SetTextureFilter(texture: Texture2D, filter: Int): Void {
+export let SetTextureFilter(texture: Texture /* from alias Texture2D */, filter: Int): Void {
     rl.SetTextureFilter(texture, filter);
 }
 // Set texture wrapping mode
-export let SetTextureWrap(texture: Texture2D, wrap: Int): Void {
+export let SetTextureWrap(texture: Texture /* from alias Texture2D */, wrap: Int): Void {
     rl.SetTextureWrap(texture, wrap);
 }
 // Draw a Texture2D
-export let DrawTexture(texture: Texture2D, posX: Int, posY: Int, tint: Color): Void {
+export let DrawTexture(texture: Texture /* from alias Texture2D */, posX: Int, posY: Int, tint: Color): Void {
     rl.DrawTexture(texture, posX, posY, tint);
 }
 // Draw a Texture2D with position defined as Vector2
-export let DrawTextureV(texture: Texture2D, position: Vector2, tint: Color): Void {
+export let DrawTextureV(texture: Texture /* from alias Texture2D */, position: Vector2, tint: Color): Void {
     rl.DrawTextureV(texture, position, tint);
 }
 // Draw a Texture2D with extended parameters
-export let DrawTextureEx(texture: Texture2D, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void {
+export let DrawTextureEx(texture: Texture /* from alias Texture2D */, position: Vector2, rotation: Float64, scale: Float64, tint: Color): Void {
     rl.DrawTextureEx(texture, position, rotation, scale, tint);
 }
 // Draw a part of a texture defined by a rectangle
-export let DrawTextureRec(texture: Texture2D, source: Rectangle, position: Vector2, tint: Color): Void {
+export let DrawTextureRec(texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector2, tint: Color): Void {
     rl.DrawTextureRec(texture, source, position, tint);
 }
 // Draw a part of a texture defined by a rectangle with 'pro' parameters
-export let DrawTexturePro(texture: Texture2D, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
+export let DrawTexturePro(texture: Texture /* from alias Texture2D */, source: Rectangle, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
     rl.DrawTexturePro(texture, source, dest, origin, rotation, tint);
 }
 // Draws a texture (or part of it) that stretches or shrinks nicely
-export let DrawTextureNPatch(texture: Texture2D, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
+export let DrawTextureNPatch(texture: Texture /* from alias Texture2D */, nPatchInfo: NPatchInfo, dest: Rectangle, origin: Vector2, rotation: Float64, tint: Color): Void {
     rl.DrawTextureNPatch(texture, nPatchInfo, dest, origin, rotation, tint);
 }
 // Get color with alpha applied, alpha goes from 0.0f to 1.0f
@@ -3677,15 +3677,15 @@ export let DrawBoundingBox(box: BoundingBox, color: Color): Void {
     rl.DrawBoundingBox(box, color);
 }
 // Draw a billboard texture
-export let DrawBillboard(camera: Camera, texture: Texture2D, position: Vector3, size: Float64, tint: Color): Void {
+export let DrawBillboard(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, position: Vector3, size: Float64, tint: Color): Void {
     rl.DrawBillboard(camera, texture, position, size, tint);
 }
 // Draw a billboard texture defined by source
-export let DrawBillboardRec(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void {
+export let DrawBillboardRec(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector3, size: Vector2, tint: Color): Void {
     rl.DrawBillboardRec(camera, texture, source, position, size, tint);
 }
 // Draw a billboard texture defined by source and rotation
-export let DrawBillboardPro(camera: Camera, texture: Texture2D, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void {
+export let DrawBillboardPro(camera: Camera3D /* from alias Camera */, texture: Texture /* from alias Texture2D */, source: Rectangle, position: Vector3, up: Vector3, size: Vector2, origin: Vector2, rotation: Float64, tint: Color): Void {
     rl.DrawBillboardPro(camera, texture, source, position, up, size, origin, rotation, tint);
 }
 // Upload mesh vertex data in GPU and provide VAO/VBO ids
@@ -3785,7 +3785,7 @@ export let UnloadMaterial(material: Material): Void {
     rl.UnloadMaterial(material);
 }
 // Set texture for a material map type (MATERIAL_MAP_DIFFUSE, MATERIAL_MAP_SPECULAR...)
-export let SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture2D): Void {
+export let SetMaterialTexture(material: Listed<Material>, mapType: Int, texture: Texture /* from alias Texture2D */): Void {
     rl.SetMaterialTexture(material, mapType, texture);
 }
 // Set material for a mesh
@@ -4253,7 +4253,7 @@ export let Vector3Transform(v: Vector3, mat: Matrix): Vector3 {
     return rl.Vector3Transform(v, mat);
 }
 // 
-export let Vector3RotateByQuaternion(v: Vector3, q: Quaternion): Vector3 {
+export let Vector3RotateByQuaternion(v: Vector3, q: Vector4 /* from alias Quaternion */): Vector3 {
     return rl.Vector3RotateByQuaternion(v, q);
 }
 // 
@@ -4393,95 +4393,95 @@ export let MatrixToFloatV(mat: Matrix): float16 {
     return rl.MatrixToFloatV(mat);
 }
 // 
-export let QuaternionAdd(q1: Quaternion, q2: Quaternion): Quaternion {
+export let QuaternionAdd(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionAdd(q1, q2);
 }
 // 
-export let QuaternionAddValue(q: Quaternion, add: Float64): Quaternion {
+export let QuaternionAddValue(q: Vector4 /* from alias Quaternion */, add: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionAddValue(q, add);
 }
 // 
-export let QuaternionSubtract(q1: Quaternion, q2: Quaternion): Quaternion {
+export let QuaternionSubtract(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionSubtract(q1, q2);
 }
 // 
-export let QuaternionSubtractValue(q: Quaternion, sub: Float64): Quaternion {
+export let QuaternionSubtractValue(q: Vector4 /* from alias Quaternion */, sub: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionSubtractValue(q, sub);
 }
 // 
-export let QuaternionIdentity(): Quaternion {
+export let QuaternionIdentity(): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionIdentity();
 }
 // 
-export let QuaternionLength(q: Quaternion): Float64 {
+export let QuaternionLength(q: Vector4 /* from alias Quaternion */): Float64 {
     return rl.QuaternionLength(q);
 }
 // 
-export let QuaternionNormalize(q: Quaternion): Quaternion {
+export let QuaternionNormalize(q: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionNormalize(q);
 }
 // 
-export let QuaternionInvert(q: Quaternion): Quaternion {
+export let QuaternionInvert(q: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionInvert(q);
 }
 // 
-export let QuaternionMultiply(q1: Quaternion, q2: Quaternion): Quaternion {
+export let QuaternionMultiply(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionMultiply(q1, q2);
 }
 // 
-export let QuaternionScale(q: Quaternion, mul: Float64): Quaternion {
+export let QuaternionScale(q: Vector4 /* from alias Quaternion */, mul: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionScale(q, mul);
 }
 // 
-export let QuaternionDivide(q1: Quaternion, q2: Quaternion): Quaternion {
+export let QuaternionDivide(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionDivide(q1, q2);
 }
 // 
-export let QuaternionLerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+export let QuaternionLerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionLerp(q1, q2, amount);
 }
 // 
-export let QuaternionNlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+export let QuaternionNlerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionNlerp(q1, q2, amount);
 }
 // 
-export let QuaternionSlerp(q1: Quaternion, q2: Quaternion, amount: Float64): Quaternion {
+export let QuaternionSlerp(q1: Vector4 /* from alias Quaternion */, q2: Vector4 /* from alias Quaternion */, amount: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionSlerp(q1, q2, amount);
 }
 // 
-export let QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Quaternion {
+export let QuaternionFromVector3ToVector3(from: Vector3, to: Vector3): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionFromVector3ToVector3(from, to);
 }
 // 
-export let QuaternionFromMatrix(mat: Matrix): Quaternion {
+export let QuaternionFromMatrix(mat: Matrix): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionFromMatrix(mat);
 }
 // 
-export let QuaternionToMatrix(q: Quaternion): Matrix {
+export let QuaternionToMatrix(q: Vector4 /* from alias Quaternion */): Matrix {
     return rl.QuaternionToMatrix(q);
 }
 // 
-export let QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Quaternion {
+export let QuaternionFromAxisAngle(axis: Vector3, angle: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionFromAxisAngle(axis, angle);
 }
 // 
-export let QuaternionToAxisAngle(q: Quaternion, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void {
+export let QuaternionToAxisAngle(q: Vector4 /* from alias Quaternion */, outAxis: Listed<Vector3>, outAngle: Listed<Float64>): Void {
     rl.QuaternionToAxisAngle(q, outAxis, outAngle);
 }
 // 
-export let QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Quaternion {
+export let QuaternionFromEuler(pitch: Float64, yaw: Float64, roll: Float64): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionFromEuler(pitch, yaw, roll);
 }
 // 
-export let QuaternionToEuler(q: Quaternion): Vector3 {
+export let QuaternionToEuler(q: Vector4 /* from alias Quaternion */): Vector3 {
     return rl.QuaternionToEuler(q);
 }
 // 
-export let QuaternionTransform(q: Quaternion, mat: Matrix): Quaternion {
+export let QuaternionTransform(q: Vector4 /* from alias Quaternion */, mat: Matrix): Vector4 /* from alias Quaternion */ {
     return rl.QuaternionTransform(q, mat);
 }
 // 
-export let QuaternionEquals(p: Quaternion, q: Quaternion): Int {
+export let QuaternionEquals(p: Vector4 /* from alias Quaternion */, q: Vector4 /* from alias Quaternion */): Int {
     return rl.QuaternionEquals(p, q);
 }
 // Choose the current matrix to be transformed
@@ -6091,7 +6091,7 @@ export class Font {
     // Padding around the glyph characters
     public var glyphPadding: Int;
     // Texture atlas containing the glyphs
-    public var texture: Texture2D;
+    public var texture: Texture /* from alias Texture2D */;
     // Rectangles in texture for the glyphs
     public var recs: Listed<Rectangle>;
     // Glyphs info data
@@ -6164,7 +6164,7 @@ export class Shader {
 // MaterialMap
 export class MaterialMap {
     // Material map texture
-    public var texture: Texture2D;
+    public var texture: Texture /* from alias Texture2D */;
     // Material map color
     public var color: Color;
     // Material map value
@@ -6184,7 +6184,7 @@ export class Transform {
     // Translation
     public var translation: Vector3;
     // Rotation
-    public var rotation: Quaternion;
+    public var rotation: Vector4 /* from alias Quaternion */;
     // Scale
     public var scale: Vector3;
 }
@@ -6418,16 +6418,6 @@ export class rlRenderBatch {
     // Current depth value for next draw
     public var currentDepth: Float64;
 }
-// Quaternion, 4 components (Vector4 alias)
-export const Quaternion = Vector4;
-// Texture2D, same as Texture
-export const Texture2D = Texture;
-// TextureCubemap, same as Texture
-export const TextureCubemap = Texture;
-// RenderTexture2D, same as RenderTexture
-export const RenderTexture2D = RenderTexture;
-// Camera type fallback, defaults to Camera3D
-export const Camera = Camera3D;
 // FileIO: Load binary data
 export let LoadFileDataCallback = fn(String, Listed<Int>): String;
 // FileIO: Save binary data

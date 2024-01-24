@@ -6,42 +6,13 @@ var heat = 0;
 
 var pow2 = new ListBuilder<Int>();
 var cur = 1;
-for (var i = 0; i < 32; i++) {
+for (var i = 0; i < 64; i++) {
   pow2.add(cur);
   cur += cur;
 }
 
-let idString(s: String): String {
-  return s;
-}
-
-let saveTable(): String {
-  var ret = new ListBuilder<String>();
-  var items = hashtable.toList();
-  for (var i = 0; i < items.length; i++) {
-    var key = items[i].key;
-    var values = hashtable[key];
-    if (i != 0) {
-      ret.add("#");
-    }
-    ret.add(key.toString());
-    ret.add("=");
-    for (var j = 0; j < values.length; j++) {
-      if (j != 0) {
-        ret.add(".")
-      }
-      ret.add(values[j].toJson());
-    }
-  }
-  return ret.join("", idString);
-}
-
 class DrawConfig {
   public screen: Rectangle;
-}
-
-let nodeToJsonRef(n: Node): String {
-  return n.toJsonRef();
 }
 
 interface Node {
@@ -52,16 +23,18 @@ interface Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node = null;
+  public hash0: Int;
   public succ: ListBuilder<Node>;
 
-  public setNext(n: Node): Void;
   public setSucc(j: Int, n: Node): Void;
-  public eq(other: Node): Boolean;
   public draw(config: DrawConfig, bounds: Rectangle): Void;
-  
-  public toJson(): String;
-  public toJsonRef(): String;
+
+  public successor(j: Int): Node;
+  public life2(): Node;
+  public successorImpl(j: Int): Node;
+  public center(): Node;
+  public advance(n: Int): Node;
+  public copyWithRangeSet(low: List<Int>, high: List<Int>, data: MapBuilder<Int, Boolean>): Node;
 }
 
 class RealNode extends Node {
@@ -72,7 +45,7 @@ class RealNode extends Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node;
+  public hash0: Int;
   public succ: ListBuilder<Node>;
   
   constructor(level: Int, pop: Int, a: Node, b: Node, c: Node, d: Node, hash: Int): Void {
@@ -83,36 +56,8 @@ class RealNode extends Node {
     this.c = c;
     this.d = d;
     this.hash = hash;
-    next = fake;
+    this.hash0 = hash % 2147483647;
     succ = new ListBuilder<Node>();
-  }
-
-  public toJson(): String {
-    var parts = [
-      level.toString(),
-      pop.toString(),
-      a.toJsonRef(),
-      b.toJsonRef(),
-      c.toJsonRef(),
-      d.toJsonRef(),
-      next.toJsonRef(),
-      succ.join(",", nodeToJsonRef),
-    ];
-    return parts.join(";", idString);
-  }
-
-  public toJsonRef(): String {
-    var ent = hashtable[hash];
-    for (var i = 0; i < ent.length; i++) {
-      if (ent[i] == this) {
-        return "${hash.toString()}>${i.toString()}";
-      }
-    }
-    return "???";
-  }
-
-  public setNext(n: Node): Void {
-    next = n;
   }
 
   public setSucc(j: Int, n: Node): Void {
@@ -122,46 +67,14 @@ class RealNode extends Node {
     succ[j] = n;
   }
 
-  public eq(other: Node): Boolean {
-    if (level != other.level) {
-      return false;
-    }
-    if (level == 0) {
-      return other.level == 0 && other.pop == pop;
-    }
-    if (other.pop != pop) {
-      return false;
-    }
-    // for (var i = 0; i < 4; i++) {
-    //   if (children[i] != other.children[i]) {
-    //     return false;
-    //   }
-    // }
-    return a == other.a && b == other.b && c == other.c && d == other.d;
-  }
-
   public draw(config: DrawConfig, base: Rectangle): Void {
     if (!CheckCollisionRecs(config.screen, base)) {
       return;
     }
     if (pop == 0) {
-      // DrawRectangleRec(
-      //   new Rectangle(
-      //     base.x.max(config.screen.x),
-      //     base.y.max(config.screen.y),
-      //     base.width.min(config.screen.width),
-      //     base.height.min(config.screen.height),
-      //   ),
-      //   BLACK,
-      // );
     } else if (level == 0 || base.width < 2.0) {
       DrawRectangleRec(
-        new Rectangle(
-          base.x.max(config.screen.x),
-          base.y.max(config.screen.y),
-          base.width.min(config.screen.width),
-          base.height.min(config.screen.height),
-        ),
+        base,
         WHITE,
       );
     } else {
@@ -173,6 +86,140 @@ class RealNode extends Node {
       d.draw(config, new Rectangle(base.x + halfWidth, base.y + halfHeight, halfWidth, halfHeight));
     }
   }
+  
+  public successor(j: Int): Node {
+    var mSucc = succ.getOr(j, fake); 
+    if (mSucc == fake) {
+      var jthSucc = successorImpl(j);
+      setSucc(j, jthSucc);
+      return jthSucc;
+    } else {
+      return mSucc;
+    }
+  }
+
+  public life2(): Node {
+    var ad = lifeRule(
+      a.a, a.b, b.a,
+      a.c, a.d, b.c,
+      c.a, c.b, d.a
+    );
+    var bc = lifeRule(
+      a.b, b.a, b.b,
+      a.d, b.c, b.d,
+      c.b, d.a, d.b
+    );
+    var cb = lifeRule(
+      a.c, a.d, b.c,
+      c.a, c.b, d.a,
+      c.c, c.d, d.c
+    );
+    var da = lifeRule(
+      a.d, b.c, b.d,
+      c.b, d.a, d.b,
+      c.d, d.c, d.d
+    );
+    return join(ad, bc, cb, da);
+  }
+
+  public successorImpl(j: Int): Node {
+    if (pop == 0) {
+      return a;
+    } else if (level == 2) {
+      return life2();
+    } else {
+      if (j > level - 2) {
+        j = level - 2;
+      }
+      var c1 = a.successor(j);
+      var c2 = join(a.b, b.a, a.d, b.c).successor(j);
+      var c3 = b.successor(j);
+      var c4 = join(a.c, a.d, c.a, c.b).successor(j);
+      var c5 = join(a.d, b.c, c.b, d.a).successor(j);
+      var c6 = join(b.c, b.d, d.a, d.b).successor(j);
+      var c7 = c.successor(j);
+      var c8 = join(c.b, d.a, c.d, d.c).successor(j);
+      var c9 = d.successor(j);
+
+      if (j < level - 2) {
+        return join(
+          join(c1.d, c2.c, c4.b, c5.a),
+          join(c2.d, c3.c, c5.b, c6.a),
+          join(c4.d, c5.c, c7.b, c8.a),
+          join(c5.d, c6.c, c8.b, c9.a),
+        );
+      } else {
+        return join(
+          join(c1, c2, c4, c5).successor(j),
+          join(c2, c3, c5, c6).successor(j),
+          join(c4, c5, c7, c8).successor(j),
+          join(c5, c6, c8, c9).successor(j),
+        );
+      }
+    }
+  }
+
+  public center(): Node {
+    var z = zero(level - 1);
+    return join(
+      join(z, z, z, a), join(z, z, b, z),
+      join(z, c, z, z), join(d, z, z, z),
+    );
+  }
+
+  public advance(n: Int): Node {
+    if (n == 0) {
+      return this;
+    }
+    var bits = new ListBuilder<Boolean>();
+    var node = this.as<Node>();
+    while (n != 0) {
+      bits.add(n % 2 != 0);
+      n /= 2;
+    }
+    for (var i = bits.length-1; i >= 0; i--) {
+      if (bits[i]) {
+        node = node.center().successor(i);
+      }
+    }
+    return node;
+  }
+
+  public copyWithRangeSet(low: List<Int>, high: List<Int>, data: MapBuilder<Int, Boolean>): Node {
+    var low0 = low[0];
+    var low1 = low[1];
+    var high0 = high[0];
+    var high1 = high[1];
+
+    var width = high0 - low0;
+    var height = high1 - low1;
+
+    let go(grid: Node, x: Int, y: Int, size: Int): Node {
+      if (x >= high0 || x + size <= low0 || y >= high1 || y + size <= low1) {
+        return grid;
+      }
+      
+      if (grid.level == 0) {
+        if (data.getOr((x - low0) + (y - low1) * width, false)) {
+          return on;
+        } else {
+          return off;
+        }
+      }
+      
+      var halfSize = size / 2;
+      var xh = x + halfSize;
+      var yh = y + halfSize;
+      return join(
+        go(grid.a, x, y, halfSize),
+        go(grid.b, xh, y, halfSize),
+        go(grid.c, x, yh, halfSize),
+        go(grid.d, xh, yh, halfSize),
+      );
+    }
+
+    return go(this, 0, 0, pow2[level]);
+  }
 }
 
 class FakeNode extends Node {
@@ -183,60 +230,51 @@ class FakeNode extends Node {
   public c: Node;
   public d: Node;
   public hash: Int;
-  public next: Node;
+  public hash0: Int;
   public succ: ListBuilder<Node>;
 
-  constructor(): Void {}
+  constructor(): Void {
+    level = -1;
+    hash0 = 0;
+  }
 
-  public toJson(): String {
-    return "???";
-  }
-  
-  public toJsonRef(): String {
-    return "???";
-  }
-  
-  public setNext(n: Node): Void {}
   public setSucc(j: Int, n: Node): Void {}
-  public eq(other: Node): Boolean {
-    return this == other;
-  }
   public draw(config: DrawConfig, bounds: Rectangle): Void {}
 }
 
 var fake = new FakeNode();
-var off = new RealNode(0, 0, fake, fake, fake, fake, 1);
-var on = new RealNode(0, 1, fake, fake, fake, fake, 2);
-
-enter(on);
-enter(off);
-
-let enter(node: Node): Node {
-  var got = hashtable[node.hash] orelse new ListBuilder<Node>();
-  for (var i = got.length - 1; i >= 0; i--) {
-    var cur = got.getOr(i, node);
-    if (node.eq(cur)) {
-      return cur;
-    }
-  }
-  heat += 1;
-  got.add(node);
-  hashtable[node.hash] = got;
-  return node;
-}
-
+var off = new RealNode(0, 0, fake, fake, fake, fake, 0);
+var on = new RealNode(0, 1, fake, fake, fake, fake, 1);
 
 let join(a: Node, b: Node, c: Node, d: Node): Node {
+  var level = a.level + 1;
   var pop = a.pop + b.pop + c.pop + d.pop;
-  var next = (
-    a.level
-    + 2531198185803 * pop
-    + 5131830419411 * a.hash
-    + 3758991985019 * b.hash
-    + 8973110871315 * c.hash
-    + 4318490180473 * d.hash
+  var hash = (
+    72251 * pop
+    + 305971 * a.hash0
+    + 495071 * b.hash0
+    + 801061 * c.hash0
+    + 1296137 * d.hash0
   );
-  return enter(new RealNode(a.level + 1, pop, a, b, c, d, next % 2147483648));
+  var got = hashtable.getOr(hash, new ListBuilder<Node>());
+  for (var i = got.length-1; i >= 0; i--) {
+    var exist = got.getOr(i, fake);
+    if (
+      exist.level == level
+      && exist.pop == pop
+      && exist.a == a
+      && exist.b == b
+      && exist.c == c
+      && exist.d == d
+    ) {
+      return exist;
+    }
+  }
+  var node = new RealNode(level, pop, a, b, c, d, hash);
+  got.add(node);
+  hashtable[hash] = got;
+  heat += 1;
+  return node;
 }
 
 let zero(level: Int): Node {
@@ -260,131 +298,12 @@ let random(level: Int): Node {
   }
 }
 
-let center(node: Node): Node {
-  var z = zero(node.level - 1);
-  return join(
-    join(z, z, z, node.a), join(z, z, node.b, z),
-    join(z, node.c, z, z), join(node.d, z, z, z),
-  );
-}
-
 let lifeRule(a: Node, b: Node, c: Node, d: Node, e: Node, f: Node, g: Node, h: Node, i: Node): Node {
   var outer = a.pop + b.pop + c.pop + d.pop + f.pop + g.pop + h.pop + i.pop;
   if ((outer == 2 && e.pop != 0) || outer == 3) {
     return on;
   } else {
     return off;
-  }
-}
-
-
-let life2(m: Node): Node {
-  var ad = lifeRule(
-    m.a.a, m.a.b, m.b.a,
-    m.a.c, m.a.d, m.b.c,
-    m.c.a, m.c.b, m.d.a
-  );
-  var bc = lifeRule(
-    m.a.b, m.b.a, m.b.b,
-    m.a.d, m.b.c, m.b.d,
-    m.c.b, m.d.a, m.d.b
-  );
-  var cb = lifeRule(
-    m.a.c, m.a.d, m.b.c,
-    m.c.a, m.c.b, m.d.a,
-    m.c.c, m.c.d, m.d.c
-  );
-  var da = lifeRule(
-    m.a.d, m.b.c, m.b.d,
-    m.c.b, m.d.a, m.d.b,
-    m.c.d, m.d.c, m.d.d
-  );
-  return join(ad, bc, cb, da);
-}
-
-let nextGen(m: Node): Node {
-  if (m.next == fake) {
-    var next = nextGenImpl(m);
-    m.setNext(next);
-    return next;
-  } else {
-    return m.next;
-  }
-}
-
-let nextGenImpl(m: Node): Node {
-  if (m.pop == 0) {
-    return m.a;
-  } else if (m.level == 2) {
-    return life2(m);
-  } else {
-    var c1 = nextGen(join(m.a.a, m.a.b, m.a.c, m.a.d));
-    var c2 = nextGen(join(m.a.b, m.b.a, m.a.d, m.b.c));
-    var c3 = nextGen(join(m.b.a, m.b.b, m.b.c, m.b.d));
-    var c4 = nextGen(join(m.a.c, m.a.d, m.c.a, m.c.b));
-    var c5 = nextGen(join(m.a.d, m.b.c, m.c.b, m.d.a));
-    var c6 = nextGen(join(m.b.c, m.b.d, m.d.a, m.d.b));
-    var c7 = nextGen(join(m.c.a, m.c.b, m.c.c, m.c.d));
-    var c8 = nextGen(join(m.c.b, m.d.a, m.c.d, m.d.c));
-    var c9 = nextGen(join(m.d.a, m.d.b, m.d.c, m.d.d));
-
-    return join(
-      (join(c1.d, c2.c, c4.b, c5.a)),
-      (join(c2.d, c3.c, c5.b, c6.a)),
-      (join(c4.d, c5.c, c7.b, c8.a)),
-      (join(c5.d, c6.c, c8.b, c9.a)),
-    );
-  }
-}
-
-let successor(m: Node, j: Int): Node {
-  if (j == 0) {
-    return nextGen(m);
-  }
-  var mSucc = m.succ.getOr(j, fake); 
-  if (mSucc == fake) {
-    var succ = successorImpl(m, j);
-    m.setSucc(j, succ);
-    return succ;
-  } else {
-    return mSucc;
-  }
-}
-
-let successorImpl(m: Node, j: Int): Node {
-  if (m.pop == 0) {
-    return m.a;
-  } else if (m.level == 2) {
-    return life2(m);
-  } else {
-    if (j > m.level - 2) {
-      j = m.level - 2;
-    }
-    var c1 = successor(join(m.a.a, m.a.b, m.a.c, m.a.d), j);
-    var c2 = successor(join(m.a.b, m.b.a, m.a.d, m.b.c), j);
-    var c3 = successor(join(m.b.a, m.b.b, m.b.c, m.b.d), j);
-    var c4 = successor(join(m.a.c, m.a.d, m.c.a, m.c.b), j);
-    var c5 = successor(join(m.a.d, m.b.c, m.c.b, m.d.a), j);
-    var c6 = successor(join(m.b.c, m.b.d, m.d.a, m.d.b), j);
-    var c7 = successor(join(m.c.a, m.c.b, m.c.c, m.c.d), j);
-    var c8 = successor(join(m.c.b, m.d.a, m.c.d, m.d.c), j);
-    var c9 = successor(join(m.d.a, m.d.b, m.d.c, m.d.d), j);
-
-    if (j < m.level - 2) {
-      return join(
-        join(c1.d, c2.c, c4.b, c5.a),
-        join(c2.d, c3.c, c5.b, c6.a),
-        join(c4.d, c5.c, c7.b, c8.a),
-        join(c5.d, c6.c, c8.b, c9.a),
-      );
-    } else {
-      return join(
-        successor(join(c1, c2, c4, c5), j),
-        successor(join(c2, c3, c5, c6), j),
-        successor(join(c4, c5, c7, c8), j),
-        successor(join(c5, c6, c8, c9), j),
-      );
-    }
   }
 }
 
@@ -405,59 +324,31 @@ let nodeForBit(n: Boolean): Node {
     return off;
   }
 }
-
-let copyWithRangeSet(grid0: Node, low: List<Int>, high: List<Int>, data: Listed<DenseBitVector>): Node {
-  var low0 = low[0];
-  var low1 = low[1];
-  var high0 = high[0];
-  var high1 = high[1];
-
-  let go(grid: Node, x: Int, y: Int, size: Int): Node {
-    if (x >= high0 || x + size <= low0 || y >= high1 || y + size <= low1) {
-      return grid;
-    }
-    
-    if (grid.level == 0) {
-      if (data[y - low1][x - low0]) {
-        return on;
-      } else {
-        return off;
-      }
-    }
-    
-    var halfSize = size / 2;
-    var xh = x + halfSize;
-    var yh = y + halfSize;
-    return join(
-      go(grid.a, x, y, halfSize),
-      go(grid.b, xh, y, halfSize),
-      go(grid.c, x, yh, halfSize),
-      go(grid.d, xh, yh, halfSize),
-    );
-  }
-
-  return go(grid0, 0, 0, pow2[grid0.level]);
-}
-
 class Game {
   public grid: Node;
   
   constructor(args: Listed<String>) {
-    var sizeLog2 = args[0].toInt() orelse 16;
-    var size = pow2[sizeLog2];
-    grid = zero(sizeLog2);
+    if ((args[0] == "--random") orelse false) {
+      var sizeLog2 = args[1].toInt() orelse 8;
+      var size = pow2[sizeLog2];
+      grid = random(sizeLog2);
+    } else {
+      var sizeLog2 = args[0].toInt() orelse 16;
+      var size = pow2[sizeLog2];
+      grid = zero(sizeLog2);
+    }
   }
 
   public clear(): Void {
     grid = zero(grid.level);
   }
 
-  public addData(size: List<Int>, data: Listed<DenseBitVector>, pos: List<Int>): Void {
-    grid = copyWithRangeSet(grid, pos, [pos[0] + size[0], pos[1] + size[1]], data);
+  public addData(size: List<Int>, data: MapBuilder<Int, Boolean>, pos: List<Int>): Void {
+    grid = grid.copyWithRangeSet(pos, [pos[0] + size[0], pos[1] + size[1]], data);
   }
 
   public addBuilder(builder: LifeBuilder, pos: List<Int>): Void {
-    addData(builder.size, builder.buildBits(), pos);
+    addData([builder.width, builder.height], builder.data, pos);
   }
 
   public draw(bounds: Rectangle): Void {
@@ -467,115 +358,134 @@ class Game {
     grid.draw(config, bounds);
   }
 
-  public update(): Void {
-    grid = nextGen(center(grid));
-  }
-
-  public warp(n: Int): Int {
-    grid = successor(center(grid), n);
-    if (n < grid.level - 2) {
-      return n;
-    } else {
-      return grid.level - 2;
-    }
+  public advance(n: Int): Void {
+    grid = grid.advance(n);
   }
 }
 
 class LifeBuilder {
   public width: Int;
-  private data: ListBuilder<DenseBitVector>;
+  public height: Int;
+  // public doFlipX: Boolean;
+  // public doFlipY: Boolean;
   
-  public doFlipX: Boolean;
-  public doFlipY: Boolean;
+  public data: MapBuilder<Int, Boolean>;
   
   private node: Node;
-  private builtNode: Boolean;
+  private hasNode: Boolean;
 
-  public constructor() {
-    width = 0;
-    data = new ListBuilder<DenseBitVector>();
-    doFlipX = false;
-    doFlipY = false;
+  private hasPointList: Boolean;
+  private pointListData: List<Int>;
+
+  public constructor(w: Int, h: Int) {
+    width = w;
+    height = h;
+    // doFlipX = false;
+    // doFlipY = false;
+    data = new MapBuilder<Int, Boolean>();
     clear();
   }
 
   private clear(): Void {
-    builtNode = false;
+    hasPointList = false;
+    hasNode = false;
   }
 
-  public flipX(): Void {
-    clear();
-    doFlipX = !doFlipX;
-  }
-
-  public flipY(): Void {
-    clear();
-    doFlipY = !doFlipY;
-  }
-
-  public get height(): Int {
-    return data.length;
-  }
-
-  public get size(): List<Int> {
-    return [width, height];
+  public add(x: Int, y: Int): Void {
+    if (y < 0 || y >= height) {
+      console.log("y=${y.toString()} not in range 0..${height.toString()}");
+      bubble();
+    }
+    if (x < 0 || x >= width) {
+      console.log("x=${x.toString()} not in range 0..${width.toString()}");
+      bubble();
+    }
+    data[x + y * width] = true;
   }
 
   public buildNode(): Node {
-    if (!builtNode) {
+    if (!hasNode) {
       var startTime = GetTime();
-      builtNode = true;
-      var sizeMax = if (size[0] < size[1]) { size[1] } else { size[0] };
+      hasNode = true;
+      var sizeMax = if (width < height) { height } else { width };
       var empty: Node = off;
       while (pow2[empty.level] < sizeMax) {
         empty = join(empty, empty, empty, empty);
       }
       var start = [
-        (size[0] - sizeMax) / 2,
-        (size[1] - sizeMax) / 2,
+        (width - sizeMax) / 2,
+        (height - sizeMax) / 2,
       ];
       var stop = [
-        start[0] + size[0],
-        start[1] + size[1],
+        start[0] + width,
+        start[1] + height,
       ];
-      node = copyWithRangeSet(empty, start, stop, buildBits());
+      node = empty.copyWithRangeSet(start, stop, data);
       var endTime = GetTime();
     }
     return node;
   }
 
-  public add(t: DenseBitVector, len: Int): Void {
-    if (len > width) {
-      width = len;
+  public pointList(): List<Int> {
+    if (!hasPointList) {
+      hasPointList = true;
+      pointListData = data.toList()
+        .filter(fn(p: Pair<Int, Boolean>): Boolean { p.value })
+        .map(fn(p: Pair<Int, Boolean>): Int { p.key });
     }
-    data.add(t);
-  }
-  
-  public buildBits(): Listed<DenseBitVector> {
-    return data;
+    return pointListData;
   }
 }
 
 class Pattern {
+  private lines: List<String>;
   public name: String;
   public builder: LifeBuilder;
-  private doNotDraw: Boolean;
+  private isParsed: Boolean;
   private hasTexture: Boolean;
-  private texture: RenderTexture2D;
+  private texture: RenderTexture;
 
-  public get size(): List<Int> {
-    return builder.size;
-  }
-
-  public constructor(nameArg: String, builderArg: LifeBuilder) {
-    name = nameArg;
-    builder = builderArg;
-    // doNotDraw = builder.size[0] * builder.size[1] > 1000000;
-    doNotDraw = false;
+  public constructor(s: String) {
+    lines = s.split("\n");
+    name = "???";
+    for (var i = 0; i < lines.length; i++) {
+      var cur = lines[i].codePoints;
+      if (cur.hasAtLeast(1)) {
+        if (cur.read() == /* x */ 120) {
+          let number(): Int {
+            while (!(48 <= cur.read() && cur.read() <= 57)) {
+              cur = cur.advance(1);
+            }
+            var n = 0;
+            while (cur.hasAtLeast(1) && 48 <= cur.read() && cur.read() <= 57) {
+              n *= 10;
+              n += cur.read() - 48;
+              cur = cur.advance(1);
+            }
+            return n;
+          }
+          builder = new LifeBuilder(number(), number());
+          break;
+        }
+        if (cur.read() == /* # */ 35) {
+          var type = cur.advance(1).read();
+          if (type == /* N */ 78) {
+            var hack = lines[i].split("#N");
+            name = hack[hack.length - 1];
+          }
+        }
+      }
+    }
     hasTexture = false;
+    isParsed = false;
   }
 
   public drawTool(bounds: Rectangle, selected: Boolean): Boolean {
+    if (!isParsed) {
+      isParsed = true;
+      parseString();
+      lines = [];
+    }
     if (selected) {
       DrawRectangleRec(bounds, new Color(32, 128, 32, 255));
     } else {
@@ -588,38 +498,32 @@ class Pattern {
       bounds.width * (1.0 - border * 2.0),
       bounds.height * (1.0 - border * 2.0),
     );
-    if (doNotDraw) {
-      DrawRectangleRec(bounds, new Color(255, 128, 32, 255));
-    } else {
-      var size = builder.width.toFloat64().max(builder.height.toFloat64());
-      var textureBounds = new Rectangle(0.0, 0.0, size, size);
-      if (!hasTexture) {
-        hasTexture = true;
-        texture = LoadRenderTexture(builder.width, builder.height);
-        BeginTextureMode(texture);
-        DrawRectangleRec(textureBounds, BLACK);
-        var built = builder.buildBits();
-        for (var y = 0; y < builder.height; y += 1) {
-          var row = built[y];
-          for (var x = 0; x < builder.width; x += 1) {
-            if (row[x]) {
-              DrawPixel(x, y, WHITE);
-            }
-          }
-        }
-        EndTextureMode();
+    var size = builder.width.toFloat64().max(builder.height.toFloat64());
+    var textureBounds = new Rectangle(0.0, 0.0, 100.0, 100.0);
+    if (!hasTexture) {
+      hasTexture = true;
+      texture = LoadRenderTexture(100, 100);
+      BeginTextureMode(texture);
+      ClearBackground(BLACK);
+      var points = builder.pointList();
+      var width = builder.width;
+      var scale = 100.0 / size;
+      var xo = ((size - width.toFloat64()) * 0.5).toInt();
+      var yo = ((size - builder.height.toFloat64()) * 0.5).toInt();
+      for (var i = 0; i < points.length; i++) {
+        var point = points[i];
+        var x = (point % width).toFloat64() * scale;
+        var y = (point / width).toFloat64() * scale;
+
+        // if (x >= size || y >= size) {
+        //   console.log("${x.toString()}x${y.toString()} in ${size.toString()}x${size.toString()}");
+        // }
+
+        DrawRectangleRec(new Rectangle(x, y, scale, scale), WHITE);
       }
-      var b = new Rectangle(0.0, 0.0, builder.width.toFloat64(), builder.height.toFloat64());
-      if (builder.doFlipX) {
-        b.x = b.width - 1.0;
-        b.width = -b.width;
-      }
-      if (builder.doFlipY) {
-        b.y = b.height - 1.0;
-        b.height = -b.height;
-      }
-      DrawTexturePro(texture.texture, b, bounds, new Vector2(0.0, 0.0), 0.0, WHITE);
+      EndTextureMode();
     }
+    DrawTexturePro(texture.texture, textureBounds, bounds, new Vector2(0.0, 0.0), 1.0, WHITE);
     var mouse = GetMousePosition();
     if (CheckCollisionPointRec(mouse, bounds)) {
       if (IsMouseButtonPressed(0)) {
@@ -628,73 +532,63 @@ class Pattern {
     }
     return false;
   }
-}
 
-let stringToPattern(text: String): Pattern {
-  var name = "???";
-  var csl = 0;
-  var cs = new DenseBitVector(0);
-  var builder = new LifeBuilder();
-  var split = text.split("\n");
-  var numEmpty = 0;
-  for (var i = 0; i < split.length; i++) {
-    var cur = split[i].codePoints;
-    if (cur.hasAtLeast(1)) {
-      if (cur.read() == /* x */ 120) {
-        continue;
-      }
-      if (cur.read() == /* # */ 35) {
-        var type = cur.advance(1).read();
-        if (type == /* N */ 78) {
-          var hack = split[i].split("#N");
-          name = hack[hack.length - 1];
-        }
-        continue;
-      }
-    }
-    while (!cur.isEmpty) {
-      var code = cur.read();
-      var n = 1;
-      if (48 <= code && code < 58) {
-        n = 0;
-        while (48 <= code && code < 58) {
+  private parseString(): Void {
+    var myBuilder = this.builder;
+    var funcs = new MapBuilder<String, fn(): Void>();
+    var x = 0;
+    var y = 0;
+    var n = 0;
+    for (var i = 0; i < 10; i++) {
+      funcs[i.toString()] = fn(num: Int): fn(): Void {
+        return fn(): Void {
           n *= 10;
-          n += code - 48;
-          cur = cur.advance(1);
-          code = cur.read();
-          if (cur.isEmpty) {
-            break;
-          }
-        }
+          n += num;
+        };
+      }(i);
+    }
+    funcs["b"] = fn(): Void {
+      if (n == 0) {
+        x += 1;
+      } else {
+        x += n;
+        n = 0;
       }
-      cur = cur.advance(1);
-      if (code == /* b */ 98) {
+    }
+    funcs["o"] = fn(): Void {
+      if (n == 0) {
+        myBuilder.add(x++, y);
+      } else {
         for (var i = 0; i < n; i++) {
-          cs[csl++] = false;
+          myBuilder.add(x++, y);
         }
+        n = 0;
       }
-      if (code == /* o */ 111) {
-        for (var i = 0; i < n; i++) {
-          cs[csl++] = true;
-        }
+    }
+    funcs["$"] = fn(): Void {
+      x = 0;
+      if (n == 0) {
+        y += 1;
+      } else {
+        y += n;
+        n = 0;
       }
-      if (code == /* $ */ 36 || code == /* ! */ 33) {
-        for (var i = 0; i < n; i++) {
-          if (csl == 0) {
-            numEmpty += 1;
-          }
-          builder.add(cs, csl);
-          csl = 0;
-          cs = new DenseBitVector(0);
-        }
+    }
+    let nop(): Void {}
+    for (var lineNum = 0; lineNum < lines.length; lineNum++) {
+      var split: List<String> = lines[lineNum].split("");
+      var first = split[0] orelse "#";
+      if (first == "#" || first == "x") {
+        continue;
+      }
+      var head = 0;
+      var stop = split.length;
+      while (head < stop) {
+        var todo = funcs[split[head++]] orelse nop;
+        todo();
       }
     }
   }
-  if (csl != 0) {
-    console.log("${name} failed with ${csl.toString()} data");
-    bubble();
-  }
-  return new Pattern(name, builder);
 }
 
 class SimpleCamera {
@@ -748,45 +642,61 @@ class SimpleCamera {
   }
 }
 
-let patterns(): List<Pattern> {
-  return LoadFileText("demos/patterns.har").split("\n--- header ---\n").map(stringToPattern);
+let loadAllPatterns(): List<Pattern> {
+  return LoadFileText("demos/patterns.har").split("\n--- header ---\n").map(fn(s: String): Pattern {
+    return new Pattern(s);
+  });
 }
 
-export let main(args: Listed<String>): Void | Bubble {
-  SetTraceLogLevel(LOG_WARNING);
-  
-  var allPatterns = patterns();
-  var patternHead = 0;
-  var patterns = new ListBuilder<Pattern>();
-  if (allPatterns.length != 0) {
-    for (var i = patternHead; i < patternHead + 10; i++) {
-      patterns.add(allPatterns[(i + allPatterns.length) % allPatterns.length]);
+export class App {
+  private allPatterns: List<Pattern>;
+  private patternHead: Int;
+  private patterns: ListBuilder<Pattern>;
+  private selectedEnt: Pattern | Null;
+  private game: Game;
+  private paused: Boolean;
+  private rate: Float64;
+  private steps: Float64;
+  private camera: SimpleCamera;
+  private nextTime: Float64;
+  // private realHeat: Int;
+
+  public constructor(args: Listed<String>): Void {
+    SetTraceLogLevel(LOG_WARNING);
+    allPatterns = loadAllPatterns();
+    patternHead = 0;
+    patterns = new ListBuilder<Pattern>();
+    if (allPatterns.length != 0) {
+      for (var i = patternHead; i < patternHead + 10; i++) {
+        patterns.add(allPatterns[(i + allPatterns.length) % allPatterns.length]);
+      }
     }
+    selectedEnt = null;
+
+    var bench = (args[0] == "--bench") orelse false;
+    if (bench) {
+      SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+      args = args.slice(1, args.length);
+    } else {
+      SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    }
+
+    InitWindow(960, 540, "Conway's Game of LIFE");
+    game = new Game(args);
+
+    paused = false;
+    rate = 1.0;
+    steps = 1.0;
+
+    camera = new SimpleCamera(game.grid.level);
+
+    nextTime = GetTime() + 1.0;
+
+    // realHeat = heat;
+    // console.log("Started Hashlife!");
   }
-  var selectedEnt: Pattern | Null = null;
 
-  var bench = (args[0] == "--bench") orelse false;
-  if (bench) {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    args = args.slice(1, args.length);
-  } else {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  }
-
-  InitWindow(960, 540, "Conway's Game of LIFE");
-  var game = new Game(args);
-
-  var paused = false;
-  var rate = 1.0;
-  var steps = 0;
-
-  var camera = new SimpleCamera(game.grid.level);
-
-  var nextTime = GetTime() + 1.0 / rate;
-
-  var realHeat = heat;
-
-  while (!WindowShouldClose()) {
+  public loop(): Void {
     camera.update();
 
     var wheel = GetMouseWheelMove();
@@ -794,104 +704,18 @@ export let main(args: Listed<String>): Void | Bubble {
       camera.zoomBy(wheel, new Vector2(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
     }
 
-    if (IsMouseButtonDown(1)) {
+    if (IsMouseButtonDown(1) || IsMouseButtonDown(2)) {
       camera.moveBy(GetMouseDelta());
     }
-
-    BeginDrawing();
-    ClearBackground(new Color(32, 32, 32, 255));
-    var gameBounds = new Rectangle(
-      camera.target.x * camera.zoom,
-      camera.target.y * camera.zoom,
-      camera.size * camera.zoom,
-      camera.size * camera.zoom,
-    );
-    game.draw(gameBounds);
-    DrawFPS(20, 20);
-    var n = 1;
-    for (var i = 0; n < realHeat; i += 1) {
-      DrawRectangleRec(new Rectangle(20.0, 50.0 + i.toFloat64() * 30.0, 20.0, 20.0), RED);
-      n *= 2;
-    }
-    DrawText("${rate.toString()} hz * ${pow2[steps].toString()} warp", 120, 20, 20, WHITE);
-    var entWidth = (GetScreenHeight().toFloat64() * 0.1).min(GetScreenWidth().toFloat64() / patterns.length.toFloat64());
-    var mouse = GetMousePosition();
-    var drawSelectedEnt = true;
-    var clickWasEnts = false;
-    var toolText = "";
-    for (var i = 0; i < patterns.length; i++) {
-      var bounds = new Rectangle(i.toFloat64() * entWidth, GetScreenHeight().toFloat64() - entWidth, entWidth, entWidth);
-      if (CheckCollisionPointRec(mouse, bounds)) {
-        clickWasEnts = true;
-        drawSelectedEnt = false;
-        toolText = patterns[i].name;
-      }
-      if (patterns[i].drawTool(bounds, selectedEnt == patterns[i])) {
-        if (selectedEnt == patterns[i]) {
-          selectedEnt = null;
-        } else {
-          selectedEnt = patterns[i];
-        }
-      }
-    }
-    if (toolText != "") {
-      var width = MeasureText(toolText, 20);
-      DrawRectangleRec(new Rectangle(mouse.x + 2.0, mouse.y - 16.0, width.toFloat64() + 4.0, 24.0), new Color(0, 0, 0, 192));
-      DrawText(toolText, mouse.x.toInt() + 8, mouse.y.toInt() - 16, 20, WHITE);
-    }
-    if (!clickWasEnts && selectedEnt != null) {
-      var boundsFlipX1 = new Rectangle(GetScreenWidth().toFloat64() - 50.0, 10.0, 20.0, 40.0);
-      var boundsFlipX2 = new Rectangle(GetScreenWidth().toFloat64() - 30.0, 10.0, 20.0, 40.0);
-      DrawRectangleRec(boundsFlipX1, GREEN);
-      DrawRectangleRec(boundsFlipX2, RED);
-      var inBounds = CheckCollisionPointRec(mouse, boundsFlipX1) || CheckCollisionPointRec(mouse, boundsFlipX2);
-      if (inBounds) {
-        drawSelectedEnt = false;
-        if (IsMouseButtonPressed(0)) {
-          selectedEnt.as<Pattern>().builder.flipX();
-          clickWasEnts = true;  
-        }
-      }
-    }
-    if (!clickWasEnts && selectedEnt != null) {
-      var boundsFlipY1 = new Rectangle(GetScreenWidth().toFloat64() - 100.0, 10.0, 40.0, 20.0);
-      var boundsFlipY2 = new Rectangle(GetScreenWidth().toFloat64() - 100.0, 30.0, 40.0, 20.0);
-      DrawRectangleRec(boundsFlipY1, GREEN);
-      DrawRectangleRec(boundsFlipY2, RED);
-      var inBounds = CheckCollisionPointRec(mouse, boundsFlipY1) || CheckCollisionPointRec(mouse, boundsFlipY2);
-      if (inBounds) {
-        drawSelectedEnt = false;
-        if (IsMouseButtonPressed(0)) {
-          selectedEnt.as<Pattern>().builder.flipY();
-          clickWasEnts = true;
-        }
-      }
-    }
-    if (drawSelectedEnt && selectedEnt != null && CheckCollisionPointRec(mouse, gameBounds)) {
-      var pat = selectedEnt.as<Pattern>();
-      DrawText("Selected: ${pat.name}", GetMouseX(), GetMouseY(), 20, GREEN);
-    }
-    EndDrawing();
-    if (paused) {
-      nextTime = GetTime() + 1.0 / rate;
-    }
-    if (!paused) {
-      var time = GetTime();
-      if (nextTime <= time) {
-        if (steps == 0) {
-          game.update();
-        } else {
-          game.warp(steps);
-        }
-        nextTime = time + 1.0 / rate;
-      }
-    }
     if (IsKeyPressed(KEY_APOSTROPHE)) {
-      steps += 1;
+      steps += 1.0;
+      steps /= 0.8;
     }
     if (IsKeyPressed(KEY_SEMICOLON)) {
-      if (steps > 0) {
-        steps -= 1;
+      steps *= 0.8;
+      steps -= 1.0;
+      if (steps < 1.0) {
+        steps = 1.0;
       }
     }
     if (IsKeyPressed(KEY_PERIOD)) {
@@ -922,16 +746,84 @@ export let main(args: Listed<String>): Void | Bubble {
         }
       }
     }
-    if (drawSelectedEnt && selectedEnt != null) {
-      if (IsMouseButtonPressed(0)) {
-        game.addBuilder(selectedEnt.as<Pattern>().builder, camera.screenToLife(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
+    var b0 = IsMouseButtonPressed(0);
+    BeginDrawing();
+    ClearBackground(new Color(32, 32, 32, 255));
+    var gameBounds = new Rectangle(
+      camera.target.x * camera.zoom,
+      camera.target.y * camera.zoom,
+      camera.size * camera.zoom,
+      camera.size * camera.zoom,
+    );
+    var drawStart = GetTime();
+    game.draw(gameBounds);
+    var drawEnd = GetTime();
+    // console.log("${((drawEnd - drawStart) * 1000.0).toString()}ms to draw");
+    DrawFPS(20, 20);
+    // var n = 1;
+    // for (var i = 0; n < realHeat; i += 1) {
+      // DrawRectangleRec(new Rectangle(20.0, 50.0 + i.toFloat64() * 30.0, 20.0, 20.0), RED);
+      // n *= 2;
+    // }
+    DrawText("${rate.toString()} hz * ${steps.toInt().toString()} warp", 120, 20, 20, WHITE);
+    var entWidth = (GetScreenHeight().toFloat64() * 0.1).min(GetScreenWidth().toFloat64() / patterns.length.toFloat64());
+    var mouse = GetMousePosition();
+    var drawSelectedEnt = true;
+    var clickWasEnts = false;
+    var toolText = "";
+    for (var i = 0; i < patterns.length; i++) {
+      var bounds = new Rectangle(i.toFloat64() * entWidth, GetScreenHeight().toFloat64() - entWidth, entWidth, entWidth);
+      if (CheckCollisionPointRec(mouse, bounds)) {
+        clickWasEnts = true;
+        drawSelectedEnt = false;
+        toolText = patterns[i].name;
+      }
+      if (patterns[i].drawTool(bounds, selectedEnt == patterns[i])) {
+        if (selectedEnt == patterns[i]) {
+          selectedEnt = null;
+        } else {
+          selectedEnt = patterns[i];
+        }
       }
     }
-    if (heat != 0) {
-      realHeat = heat;
+    if (toolText != "") {
+      var width = MeasureText(toolText, 20);
+      DrawRectangleRec(new Rectangle(mouse.x + 2.0, mouse.y - 16.0, width.toFloat64() + 4.0, 24.0), new Color(0, 0, 0, 192));
+      DrawText(toolText, mouse.x.toInt() + 8, mouse.y.toInt() - 16, 20, WHITE);
     }
-    heat = 0;
-    // SaveFileText("out.save", saveTable());
+    if (drawSelectedEnt && selectedEnt != null && CheckCollisionPointRec(mouse, gameBounds)) {
+      var pat = selectedEnt.as<Pattern>();
+      DrawText("Selected: ${pat.name}", GetMouseX(), GetMouseY(), 20, GREEN);
+    }
+    EndDrawing();
+    if (paused) {
+      nextTime = GetTime() + 1.0 / rate;
+    }
+    if (!paused) {
+      var time = GetTime();
+      if (nextTime <= time) {
+        game.advance(steps.toInt());
+        nextTime = time + 1.0 / rate;
+      }
+    }
+    if (drawSelectedEnt && selectedEnt != null) {
+      if (b0) {
+        var start = GetTime();
+        game.addBuilder(selectedEnt.as<Pattern>().builder, camera.screenToLife(GetMouseX().toFloat64(), GetMouseY().toFloat64()));
+        var end = GetTime();
+      }
+    }
+
+    // if (heat != 0) {
+    //   realHeat = heat;
+    // }
+    // heat = 0;
   }
-  CloseWindow();
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  var app = new App(args);
+  while (!WindowShouldClose()) {
+    app.loop();
+  }
 }

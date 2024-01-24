@@ -16,92 +16,135 @@ let absf(v: Float64): Float64 {
   }
 }
 
-export let main(args: Listed<String>): Void | Bubble {
-  var borderSize = 12.0;
-  var gameSpeed = 1.0;
-  var leftStrength = 0.2;
-  var rightStrength = 0.2;
-  var maxScore = 11;
-  var windowScale = 0.75;
-  var racketSpeed = 1.0;
-  var leftAi = false;
-  var rightAi = true;
+let UP = -1.0;
+let DOWN = 1.0;
 
-  for (var i = 0; i < args.length; i++) {
-    var argBase = (args[i] orelse "").split("=");
-    var nextArg = argBase[1] orelse args[++i] orelse "";
-    if (argBase[0] == "--border") {
-      borderSize = nextArg.toFloat64();
+let SCREEN_TITLE = 0;
+let SCREEN_PLAY = 1;
+let SCREEN_ENDING = 2;
+
+export class App {
+  private borderSize: Float64;
+  private gameSpeed: Float64;
+  private leftStrength: Float64;
+  private rightStrength: Float64;
+  private maxScore: Float64;
+  private windowScale: Float64;
+  private racketSpeed: Float64;
+  private leftAi: Boolean;
+  private rightAi: Boolean;
+
+  private rightScore: Int;
+  private leftScore: Int;
+
+  private screen: Rectangle;
+  private border: Rectangle;
+  private top: Rectangle;
+  private bottom: Rectangle;
+
+  private ball: Rectangle;
+  private leftRacket: Rectangle;
+  private rightRacket: Rectangle;
+  private scoreWidth: Int;
+  private frameTime: Float64;
+
+  private camera: Camera2D;
+  private winnerMessage: String;
+  private currentScreen: Int;
+
+  private xx: Float64;
+  private yy: Float64;
+
+  public constructor(args: Listed<String>) {
+    borderSize = 12.0;
+    gameSpeed = 1.0;
+    leftStrength = 0.2;
+    rightStrength = 0.2;
+    maxScore = 11;
+    windowScale = 0.75;
+    racketSpeed = 1.0;
+    leftAi = false;
+    rightAi = true;
+
+    for (var i = 0; i < args.length; i++) {
+      var argBase = (args[i] orelse "").split("=");
+      var nextArg = argBase[1] orelse args[++i] orelse "";
+      if (argBase[0] == "--border") {
+        borderSize = nextArg.toFloat64();
+      }
+      if (argBase[0] == "--game-speed") {
+        gameSpeed = nextArg.toFloat64();
+      }
+      if (argBase[0] == "--control") {
+        leftStrength = nextArg.toFloat64();
+        rightStrength = nextArg.toFloat64();
+      }
+      if (argBase[0] == "--score") {
+        maxScore = nextArg.toInt();
+      }
+      if (argBase[0] == "--mode") {
+        var splitNext = nextArg.split("");
+        leftAi = (splitNext[splitNext.length - 2] orelse "h") != "h";
+        rightAi = (splitNext[splitNext.length - 1] orelse "h") != "h";
+      }
+      if (argBase[0] == "--racket-speed") {
+        racketSpeed = nextArg.toFloat64();
+      }
     }
-    if (argBase[0] == "--game-speed") {
-      gameSpeed = nextArg.toFloat64();
+
+    if (!leftAi || !rightAi) {
+      if (leftAi) {
+        leftStrength *= 0.5;
+      }
+      if (rightAi) {
+        rightStrength *= 0.5;
+      }
     }
-    if (argBase[0] == "--control") {
-      leftStrength = nextArg.toFloat64();
-      rightStrength = nextArg.toFloat64();
-    }
-    if (argBase[0] == "--score") {
-      maxScore = nextArg.toInt();
-    }
-    if (argBase[0] == "--mode") {
-      var splitNext = nextArg.split("");
-      leftAi = (splitNext[splitNext.length - 2] orelse "h") != "h";
-      rightAi = (splitNext[splitNext.length - 1] orelse "h") != "h";
-    }
-    if (argBase[0] == "--racket-speed") {
-      racketSpeed = nextArg.toFloat64();
-    }
+    rightScore = 0;
+    leftScore = 0;
+
+    SetTraceLogLevel(LOG_WARNING);
+
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    InitWindow(960, 540, "Pong!");
+
+    screen = new Rectangle(0.0, 0.0, 1920.0, 1080.0);
+    border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
+    top = new Rectangle(screen.x, screen.y, border.width, border.y);
+    bottom = new Rectangle(screen.x, border.height + borderSize, screen.width, screen.y);
+
+    // SetWindowPosition((screen.width * (1.0 - windowScale)).toInt(), (screen.height * (1.0 - windowScale)).toInt());
+    SetWindowSize(screen.width.toInt(), screen.height.toInt());
+
+    ball = new Rectangle(borderSize * 5.0, border.height, borderSize, borderSize);
+    leftRacket = new Rectangle(border.x + borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
+    rightRacket = new Rectangle(border.width - borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
+    scoreWidth = MeasureText("00", 60);
+    frameTime = 0.0;
+
+    camera = new Camera2D(
+      new Vector2(0.0, 0.0),
+      new Vector2(0.0, 0.0),
+      0.0,
+      1.0,
+    );
+    winnerMessage = "";
+    currentScreen = SCREEN_TITLE;
+
+    xx = borderSize / 2.0;
+    yy = borderSize / 2.0;
   }
 
-  if (!leftAi || !rightAi) {
-    if (leftAi) {
-      leftStrength *= 0.5;
-    }
-    if (rightAi) {
-      rightStrength *= 0.5;
-    }
-  }
-
-  let UP = -1.0;
-  let DOWN = 1.0;
-
-  let SCREEN_TITLE = 0;
-  let SCREEN_PLAY = 1;
-  let SCREEN_ENDING = 2;
-
-  var rightScore = 0;
-  var leftScore = 0;
-
-  SetTraceLogLevel(LOG_WARNING);
-
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(960, 540, "Pong!");
-
-  var screen = new Rectangle(0.0, 0.0, 1920.0, 1080.0);
-  var border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
-  var top = new Rectangle(screen.x, screen.y, border.width, border.y);
-  var bottom = new Rectangle(screen.x, border.height + borderSize, screen.width, screen.y);
-
-  // SetWindowPosition((screen.width * (1.0 - windowScale)).toInt(), (screen.height * (1.0 - windowScale)).toInt());
-  SetWindowSize(screen.width.toInt(), screen.height.toInt());
-
-  var ball = new Rectangle(borderSize * 5.0, border.height, borderSize, borderSize);
-  var leftRacket = new Rectangle(border.x + borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
-  var rightRacket = new Rectangle(border.width - borderSize, border.height / 2.0, borderSize, borderSize * 5.0);
-  var scoreWidth = MeasureText("00", 60);
-  var frameTime = 0.0;
-
-  let resizeWindow(): Void {
-    console.log("RESIZE");
+  public resizeWindow(): Void {
     var oldScreen = screen;
-    screen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+    var newScreen = new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+    screen = newScreen;
     let scaleX(xPos: Float64): Float64 {
-      return xPos / oldScreen.width * screen.width;
+      return xPos / oldScreen.width * newScreen.width;
     }
     let scaleY(yPos: Float64): Float64 {
-      return yPos / oldScreen.height * screen.height;
+      return yPos / oldScreen.height * newScreen.height;
     }
-    console.log(scaleX(0.0).toString());
     border = new Rectangle(borderSize, borderSize, screen.width - 2.0 * borderSize, screen.height - 2.0 * borderSize);
     top = new Rectangle(screen.x, screen.y, border.width, border.y);
     bottom = new Rectangle(screen.x, border.height + borderSize, screen.width, screen.y);
@@ -110,13 +153,11 @@ export let main(args: Listed<String>): Void | Bubble {
     ball = new Rectangle(scaleX(ball.x), scaleY(ball.y), ball.width, ball.height);
   }
 
-  let setBallPos(x: Float64, y: Float64): Void {
+  public setBallPos(x: Float64, y: Float64): Void {
     ball = new Rectangle(x, y, borderSize, borderSize);
   }
 
-  var xx = borderSize / 2.0;
-  var yy = borderSize / 2.0;
-  let moveBall(dir1: Float64, dir2: Float64): Void {
+  public moveBall(dir1: Float64, dir2: Float64): Void {
     if (CheckCollisionRecs(ball, leftRacket)) {
       if (xx < 0.0) {
         xx = -xx;
@@ -155,7 +196,7 @@ export let main(args: Listed<String>): Void | Bubble {
     setBallPos(ball.x + xx * frameTime, ball.y + yy * frameTime);
   }
 
-  let moveRacket(racket: Rectangle, dir: Float64): Rectangle {
+  public moveRacket(racket: Rectangle, dir: Float64): Rectangle {
     if ((CheckCollisionRecs(top, racket) && dir < 0.0) || (CheckCollisionRecs(bottom, racket) && dir > 0.0)) {
       return racket;
     } else {
@@ -164,21 +205,13 @@ export let main(args: Listed<String>): Void | Bubble {
     }
   }
 
-  let serveBall(): Void {
+  public serveBall(): Void {
     xx = -xx;
     yy = borderSize / 2.0;
     setBallPos(border.x + border.width / 2.0, GetRandomValue(border.y.toInt() + 10, border.height.toInt()).toFloat64());
   }
 
-  var camera = new Camera2D(
-    new Vector2(0.0, 0.0),
-    new Vector2(0.0, 0.0),
-    0.0,
-    1.0,
-  );
-  var winnerMessage = "";
-  var currentScreen = SCREEN_TITLE;
-  while (!WindowShouldClose()) {
+  public loop(): Void {
     resizeWindow();
 
     frameTime = GetFrameTime() * 60.0 * gameSpeed;
@@ -283,6 +316,12 @@ export let main(args: Listed<String>): Void | Bubble {
     EndMode2D();
     EndDrawing();
   }
-  CloseWindow();
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  var app = new App(args);
+  while (!WindowShouldClose()) {
+    app.loop();
+  }
 }
 

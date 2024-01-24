@@ -34,10 +34,6 @@ basic = [
     '...',
 ]
 
-dump_funcs = False
-debug_args = False
-debug_ret = False
-
 def lookup(type_name, name = None):
     type_name = type_name.strip()
     if type_name.startswith('const'):
@@ -134,13 +130,20 @@ def main() -> None:
     
     with open(f'vendor/raylib-luajit/generated.lua', 'w') as out_file:
         out_file.write('local ffi = require("ffi")\n')
-        out_file.write('local rl = {}\n')
+        out_file.write('return function(lib)\n')
+        out_file.write('  local rl = {}\n')
         # structs = {}
         # for struct in raylib_json['structs']:
         #     structs[struct['name']] = {prop['name']: prop['type'] for prop in struct['fields']}
+
+        # for struct in raylib_json['aliases']:
+        #     name = struct['name']
+        #     ty = struct['type']
+        #     out_file.write(f'  rl.{name} = ffi.typeof("{alias[ty]}")\n')
+
         for struct in raylib_json['structs']:
             name = struct['name']
-            out_file.write(f'rl.{name} = ffi.typeof("struct {name}")')
+            out_file.write(f'  rl.{name} = ffi.typeof("struct {name}")\n')
             # out_file.write(f'function rl.{name}(...)\n')
             # out_file.write(f'  local obj = ffi.new("struct {name}", ...)\n')
             # out_file.write(f'  assert(obj ~= nil, "failed to create {name}")\n')
@@ -148,40 +151,16 @@ def main() -> None:
             # out_file.write(f'end\n')
         for func in raylib_json['functions']:
             name = func['name']
-            params = func['params'] if 'params' in func else []
-            param_names = [escape_keyword(param['name']) for param in params]
-            converted_args = []
-            for param, param_name in zip(params, param_names):
-                param_type = param['type']
-                if param_type == 'char *' or param_type == 'const char *':
-                    converted_args.append(f'rl.char_ptr({param_name})') 
-                else:
-                    converted_args.append(param_name) 
-            params_str = ', '.join(param_names)
-            args_str = ', '.join(converted_args)
-            ret_val_str = f'rl.lib.{name}({args_str})'
             if func['returnType'] == 'char *' or func['returnType'] == 'const char *':
-                ret_val_str = f'ffi.string({ret_val_str})'
-            if debug_args:
-                pre_inject = f'  print({params_str})\n'
-                if func['returnType'] != 'void':
-                    ret_stmt_str = f'local ret = {ret_val_str}'
-                    if debug_ret:
-                        post_inject = '  print(type(ret))\n  return ret\n'
-                else:
-                    ret_stmt_str = ret_val_str
-                    post_inject = ''
+                params = func['params'] if 'params' in func else []
+                param_names = [escape_keyword(param['name']) for param in params]
+                params_str = ', '.join(param_names)
+                ret_val_str = f'lib.{name}({params_str})'
+                out_file.write(f'  function rl.{name}({params_str})\n    return ffi.string({ret_val_str})\n  end\n')
             else:
-                pre_inject = ''
-                if func['returnType'] != 'void':
-                    ret_stmt_str = f'return {ret_val_str}'
-                else:
-                    ret_stmt_str = ret_val_str
-                post_inject = ''
-            if dump_funcs:
-                pre_inject = f'  print("{name}")\n{pre_inject}'
-            out_file.write(f'function rl:{name}({params_str})\n{pre_inject}  {ret_stmt_str}\n{post_inject}end\n')
-        out_file.write('return rl\n')
+                out_file.write(f'  rl.{name} = lib.{name}\n')
+        out_file.write('  return rl\n')
+        out_file.write('end\n')
 
 if __name__ == '__main__':
     main()

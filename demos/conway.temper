@@ -110,22 +110,27 @@ class Game {
   }
 }
 
-export let main(args: Listed<String>): Void | Bubble {
-  SetTraceLogLevel(LOG_WARNING);
+export class App {
+  private bench: Boolean;
+  private game: Game;
 
-  var bench = (args[0] == "--bench") orelse false;
+  public constructor(args: Listed<String>) {
+    SetTraceLogLevel(LOG_WARNING);
 
-  if (bench) {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    args = args.slice(1, args.length);
-  } else {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    bench = (args[0] == "--bench") orelse false;
+
+    if (bench) {
+      SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+      args = args.slice(1, args.length);
+    } else {
+      SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    }
+
+    InitWindow(960, 540, "Conway's Game of LIFE");
+    game = new Game(args);
   }
 
-  InitWindow(960, 540, "Conway's Game of LIFE");
-  var game = new Game(args);
-
-  while (!WindowShouldClose()) {
+  public loop(): Void {
     BeginDrawing();
     ClearBackground(BLACK);
     game.draw(new Rectangle(0.0, 0.0, GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64()));
@@ -136,5 +141,11 @@ export let main(args: Listed<String>): Void | Bubble {
       console.log("FrameTime: ${(GetFrameTime() * 1000.0).toInt().toString()}ms")
     }
   }
-  CloseWindow();
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  var app = new App(args);
+  while (!WindowShouldClose()) {
+    app.loop();
+  }
 }
