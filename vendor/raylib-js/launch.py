@@ -19,7 +19,7 @@ try:
 except ImportError as e:
     pass
 
-dir = pathlib.Path(__file__).parent
+dirname = pathlib.Path(__file__).parent
 
 suggested_jsmin = False
 
@@ -45,10 +45,14 @@ def timed(func):
         return ret
     return inner
 
-def which(name):
-    res = shutil.which(name)
+def which(*names):
+    res = None
+    for name in names:
+        res = shutil.which(name)
+        if res is not None:
+            break
     if res is None:
-        raise Exception(f'this script requires {name} to be installed')
+        raise Exception(f'this script requires one of ({" or ".join(names)}) to be installed')
     return res
 
 asyncs = [
@@ -149,6 +153,19 @@ def is_bad_func(func):
 def filter_out_bad_funcs(funcs):
     return [func for func in funcs if not is_bad_func(func)]
 
+def is_bad_alias(alias):
+    assert alias['name'] not in bad_types
+    return alias['type'] in bad_types
+
+def filter_out_bad_aliases(aliases):
+    return [alias for alias in aliases if not is_bad_alias(alias)]
+
+def is_bad_type(ty):
+    return ty['name'] in bad_types
+
+def filter_out_bad_types(types):
+    return [ty for ty in types if not is_bad_type(ty)]
+
 raylib_json = None
 def load_json():
     global raylib_json
@@ -164,6 +181,8 @@ def load_json():
                 else:
                     raylib_json[entry] = name_json[entry]
     raylib_json['functions'] = filter_out_bad_funcs(raylib_json['functions'])
+    raylib_json['aliases'] = filter_out_bad_aliases(raylib_json['aliases'])
+    raylib_json['structs'] = filter_out_bad_types(raylib_json['structs'])
 
 @timed
 def generate_c_from_raylib_json():
@@ -307,13 +326,14 @@ def generate_javascript_from_raylib_json():
     load_json()
     with open(f'emcc/bind.js', 'w') as out_file:
         out_file.write('\n')
-        out_file.write('import Module from "/emcc/raylib.js";\n')
+        out_file.write('import Module from "../emcc/raylib.js";\n')
         out_file.write('\n')
         out_file.write('export const lib = Module;\n')
         out_file.write('export const bind = async() => {\n')
         out_file.write('  const lib = await Module();\n')
         out_file.write('  const rl = Object.create(null);\n')
         out_file.write('  rl.lib = lib;\n')
+        out_file.write('  const cwrap = lib["cwrap"];\n')
         for struct in raylib_json['structs']:
             name = struct['name']
             props = struct['fields']
@@ -329,14 +349,14 @@ def generate_javascript_from_raylib_json():
                     types.append('string')
                 elif prop_type in type_number:
                     types.append('number')
-                elif prop_type.startswith('struct') and not prop_type.endswith('*'):
+                elif prop_type.endswith('*'):
+                    types.append('number')
+                elif prop_type.startswith('struct'):
                     types.append('number')
                 else:
                     # raise Exception("struct not yet implemented: " + name)
                     skip = True
                     break
-            if skip:
-                continue
             js2c_args = []
             for prop in props:
                 prop_name = prop['name']
@@ -351,18 +371,18 @@ def generate_javascript_from_raylib_json():
                         arr = i
                         break
                 if arr is None:
-                    if prop_type.startswith('struct'):
+                    if prop_type.startswith('struct') and not prop_type.endswith('*'):
                         js2c_args.append(f'js2c_{prop_type[6:].strip()}(obj.{prop_name})')
                     else:
                         js2c_args.append(f'obj.{prop_name}')
                     if prop_type == 'char *' or prop_type == 'unsigned char *':
-                        out_file.write(f'  const from_{name}_get_{prop_name} = lib.cwrap("{get_for(name, prop_name)}", "string", ["number"]);\n')
+                        out_file.write(f'  const from_{name}_get_{prop_name} = cwrap("{get_for(name, prop_name)}", "string", ["number"]);\n')
                     else:
-                        out_file.write(f'  const from_{name}_get_{prop_name} = lib.cwrap("{get_for(name, prop_name)}", "number", ["number"]);\n')
+                        out_file.write(f'  const from_{name}_get_{prop_name} = cwrap("{get_for(name, prop_name)}", "number", ["number"]);\n')
                 else:
                     pass
             types = ', '.join(f'"{name}"' for name in types)
-            out_file.write(f'  const cons_{name} = lib.cwrap("{new_for(name)}", "number", [{types}]);\n')
+            out_file.write(f'  const cons_{name} = cwrap("{new_for(name)}", "number", [{types}]);\n')
             js2c_args = ', '.join(js2c_args)
             out_file.write(f'  const js2c_{name} = (obj) => cons_{name}({js2c_args});\n')
             out_file.write(f'  const c2js_{name} = (ptr) => ({"{"}\n')
@@ -380,7 +400,7 @@ def generate_javascript_from_raylib_json():
                         break
                 if arr is None:
                     prop_data = f'from_{name}_get_{prop_name}(ptr)'
-                    if prop_type.startswith('struct'):
+                    if prop_type.startswith('struct') and not prop_type.endswith('*'):
                         out_file.write(f'    {prop_name}: c2js_{prop_type[6:].strip()}({prop_data}),\n')
                     else:
                         out_file.write(f'    {prop_name}: {prop_data},\n')
@@ -410,15 +430,18 @@ def generate_javascript_from_raylib_json():
                     param_names.append(param_name)
                     if param_type.startswith('const'):
                         param_type = param_type[5:].strip()
-                    if param_type.startswith('struct') and not param_type.endswith('*'):
+                    if param_type == 'char *' or param_type == 'unsigned char *':
+                        arg_converts.append(param_name)
+                        param_js_types.append('string')
+                    elif param_type.endswith('*'):
+                        arg_converts.append(param_name)
+                        param_js_types.append('number')
+                    elif param_type.startswith('struct'):
                         arg_converts.append(f'js2c_{param_type[6:].strip()}({param_name})')
                         param_js_types.append('number')
                     elif param_type in type_number or param_type == 'bool':
                         arg_converts.append(param_name)
                         param_js_types.append('number')
-                    elif param_type == 'char *' or param_type == 'unsigned char *':
-                        arg_converts.append(param_name)
-                        param_js_types.append('string')
                     else:
                         skip = f'{name} takes {param_name} of type {param_type}'
             param_js_types = ', '.join(f'"{name}"' for name in param_js_types)
@@ -444,10 +467,10 @@ def generate_javascript_from_raylib_json():
                     extra_args = '{}'
                 args1 = ', '.join(param_names)
                 args2 = ', '.join(arg_converts)
-                out_file.write(f'  const Bind{name} = lib.cwrap("{bind_for(name)}", "{ret}", [{param_js_types}], {extra_args});\n')
+                out_file.write(f'  const Bind{name} = cwrap("{bind_for(name)}", "{ret}", [{param_js_types}], {extra_args});\n')
                 lr = lookup(func['returnType'])
                 ret_val = f'Bind{name}({args2})'
-                if lr.startswith('struct'):
+                if lr.startswith('struct') and not lr.endswith('*'):
                     ret_val = f'c2js_{lr[6:].strip()}({ret_val})'
                 if False:
                     ret_val = f'(console.log("{name}", {args1}), {ret_val})'
@@ -467,21 +490,22 @@ def emcc_generate_js_from_c():
     cli.extend(("emcc/generated.c", "lib/libraylib.a"))
     cli.extend(("-o", "emcc/raylib.js"))
     cli.append("--no-entry")
-    cli.append("-O2")
-    setting('TOTAL_MEMORY=16mb')
+    cli.append("-Oz")
+    cli.append('-flto')
+    setting('EVAL_CTORS=1')
+    setting('TOTAL_MEMORY=64mb')
     setting("USE_GLFW=3")
-    setting("FORCE_FILESYSTEM=1")
-    setting("ALLOW_MEMORY_GROWTH=1")
+    # setting("ALLOW_MEMORY_GROWTH=1")
     setting("WASM=1")
+    # setting("WASMFS=1")
     setting("DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
-    setting("ASYNCIFY=1")
     setting("FORCE_FILESYSTEM=1")
-    setting("SINGLE_FILE=1")
     setting("MODULARIZE=1")
     setting("EXPORT_ES6=1")
+    setting("ENVIRONMENT=web")
     setting("EXPORTED_RUNTIME_METHODS=cwrap,FS")
 
-    subprocess.run(cli)
+    subprocess.call(cli)
 
 @timed
 def open_browser():
@@ -496,76 +520,29 @@ def serve_directory():
 @timed
 def copy_raylib_json():
     for file in ('raylib_api.json', 'raymath_api.json', 'rlgl_api.json'):
-        shutil.copy(f'rl/json/{file}', dir / 'json' / file)
+        shutil.copy(f'rl/json/{file}', dirname / 'json' / file)
 
 @timed
 def generate_javascript_from_temper():
     subprocess.call([which('temper'), 'build', '-b', 'js'], env={'JAVA_OPTS': '-Xss4m'})
 
-all_reps = {
-    f'interface-types.js': '/temper/interface-types.js',
-    f'regex.js': '/temper/regex.js',
-    f'index.js': '/temper/core.js',
-    f'rl/raylib.js': '/temper/raylib.js',
-    f'../rl/raylib.js': '/temper/raylib.js',
-}
-
-def patch_data(data):
-    data = data.replace('from "@temperlang/core"', 'from "/temper/core.js"')
-    for key in all_reps:
-        value = all_reps[key]
-        data = data.replace(f'from "{key}"', f'from "{value}"')
-    return minify_js(data)
-
 @timed
-def patch_generated_javascript():
-    if not os.path.isdir(dir / 'temper'):
-        os.mkdir(dir / 'temper')
-
-    for core in ('index.js', 'interface-types.js', 'regex.js'):
-        with open(f'temper.out/js/temper-core/{core}') as core_file:
-            data = core_file.read()
-
-        patched = patch_data(data)
-
-        core_out = all_reps[core][1:]
-
-        with open(dir / core_out, 'w') as core_file:
-            core_file.write(patched)
-
-    demos = glob.glob('temper.out/js/temper-raylib/demos/**.js')
-
-    for ext in ('rl/raylib.js', *demos):
-        ext = ext.removeprefix('temper.out/js/temper-raylib/')
-        with open(f'temper.out/js/temper-raylib/{ext}') as ext_file:
-            data = ext_file.read()
-        
-        patched = patch_data(data)
-
-        if ext in all_reps:
-            ext_out = all_reps[ext][1:]
-        else:
-            name = ext.removeprefix('demos/')
-            ext_out = f'temper/{name}'
-
-        print(ext, ext_out)
-        
-        with open(dir / ext_out, 'w') as ext_file:
-            ext_file.write(patched)
-
-    shutil.copy('demos/patterns.har', dir / 'temper' / 'patterns.har')
+def run_webpack():
+    subprocess.call([which('npx'), '--yes', 'webpack'])
 
 @timed
 def all():
+    os.chdir(dirname.parent.parent)
     which('temper')
     which('emcc')
-    # generate_javascript_from_temper()
-    patch_generated_javascript()
+    which('npx')
+    generate_javascript_from_temper()
     copy_raylib_json()
-    os.chdir(pathlib.Path(__file__).parent)
+    os.chdir(dirname)
     generate_c_from_raylib_json()
     generate_javascript_from_raylib_json()
     emcc_generate_js_from_c()
+    run_webpack()
     open_browser()
     serve_directory()
 

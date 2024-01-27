@@ -1,8 +1,8 @@
 emcc/bind.js
-emcc/raylib.js
 emcc/generated.c
+emcc/raylib.js
+emcc/raylib.wasm
 json/raylib_api.json
 json/raymath_api.json
 json/rlgl_api.json
-temper/*.js
-temper/*.har
+public

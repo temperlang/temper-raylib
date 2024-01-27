@@ -99,6 +99,49 @@ class RealNode extends Node {
   }
 
   public life2(): Node {
+    // // our grid:
+    // // v00 v01 v02 v03
+    // // v10 v11 v12 v13
+    // // v20 v21 v22 v23
+    // // v30 v31 v32 v33
+    // var v00 = a.a;
+    // var v01 = a.b;
+    // var v02 = b.a;
+    // var v03 = b.b;
+    // var v10 = a.c;
+    // var v11 = a.d;
+    // var v12 = b.c;
+    // var v13 = b.d;
+    // var v20 = c.a;
+    // var v21 = c.b;
+    // var v22 = d.a;
+    // var v23 = d.b;
+    // var v30 = c.c;
+    // var v31 = c.d;
+    // var v32 = d.c;
+    // var v33 = d.d;
+
+    // var v11m = if (v11.pop + v10.pop + v00.pop + v01.pop == 1) { v10 } else { v11 };
+    // var v12m = if (v12.pop + v02.pop + v03.pop + v13.pop == 1) { v02 } else { v12 };
+    // var v21m = if (v21.pop + v31.pop + v30.pop + v20.pop == 1) { v31 } else { v21 };
+    // var v22m = if (v22.pop + v23.pop + v33.pop + v32.pop == 1) { v23 } else { v22 };
+
+    // if (v11m.pop + v12m.pop + v21m.pop + v22m.pop == 1) {
+    //   return join(
+    //     v12m, v22m,
+    //     v11m, v21m,
+    //   );
+    //   // return join(
+    //   //   v21m, v11m,
+    //   //   v22m, v12m,
+    //   // );
+    // } else {
+    //   return join(
+    //     v11m, v12m,
+    //     v21m, v22m,
+    //   );
+    // }
+
     var ad = lifeRule(
       a.a, a.b, b.a,
       a.c, a.d, b.c,
@@ -328,12 +371,12 @@ class Game {
   public grid: Node;
   
   constructor(args: Listed<String>) {
-    if ((args[0] == "--random") orelse false) {
-      var sizeLog2 = args[1].toInt() orelse 8;
+    if (args.length != 0 && args[0] == "--random") {
+      var sizeLog2 = if (args.length < 2) { 8 } else { args[1].toInt() };
       var size = pow2[sizeLog2];
       grid = random(sizeLog2);
     } else {
-      var sizeLog2 = args[0].toInt() orelse 16;
+      var sizeLog2 = if (args.length < 1) { 16 } else { args[0].toInt() };
       var size = pow2[sizeLog2];
       grid = zero(sizeLog2);
     }
@@ -440,6 +483,7 @@ class LifeBuilder {
 class Pattern {
   private lines: List<String>;
   public name: String;
+  public rule: String;
   public builder: LifeBuilder;
   private isParsed: Boolean;
   private hasTexture: Boolean;
@@ -448,6 +492,7 @@ class Pattern {
   public constructor(s: String) {
     lines = s.split("\n");
     name = "???";
+    rule = "???";
     for (var i = 0; i < lines.length; i++) {
       var cur = lines[i].codePoints;
       if (cur.hasAtLeast(1)) {
@@ -465,6 +510,8 @@ class Pattern {
             return n;
           }
           builder = new LifeBuilder(number(), number());
+          var tmp = lines[i].split("rule = ");
+          rule = tmp[tmp.length - 1];
           break;
         }
         if (cur.read() == /* # */ 35) {
@@ -475,6 +522,9 @@ class Pattern {
           }
         }
       }
+    }
+    if (rule == "???") {
+      bubble();
     }
     hasTexture = false;
     isParsed = false;
@@ -499,31 +549,33 @@ class Pattern {
       bounds.height * (1.0 - border * 2.0),
     );
     var size = builder.width.toFloat64().max(builder.height.toFloat64());
-    var textureBounds = new Rectangle(0.0, 0.0, 100.0, 100.0);
-    if (!hasTexture) {
-      hasTexture = true;
-      texture = LoadRenderTexture(100, 100);
-      BeginTextureMode(texture);
-      ClearBackground(BLACK);
-      var points = builder.pointList();
-      var width = builder.width;
-      var scale = 100.0 / size;
-      var xo = ((size - width.toFloat64()) * 0.5).toInt();
-      var yo = ((size - builder.height.toFloat64()) * 0.5).toInt();
-      for (var i = 0; i < points.length; i++) {
-        var point = points[i];
-        var x = (point % width).toFloat64() * scale;
-        var y = (point / width).toFloat64() * scale;
+    if (size != 0.0) {
+      var textureBounds = new Rectangle(0.0, 0.0, 100.0, 100.0);
+      if (!hasTexture) {
+        hasTexture = true;
+        texture = LoadRenderTexture(100, 100);
+        BeginTextureMode(texture);
+        ClearBackground(BLACK);
+        var points = builder.pointList();
+        var width = builder.width;
+        var scale = 100.0 / size;
+        var xo = ((size - width.toFloat64()) * 0.5).toInt();
+        var yo = ((size - builder.height.toFloat64()) * 0.5).toInt();
+        for (var i = 0; i < points.length; i++) {
+          var point = points[i];
+          var x = (point % width).toFloat64() * scale;
+          var y = (point / width).toFloat64() * scale;
 
-        // if (x >= size || y >= size) {
-        //   console.log("${x.toString()}x${y.toString()} in ${size.toString()}x${size.toString()}");
-        // }
+          // if (x >= size || y >= size) {
+          //   console.log("${x.toString()}x${y.toString()} in ${size.toString()}x${size.toString()}");
+          // }
 
-        DrawRectangleRec(new Rectangle(x, y, scale, scale), WHITE);
+          DrawRectangleRec(new Rectangle(x, y, scale, scale), WHITE);
+        }
+        EndTextureMode();
       }
-      EndTextureMode();
+      DrawTexturePro(texture.texture, textureBounds, bounds, new Vector2(0.0, 0.0), 1.0, WHITE);
     }
-    DrawTexturePro(texture.texture, textureBounds, bounds, new Vector2(0.0, 0.0), 1.0, WHITE);
     var mouse = GetMousePosition();
     if (CheckCollisionPointRec(mouse, bounds)) {
       if (IsMouseButtonPressed(0)) {
@@ -577,7 +629,10 @@ class Pattern {
     let nop(): Void {}
     for (var lineNum = 0; lineNum < lines.length; lineNum++) {
       var split: List<String> = lines[lineNum].split("");
-      var first = split[0] orelse "#";
+      if (split.length == 0) {
+        continue;
+      }
+      var first = split[0];
       if (first == "#" || first == "x") {
         continue;
       }
@@ -631,6 +686,12 @@ class SimpleCamera {
 
   public zoomBy(wheel: Float64, center: Vector2): Void {
     var next = wheel * 0.2;
+    if (next < -0.5) {
+      next = -0.5;
+    }
+    if (next > 0.5) {
+      next = 0.5;
+    }
     target.x = target.x - next * center.x / zoom;
     target.y = target.y - next * center.y / zoom;
     zoom = zoom * (1.0 + next);
@@ -642,10 +703,19 @@ class SimpleCamera {
   }
 }
 
-let loadAllPatterns(): List<Pattern> {
-  return LoadFileText("demos/patterns.har").split("\n--- header ---\n").map(fn(s: String): Pattern {
+let loadAllPatterns(rule: String): List<Pattern> {
+  let patternFromString(s: String): Pattern {
     return new Pattern(s);
-  });
+  }
+  let patternMatches(p: Pattern): Boolean {
+    return p.rule == rule;
+    // return true;
+  }
+  return LoadFileText("demos/patterns.har")
+    .split("\n--- header ---\n")
+    .map(patternFromString)
+    // .filter(patternMatches)
+  ;
 }
 
 export class App {
@@ -663,7 +733,7 @@ export class App {
 
   public constructor(args: Listed<String>): Void {
     SetTraceLogLevel(LOG_WARNING);
-    allPatterns = loadAllPatterns();
+    allPatterns = loadAllPatterns("life");
     patternHead = 0;
     patterns = new ListBuilder<Pattern>();
     if (allPatterns.length != 0) {
@@ -673,7 +743,7 @@ export class App {
     }
     selectedEnt = null;
 
-    var bench = (args[0] == "--bench") orelse false;
+    var bench = (args.length != 0 && args[0] == "--bench");
     if (bench) {
       SetConfigFlags(FLAG_WINDOW_RESIZABLE);
       args = args.slice(1, args.length);
@@ -720,9 +790,11 @@ export class App {
     }
     if (IsKeyPressed(KEY_PERIOD)) {
       rate *= 2.0;
+      nextTime = GetTime() + 1.0 / rate;
     }
     if (IsKeyPressed(KEY_COMMA)) {
       rate *= 0.5;
+      nextTime = GetTime() + 1.0 / rate;
     }
     if (IsKeyPressed(KEY_SPACE)) {
       paused = !paused;

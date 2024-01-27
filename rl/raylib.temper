@@ -5401,8 +5401,7 @@ export let FLAG_WINDOW_TOPMOST = 4096; // Set to window always on top
 export let FLAG_WINDOW_ALWAYS_RUN = 256; // Set to allow windows running while minimized
 export let FLAG_WINDOW_TRANSPARENT = 16; // Set to allow transparent framebuffer
 export let FLAG_WINDOW_HIGHDPI = 8192; // Set to support HighDPI
-export let FLAG_WINDOW_MOUSE_PASSTHROUGH = 16384; // Set to support mouse passthrough, only supported when FLAG_WINDOW_UNDECORATED
-export let FLAG_BORDERLESS_WINDOWED_MODE = 32768; // Set to run program in borderless windowed mode
+export let FLAG_WINDOW_MOUFLAG_WINDOW_HIGHDPIESS_WINDOWED_MODE = 32768; // Set to run program in borderless windowed mode
 export let FLAG_MSAA_4X_HINT = 32; // Set to try enabling MSAA 4X
 export let FLAG_INTERLACED_HINT = 65536; // Set to try enabling interlaced video format (for V3D)
 
