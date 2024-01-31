@@ -6,4 +6,5 @@
     import("./demos/conway.temper");
     import("./demos/empty.temper");
     import("./demos/hashlife.temper");
+    import("./demos/particle.temper");
     

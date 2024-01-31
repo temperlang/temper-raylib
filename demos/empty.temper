@@ -1,9 +1,11 @@
 
 export class App {
-  public constructor() {}
+  public constructor(args: Listed<String>) {
+    console.log("This does nothing!");
+  }
   public loop(): Void {}
 }
 
 export let main(args: Listed<String>): Void | Bubble {
-  console.log("This does nothing!");
+  new App(args);
 }
