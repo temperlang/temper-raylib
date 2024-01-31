@@ -1,0 +1,120 @@
+
+let {...} = import('../rl/raylib.temper');
+
+let big(n: Float64): Float64 {
+  if (n == 0.0 || n == -0.0) {
+    return 0.0;
+  }
+  var ret = 0.05 / n;
+  if (ret > 1.0) {
+    return 1.0;
+  }
+  if (ret < -1.0) {
+    return -1.0
+  }
+  return ret;
+}
+
+let little(n: Float64): Float64 {
+  if (n < 0.0) {
+    return -0.001;
+  } else {
+    return 0.001;
+  }
+}
+
+let wrap(pos: Vector2, size: Vector2): Vector2 {
+  return new Vector2((pos.x * 4.0 + size.x) % size.x, (pos.y * 4.0 + size.y) % size.y);
+}
+
+class Particle {
+  public pos: Vector2;
+  public vel: Vector2;
+  public mass: Float64;
+  public base: Float64;
+}
+
+export class App {
+  private particles: List<Particle>;
+  private tooClose: Float64;
+  private tooFar: Float64;
+  private size: Float64;
+  
+  public constructor(args: Listed<String>) {
+    SetTraceLogLevel(LOG_WARNING);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    InitWindow(960, 540, "Particle Life");
+    particles = [];
+    tooClose = 50.0;
+    tooFar = 150.0;
+    size = 1.0;
+  }
+
+  public loop(): Void {
+    var builder = new ListBuilder<Particle>();
+    if (IsMouseButtonPressed(0) || IsMouseButtonDown(1) || IsMouseButtonDown(2)) {
+      builder.add(new Particle(GetMousePosition(), new Vector2(0.0, 0.0), size, size));
+    }
+    if (IsKeyDown(KEY_EQUAL)) {
+      size *= 1.01;
+    }
+    if (IsKeyDown(KEY_MINUS)) {
+      size /= 1.01;
+    }
+    for (var i = 0; i < particles.length; i++) {
+      var pi = particles[i];
+      var next = pi.vel;
+      var mass = pi.base;
+      for (var j = 0; j < particles.length; j++) {
+        if (j == i) {
+          continue;
+        }
+        var pj = particles[j];
+        var dist = Vector2Distance(pi.pos, pj.pos) / pi.base;
+        if (dist >= tooFar) {
+          continue;
+        }
+        var diff = pj.mass / pi.mass;
+        if (dist <= tooClose) {
+          next = new Vector2(
+            next.x - (pj.pos.x - pi.pos.x) / pi.base * big(dist),
+            next.y - (pj.pos.y - pi.pos.y) / pi.base * big(dist),
+          );
+          mass *= 0.99;
+        } else {
+          next = new Vector2(
+            next.x + diff * (pj.pos.x - pi.pos.x) / pi.base * little(dist),
+            next.y + diff * (pj.pos.y - pi.pos.y) / pi.base * little(dist),
+          );
+        }
+      }
+      builder.add(
+        new Particle(
+          new Vector2(pi.pos.x + next.x, pi.pos.y + next.y),
+          new Vector2(next.x * 0.95, next.y * 0.95),
+          mass,
+          pi.base,
+        ),
+      );
+    }
+    particles = builder.toList();
+    BeginDrawing();
+    ClearBackground(BLACK);
+    var ssize = new Vector2(GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
+    for (var i = 0; i < particles.length; i++) {
+      var pi = particles[i];
+      // DrawCircleV(wrap(pi.pos, ssize), pi.mass, WHITE);
+      DrawCircleV(pi.pos, pi.mass * 10.0, WHITE);
+    }
+    DrawCircleV(GetMousePosition(), size * 10.0, new Color(0, 255, 0, 128));
+    DrawFPS(20, 20);
+    EndDrawing();
+  }
+}
+
+export let main(args: Listed<String>): Void | Bubble {
+  var app = new App(args);
+  while (!WindowShouldClose()) {
+    app.loop();
+  }
+}
