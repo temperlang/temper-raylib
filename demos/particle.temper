@@ -27,19 +27,19 @@ let wrap(pos: Vector2, size: Vector2): Vector2 {
   return new Vector2((pos.x * 4.0 + size.x) % size.x, (pos.y * 4.0 + size.y) % size.y);
 }
 
-class Particle {
-  public pos: Vector2;
-  public vel: Vector2;
-  public mass: Float64;
-  public base: Float64;
-}
+class Particle(
+  public pos: Vector2,
+  public vel: Vector2,
+  public mass: Float64,
+  public base: Float64,
+) {}
 
 export class App {
   private particles: List<Particle>;
   private tooClose: Float64;
   private tooFar: Float64;
   private size: Float64;
-  
+
   public constructor(args: Listed<String>) {
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);

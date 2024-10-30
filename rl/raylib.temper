@@ -5401,7 +5401,8 @@ export let FLAG_WINDOW_TOPMOST = 4096; // Set to window always on top
 export let FLAG_WINDOW_ALWAYS_RUN = 256; // Set to allow windows running while minimized
 export let FLAG_WINDOW_TRANSPARENT = 16; // Set to allow transparent framebuffer
 export let FLAG_WINDOW_HIGHDPI = 8192; // Set to support HighDPI
-export let FLAG_WINDOW_MOUFLAG_WINDOW_HIGHDPIESS_WINDOWED_MODE = 32768; // Set to run program in borderless windowed mode
+export let FLAG_WINDOW_MOUSE_PASSTHROUGH = 16384; // Set to support mouse passthrough, only supported when FLAG_WINDOW_UNDECORATED
+export let FLAG_BORDERLESS_WINDOWED_MODE = 32768; // Set to run program in borderless windowed mode
 export let FLAG_MSAA_4X_HINT = 32; // Set to try enabling MSAA 4X
 export let FLAG_INTERLACED_HINT = 65536; // Set to try enabling interlaced video format (for V3D)
 
@@ -5911,512 +5912,512 @@ export let rlFramebufferAttachType = Int;
 export let rlFramebufferAttachTextureType = Int;
 export let rlCullMode = Int;
 // NOTE: Used when exporting style as code for convenience
-export class GuiStyleProp {
+export class GuiStyleProp(
     // Control identifier
-    public var controlId: Int;
+    public var controlId: Int,
     // Property identifier
-    public var propertyId: Int;
+    public var propertyId: Int,
     // Property value
-    public var propertyValue: Int;
-}
+    public var propertyValue: Int,
+) {}
 // NOTE: Text style is defined by control
-export class GuiTextStyle {
+export class GuiTextStyle(
     // 
-    public var size: Int;
+    public var size: Int,
     // 
-    public var charSpacing: Int;
+    public var charSpacing: Int,
     // 
-    public var lineSpacing: Int;
+    public var lineSpacing: Int,
     // 
-    public var alignmentH: Int;
+    public var alignmentH: Int,
     // 
-    public var alignmentV: Int;
+    public var alignmentV: Int,
     // 
-    public var padding: Int;
-}
+    public var padding: Int,
+) {}
 // Vector2, 2 components
-export class Vector2 {
+export class Vector2(
     // Vector x component
-    public var x: Float64;
+    public var x: Float64,
     // Vector y component
-    public var y: Float64;
-}
+    public var y: Float64,
+) {}
 // Vector3, 3 components
-export class Vector3 {
+export class Vector3(
     // Vector x component
-    public var x: Float64;
+    public var x: Float64,
     // Vector y component
-    public var y: Float64;
+    public var y: Float64,
     // Vector z component
-    public var z: Float64;
-}
+    public var z: Float64,
+) {}
 // Vector4, 4 components
-export class Vector4 {
+export class Vector4(
     // Vector x component
-    public var x: Float64;
+    public var x: Float64,
     // Vector y component
-    public var y: Float64;
+    public var y: Float64,
     // Vector z component
-    public var z: Float64;
+    public var z: Float64,
     // Vector w component
-    public var w: Float64;
-}
+    public var w: Float64,
+) {}
 // Matrix, 4x4 components, column major, OpenGL style, right-handed
-export class Matrix {
+export class Matrix(
     // Matrix first row (4 components)
-    public var m0: Float64;
+    public var m0: Float64,
     // Matrix first row (4 components)
-    public var m4: Float64;
+    public var m4: Float64,
     // Matrix first row (4 components)
-    public var m8: Float64;
+    public var m8: Float64,
     // Matrix first row (4 components)
-    public var m12: Float64;
+    public var m12: Float64,
     // Matrix second row (4 components)
-    public var m1: Float64;
+    public var m1: Float64,
     // Matrix second row (4 components)
-    public var m5: Float64;
+    public var m5: Float64,
     // Matrix second row (4 components)
-    public var m9: Float64;
+    public var m9: Float64,
     // Matrix second row (4 components)
-    public var m13: Float64;
+    public var m13: Float64,
     // Matrix third row (4 components)
-    public var m2: Float64;
+    public var m2: Float64,
     // Matrix third row (4 components)
-    public var m6: Float64;
+    public var m6: Float64,
     // Matrix third row (4 components)
-    public var m10: Float64;
+    public var m10: Float64,
     // Matrix third row (4 components)
-    public var m14: Float64;
+    public var m14: Float64,
     // Matrix fourth row (4 components)
-    public var m3: Float64;
+    public var m3: Float64,
     // Matrix fourth row (4 components)
-    public var m7: Float64;
+    public var m7: Float64,
     // Matrix fourth row (4 components)
-    public var m11: Float64;
+    public var m11: Float64,
     // Matrix fourth row (4 components)
-    public var m15: Float64;
-}
+    public var m15: Float64,
+) {}
 // Color, 4 components, R8G8B8A8 (32bit)
-export class Color {
+export class Color(
     // Color red value
-    public var r: Int;
+    public var r: Int,
     // Color green value
-    public var g: Int;
+    public var g: Int,
     // Color blue value
-    public var b: Int;
+    public var b: Int,
     // Color alpha value
-    public var a: Int;
-}
+    public var a: Int,
+) {}
 // Rectangle, 4 components
-export class Rectangle {
+export class Rectangle(
     // Rectangle top-left corner position x
-    public var x: Float64;
+    public var x: Float64,
     // Rectangle top-left corner position y
-    public var y: Float64;
+    public var y: Float64,
     // Rectangle width
-    public var width: Float64;
+    public var width: Float64,
     // Rectangle height
-    public var height: Float64;
-}
+    public var height: Float64,
+) {}
 // Image, pixel data stored in CPU memory (RAM)
-export class Image {
+export class Image(
     // Image raw data
-    public var data: DenseBitVector;
+    public var data: DenseBitVector,
     // Image base width
-    public var width: Int;
+    public var width: Int,
     // Image base height
-    public var height: Int;
+    public var height: Int,
     // Mipmap levels, 1 by default
-    public var mipmaps: Int;
+    public var mipmaps: Int,
     // Data format (PixelFormat type)
-    public var format: Int;
-}
+    public var format: Int,
+) {}
 // Texture, tex data stored in GPU memory (VRAM)
-export class Texture {
+export class Texture(
     // OpenGL texture id
-    public var id: Int;
+    public var id: Int,
     // Texture base width
-    public var width: Int;
+    public var width: Int,
     // Texture base height
-    public var height: Int;
+    public var height: Int,
     // Mipmap levels, 1 by default
-    public var mipmaps: Int;
+    public var mipmaps: Int,
     // Data format (PixelFormat type)
-    public var format: Int;
-}
+    public var format: Int,
+) {}
 // RenderTexture, fbo for texture rendering
-export class RenderTexture {
+export class RenderTexture(
     // OpenGL framebuffer object id
-    public var id: Int;
+    public var id: Int,
     // Color buffer attachment texture
-    public var texture: Texture;
+    public var texture: Texture,
     // Depth buffer attachment texture
-    public var depth: Texture;
-}
+    public var depth: Texture,
+) {}
 // NPatchInfo, n-patch layout info
-export class NPatchInfo {
+export class NPatchInfo(
     // Texture source rectangle
-    public var source: Rectangle;
+    public var source: Rectangle,
     // Left border offset
-    public var left: Int;
+    public var left: Int,
     // Top border offset
-    public var top: Int;
+    public var top: Int,
     // Right border offset
-    public var right: Int;
+    public var right: Int,
     // Bottom border offset
-    public var bottom: Int;
+    public var bottom: Int,
     // Layout of the n-patch: 3x3, 1x3 or 3x1
-    public var layout: Int;
-}
+    public var layout: Int,
+) {}
 // GlyphInfo, font characters glyphs info
-export class GlyphInfo {
+export class GlyphInfo(
     // Character value (Unicode)
-    public var value: Int;
+    public var value: Int,
     // Character offset X when drawing
-    public var offsetX: Int;
+    public var offsetX: Int,
     // Character offset Y when drawing
-    public var offsetY: Int;
+    public var offsetY: Int,
     // Character advance position X
-    public var advanceX: Int;
+    public var advanceX: Int,
     // Character image data
-    public var image: Image;
-}
+    public var image: Image,
+) {}
 // Font, font texture and GlyphInfo array data
-export class Font {
+export class Font(
     // Base size (default chars height)
-    public var baseSize: Int;
+    public var baseSize: Int,
     // Number of glyph characters
-    public var glyphCount: Int;
+    public var glyphCount: Int,
     // Padding around the glyph characters
-    public var glyphPadding: Int;
+    public var glyphPadding: Int,
     // Texture atlas containing the glyphs
-    public var texture: Texture /* from alias Texture2D */;
+    public var texture: Texture /* from alias Texture2D */,
     // Rectangles in texture for the glyphs
-    public var recs: Listed<Rectangle>;
+    public var recs: Listed<Rectangle>,
     // Glyphs info data
-    public var glyphs: Listed<GlyphInfo>;
-}
+    public var glyphs: Listed<GlyphInfo>,
+) {}
 // Camera, defines position/orientation in 3d space
-export class Camera3D {
+export class Camera3D(
     // Camera position
-    public var position: Vector3;
+    public var position: Vector3,
     // Camera target it looks-at
-    public var target: Vector3;
+    public var target: Vector3,
     // Camera up vector (rotation over its axis)
-    public var up: Vector3;
+    public var up: Vector3,
     // Camera field-of-view aperture in Y (degrees) in perspective, used as near plane width in orthographic
-    public var fovy: Float64;
+    public var fovy: Float64,
     // Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
-    public var projection: Int;
-}
+    public var projection: Int,
+) {}
 // Camera2D, defines position/orientation in 2d space
-export class Camera2D {
+export class Camera2D(
     // Camera offset (displacement from target)
-    public var offset: Vector2;
+    public var offset: Vector2,
     // Camera target (rotation and zoom origin)
-    public var target: Vector2;
+    public var target: Vector2,
     // Camera rotation in degrees
-    public var rotation: Float64;
+    public var rotation: Float64,
     // Camera zoom (scaling), should be 1.0f by default
-    public var zoom: Float64;
-}
+    public var zoom: Float64,
+) {}
 // Mesh, vertex data and vao/vbo
-export class Mesh {
+export class Mesh(
     // Number of vertices stored in arrays
-    public var vertexCount: Int;
+    public var vertexCount: Int,
     // Number of triangles stored (indexed or not)
-    public var triangleCount: Int;
+    public var triangleCount: Int,
     // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
-    public var vertices: Listed<Float64>;
+    public var vertices: Listed<Float64>,
     // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
-    public var texcoords: Listed<Float64>;
+    public var texcoords: Listed<Float64>,
     // Vertex texture second coordinates (UV - 2 components per vertex) (shader-location = 5)
-    public var texcoords2: Listed<Float64>;
+    public var texcoords2: Listed<Float64>,
     // Vertex normals (XYZ - 3 components per vertex) (shader-location = 2)
-    public var normals: Listed<Float64>;
+    public var normals: Listed<Float64>,
     // Vertex tangents (XYZW - 4 components per vertex) (shader-location = 4)
-    public var tangents: Listed<Float64>;
+    public var tangents: Listed<Float64>,
     // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
-    public var colors: String;
+    public var colors: String,
     // Vertex indices (in case vertex data comes indexed)
-    public var indices: Listed<Int>;
+    public var indices: Listed<Int>,
     // Animated vertex positions (after bones transformations)
-    public var animVertices: Listed<Float64>;
+    public var animVertices: Listed<Float64>,
     // Animated normals (after bones transformations)
-    public var animNormals: Listed<Float64>;
+    public var animNormals: Listed<Float64>,
     // Vertex bone ids, max 255 bone ids, up to 4 bones influence by vertex (skinning)
-    public var boneIds: String;
+    public var boneIds: String,
     // Vertex bone weight, up to 4 bones influence by vertex (skinning)
-    public var boneWeights: Listed<Float64>;
+    public var boneWeights: Listed<Float64>,
     // OpenGL Vertex Array Object id
-    public var vaoId: Int;
+    public var vaoId: Int,
     // OpenGL Vertex Buffer Objects id (default vertex data)
-    public var vboId: Listed<Int>;
-}
+    public var vboId: Listed<Int>,
+) {}
 // Shader
-export class Shader {
+export class Shader(
     // Shader program id
-    public var id: Int;
+    public var id: Int,
     // Shader locations array (RL_MAX_SHADER_LOCATIONS)
-    public var locs: Listed<Int>;
-}
+    public var locs: Listed<Int>,
+) {}
 // MaterialMap
-export class MaterialMap {
+export class MaterialMap(
     // Material map texture
-    public var texture: Texture /* from alias Texture2D */;
+    public var texture: Texture /* from alias Texture2D */,
     // Material map color
-    public var color: Color;
+    public var color: Color,
     // Material map value
-    public var value: Float64;
-}
+    public var value: Float64,
+) {}
 // Material, includes shader and maps
-export class Material {
+export class Material(
     // Material shader
-    public var shader: Shader;
+    public var shader: Shader,
     // Material maps array (MAX_MATERIAL_MAPS)
-    public var maps: Listed<MaterialMap>;
+    public var maps: Listed<MaterialMap>,
     // Material generic parameters (if required)
-    public var params: Listed<Float64>;
-}
+    public var params: Listed<Float64>,
+) {}
 // Transform, vertex transformation data
-export class Transform {
+export class Transform(
     // Translation
-    public var translation: Vector3;
+    public var translation: Vector3,
     // Rotation
-    public var rotation: Vector4 /* from alias Quaternion */;
+    public var rotation: Vector4 /* from alias Quaternion */,
     // Scale
-    public var scale: Vector3;
-}
+    public var scale: Vector3,
+) {}
 // Bone, skeletal animation bone
-export class BoneInfo {
+export class BoneInfo(
     // Bone name
-    public var name: String;
+    public var name: String,
     // Bone parent
-    public var parent: Int;
-}
+    public var parent: Int,
+) {}
 // Model, meshes, materials and animation data
-export class Model {
+export class Model(
     // Local transform matrix
-    public var transform: Matrix;
+    public var transform: Matrix,
     // Number of meshes
-    public var meshCount: Int;
+    public var meshCount: Int,
     // Number of materials
-    public var materialCount: Int;
+    public var materialCount: Int,
     // Meshes array
-    public var meshes: Listed<Mesh>;
+    public var meshes: Listed<Mesh>,
     // Materials array
-    public var materials: Listed<Material>;
+    public var materials: Listed<Material>,
     // Mesh material number
-    public var meshMaterial: Listed<Int>;
+    public var meshMaterial: Listed<Int>,
     // Number of bones
-    public var boneCount: Int;
+    public var boneCount: Int,
     // Bones information (skeleton)
-    public var bones: Listed<BoneInfo>;
+    public var bones: Listed<BoneInfo>,
     // Bones base transformation (pose)
-    public var bindPose: Listed<Transform>;
-}
+    public var bindPose: Listed<Transform>,
+) {}
 // ModelAnimation
-export class ModelAnimation {
+export class ModelAnimation(
     // Number of bones
-    public var boneCount: Int;
+    public var boneCount: Int,
     // Number of animation frames
-    public var frameCount: Int;
+    public var frameCount: Int,
     // Bones information (skeleton)
-    public var bones: Listed<BoneInfo>;
+    public var bones: Listed<BoneInfo>,
     // Poses array by frame
-    public var framePoses: Listed<Listed<Transform>>;
+    public var framePoses: Listed<Listed<Transform>>,
     // Animation name
-    public var name: String;
-}
+    public var name: String,
+) {}
 // Ray, ray for raycasting
-export class Ray {
+export class Ray(
     // Ray position (origin)
-    public var position: Vector3;
+    public var position: Vector3,
     // Ray direction
-    public var direction: Vector3;
-}
+    public var direction: Vector3,
+) {}
 // RayCollision, ray hit information
-export class RayCollision {
+export class RayCollision(
     // Did the ray hit something?
-    public var hit: Boolean;
+    public var hit: Boolean,
     // Distance to the nearest hit
-    public var distance: Float64;
+    public var distance: Float64,
     // Point of the nearest hit
-    public var point: Vector3;
+    public var point: Vector3,
     // Surface normal of hit
-    public var normal: Vector3;
-}
+    public var normal: Vector3,
+) {}
 // BoundingBox
-export class BoundingBox {
+export class BoundingBox(
     // Minimum vertex box-corner
-    public var min: Vector3;
+    public var min: Vector3,
     // Maximum vertex box-corner
-    public var max: Vector3;
-}
+    public var max: Vector3,
+) {}
 // Wave, audio wave data
-export class Wave {
+export class Wave(
     // Total number of frames (considering channels)
-    public var frameCount: Int;
+    public var frameCount: Int,
     // Frequency (samples per second)
-    public var sampleRate: Int;
+    public var sampleRate: Int,
     // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
-    public var sampleSize: Int;
+    public var sampleSize: Int,
     // Number of channels (1-mono, 2-stereo, ...)
-    public var channels: Int;
+    public var channels: Int,
     // Buffer data pointer
-    public var data: DenseBitVector;
-}
+    public var data: DenseBitVector,
+) {}
 // AudioStream, custom audio stream
-export class AudioStream {
+export class AudioStream(
     // Pointer to internal data used by the audio system
-    public var buffer: Listed<AnyValue>;
+    public var buffer: Listed<AnyValue>,
     // Pointer to internal data processor, useful for audio effects
-    public var processor: Listed<AnyValue>;
+    public var processor: Listed<AnyValue>,
     // Frequency (samples per second)
-    public var sampleRate: Int;
+    public var sampleRate: Int,
     // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
-    public var sampleSize: Int;
+    public var sampleSize: Int,
     // Number of channels (1-mono, 2-stereo, ...)
-    public var channels: Int;
-}
+    public var channels: Int,
+) {}
 // Sound
-export class Sound {
+export class Sound(
     // Audio stream
-    public var stream: AudioStream;
+    public var stream: AudioStream,
     // Total number of frames (considering channels)
-    public var frameCount: Int;
-}
+    public var frameCount: Int,
+) {}
 // Music, audio stream, anything longer than ~10 seconds should be streamed
-export class Music {
+export class Music(
     // Audio stream
-    public var stream: AudioStream;
+    public var stream: AudioStream,
     // Total number of frames (considering channels)
-    public var frameCount: Int;
+    public var frameCount: Int,
     // Music looping enable
-    public var looping: Boolean;
+    public var looping: Boolean,
     // Type of music context (audio filetype)
-    public var ctxType: Int;
+    public var ctxType: Int,
     // Audio context data, depends on type
-    public var ctxData: DenseBitVector;
-}
+    public var ctxData: DenseBitVector,
+) {}
 // VrDeviceInfo, Head-Mounted-Display device parameters
-export class VrDeviceInfo {
+export class VrDeviceInfo(
     // Horizontal resolution in pixels
-    public var hResolution: Int;
+    public var hResolution: Int,
     // Vertical resolution in pixels
-    public var vResolution: Int;
+    public var vResolution: Int,
     // Horizontal size in meters
-    public var hScreenSize: Float64;
+    public var hScreenSize: Float64,
     // Vertical size in meters
-    public var vScreenSize: Float64;
+    public var vScreenSize: Float64,
     // Distance between eye and display in meters
-    public var eyeToScreenDistance: Float64;
+    public var eyeToScreenDistance: Float64,
     // Lens separation distance in meters
-    public var lensSeparationDistance: Float64;
+    public var lensSeparationDistance: Float64,
     // IPD (distance between pupils) in meters
-    public var interpupillaryDistance: Float64;
+    public var interpupillaryDistance: Float64,
     // Lens distortion constant parameters
-    public var lensDistortionValues: Listed<Float64>;
+    public var lensDistortionValues: Listed<Float64>,
     // Chromatic aberration correction parameters
-    public var chromaAbCorrection: Listed<Float64>;
-}
+    public var chromaAbCorrection: Listed<Float64>,
+) {}
 // VrStereoConfig, VR stereo rendering configuration for simulator
-export class VrStereoConfig {
+export class VrStereoConfig(
     // VR projection matrices (per eye)
-    public var projection: Listed<Matrix>;
+    public var projection: Listed<Matrix>,
     // VR view offset matrices (per eye)
-    public var viewOffset: Listed<Matrix>;
+    public var viewOffset: Listed<Matrix>,
     // VR left lens center
-    public var leftLensCenter: Listed<Float64>;
+    public var leftLensCenter: Listed<Float64>,
     // VR right lens center
-    public var rightLensCenter: Listed<Float64>;
+    public var rightLensCenter: Listed<Float64>,
     // VR left screen center
-    public var leftScreenCenter: Listed<Float64>;
+    public var leftScreenCenter: Listed<Float64>,
     // VR right screen center
-    public var rightScreenCenter: Listed<Float64>;
+    public var rightScreenCenter: Listed<Float64>,
     // VR distortion scale
-    public var scale: Listed<Float64>;
+    public var scale: Listed<Float64>,
     // VR distortion scale in
-    public var scaleIn: Listed<Float64>;
-}
+    public var scaleIn: Listed<Float64>,
+) {}
 // File path list
-export class FilePathList {
+export class FilePathList(
     // Filepaths max entries
-    public var capacity: Int;
+    public var capacity: Int,
     // Filepaths entries count
-    public var count: Int;
+    public var count: Int,
     // Filepaths entries
-    public var paths: Listed<String>;
-}
+    public var paths: Listed<String>,
+) {}
 // Automation event
-export class AutomationEvent {
+export class AutomationEvent(
     // Event frame
-    public var frame: Int;
+    public var frame: Int,
     // Event type (AutomationEventType)
-    public var type: Int;
+    public var type: Int,
     // Event parameters (if required)
-    public var params: Listed<Int>;
-}
+    public var params: Listed<Int>,
+) {}
 // Automation event list
-export class AutomationEventList {
+export class AutomationEventList(
     // Events max entries (MAX_AUTOMATION_EVENTS)
-    public var capacity: Int;
+    public var capacity: Int,
     // Events entries count
-    public var count: Int;
+    public var count: Int,
     // Events entries
-    public var events: Listed<AutomationEvent>;
-}
+    public var events: Listed<AutomationEvent>,
+) {}
 // NOTE: Helper types to be used instead of array return types for *ToFloat functions
-export class float3 {
+export class float3(
     // 
-    public var v: Listed<Float64>;
-}
+    public var v: Listed<Float64>,
+) {}
 // 
-export class float16 {
+export class float16(
     // 
-    public var v: Listed<Float64>;
-}
+    public var v: Listed<Float64>,
+) {}
 // Dynamic vertex buffers (position + texcoords + colors + indices arrays)
-export class rlVertexBuffer {
+export class rlVertexBuffer(
     // Number of elements in the buffer (QUADS)
-    public var elementCount: Int;
+    public var elementCount: Int,
     // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
-    public var vertices: Listed<Float64>;
+    public var vertices: Listed<Float64>,
     // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
-    public var texcoords: Listed<Float64>;
+    public var texcoords: Listed<Float64>,
     // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
-    public var colors: String;
+    public var colors: String,
     // OpenGL Vertex Array Object id
-    public var vaoId: Int;
+    public var vaoId: Int,
     // OpenGL Vertex Buffer Objects id (4 types of vertex data)
-    public var vboId: Listed<Int>;
-}
+    public var vboId: Listed<Int>,
+) {}
 // of those state-change happens (this is done in core module)
-export class rlDrawCall {
+export class rlDrawCall(
     // Drawing mode: LINES, TRIANGLES, QUADS
-    public var mode: Int;
+    public var mode: Int,
     // Number of vertex of the draw
-    public var vertexCount: Int;
+    public var vertexCount: Int,
     // Number of vertex required for index alignment (LINES, TRIANGLES)
-    public var vertexAlignment: Int;
+    public var vertexAlignment: Int,
     // Texture id to be used on the draw -> Use to create new draw call if changes
-    public var textureId: Int;
-}
+    public var textureId: Int,
+) {}
 // rlRenderBatch type
-export class rlRenderBatch {
+export class rlRenderBatch(
     // Number of vertex buffers (multi-buffering support)
-    public var bufferCount: Int;
+    public var bufferCount: Int,
     // Current buffer tracking in case of multi-buffering
-    public var currentBuffer: Int;
+    public var currentBuffer: Int,
     // Dynamic buffer(s) for vertex data
-    public var vertexBuffer: Listed<rlVertexBuffer>;
+    public var vertexBuffer: Listed<rlVertexBuffer>,
     // Draw calls array, depends on textureId
-    public var draws: Listed<rlDrawCall>;
+    public var draws: Listed<rlDrawCall>,
     // Draw calls counter
-    public var drawCounter: Int;
+    public var drawCounter: Int,
     // Current depth value for next draw
-    public var currentDepth: Float64;
-}
+    public var currentDepth: Float64,
+) {}
 // FileIO: Load binary data
 export let LoadFileDataCallback = fn(String, Listed<Int>): String;
 // FileIO: Save binary data

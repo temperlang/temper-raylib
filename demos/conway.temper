@@ -9,32 +9,30 @@ let pow2(x: Int): Int {
   return ret;
 }
 
-class GridSize {
-  public width: Int;
-  public height: Int;
-
+class GridSize(
+  public width: Int,
+  public height: Int,
+) {
   public get widthToHeight(): Float64 {
     return width.toFloat64() / height.toFloat64();
   }
-  
+
   public get heightToWidth(): Float64 {
     return height.toFloat64() / width.toFloat64();
   }
 }
 
-class Grid {
-  public size: GridSize;
-  public old: DenseBitVector;
-  public cur: DenseBitVector;
-
-  public constructor(sizeParam: GridSize): Void {
-    size = sizeParam;
-    old = new DenseBitVector(size.width * size.height);
-    cur = new DenseBitVector(size.width * size.height);
+class Grid(
+  public size: GridSize,
+) {
+  public old: DenseBitVector = new DenseBitVector(size.width * size.height);
+  public cur: DenseBitVector = do {
+    let cur = new DenseBitVector(size.width * size.height);
     for (var i = 0; i < size.width * size.height; i++) {
       var val = GetRandomValue(0, 5);
       cur[i] = val == 0;
     }
+    cur
   }
 
   public draw(bounds: Rectangle): Void {
@@ -110,15 +108,12 @@ class Game {
   }
 }
 
-export class App {
-  private bench: Boolean;
-  private game: Game;
-
-  public constructor(args: Listed<String>) {
+export class App(
+  @noProperty var args: Listed<String>,
+) {
+  private bench: Boolean = (args[0] == "--bench") orelse false;
+  private game: Game = do {
     SetTraceLogLevel(LOG_WARNING);
-
-    bench = (args[0] == "--bench") orelse false;
-
     if (bench) {
       SetConfigFlags(FLAG_WINDOW_RESIZABLE);
       args = args.slice(1, args.length);
@@ -127,8 +122,8 @@ export class App {
     }
 
     InitWindow(960, 540, "Conway's Game of LIFE");
-    game = new Game(args);
-  }
+    new Game(args)
+  };
 
   public loop(): Void {
     BeginDrawing();

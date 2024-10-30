@@ -221,14 +221,14 @@ def main() -> None:
             name = struct["name"]
             desc = struct["description"]
             out_file.write(f"// {desc}\n")
-            out_file.write(f"export class {name} " + "{\n")
+            out_file.write(f"export class {name}(\n")
             for field in struct["fields"]:
                 field_type = field["type"]
                 field_desc = field["description"]
                 field_name = field["name"]
                 out_file.write(f"{tab}// {field_desc}\n")
-                out_file.write(f"{tab}public var {field_name}: {conv(field_type)};\n")
-            out_file.write("}\n")
+                out_file.write(f"{tab}public var {field_name}: {conv(field_type)},\n")
+            out_file.write(") {}\n")
 
         for cb in raylib_json["callbacks"]:
             cb_name = cb["name"]

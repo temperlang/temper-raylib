@@ -216,7 +216,7 @@ export class App {
 
     frameTime = GetFrameTime() * 60.0 * gameSpeed;
 
-    match (currentScreen) {
+    when (currentScreen) {
       SCREEN_TITLE -> do {
         if (IsKeyPressed(KEY_ENTER)) {
           currentScreen = SCREEN_PLAY;
@@ -286,7 +286,7 @@ export class App {
     }
     BeginDrawing();
     BeginMode2D(camera);
-    match (currentScreen) {
+    when (currentScreen) {
       SCREEN_TITLE -> do {
         ClearBackground(new Color(0, 0, 0, 255));
         DrawText("PONG", 120, 20, 120, GRAY);
