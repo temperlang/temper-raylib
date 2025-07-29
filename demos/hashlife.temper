@@ -11,9 +11,9 @@ for (var i = 0; i < 64; i++) {
   cur += cur;
 }
 
-class DrawConfig {
-  public screen: Rectangle;
-}
+class DrawConfig(
+  public screen: Rectangle,
+) {}
 
 interface Node {
   public level: Int;
@@ -37,28 +37,17 @@ interface Node {
   public copyWithRangeSet(low: List<Int>, high: List<Int>, data: MapBuilder<Int, Boolean>): Node;
 }
 
-class RealNode extends Node {
-  public level: Int;
-  public pop: Int;
-  public a: Node;
-  public b: Node;
-  public c: Node;
-  public d: Node;
-  public hash: Int;
-  public hash0: Int;
-  public succ: ListBuilder<Node>;
-  
-  constructor(level: Int, pop: Int, a: Node, b: Node, c: Node, d: Node, hash: Int): Void {
-    this.level = level;
-    this.pop = pop;
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.d = d;
-    this.hash = hash;
-    this.hash0 = hash % 2147483647;
-    succ = new ListBuilder<Node>();
-  }
+class RealNode(
+  public level: Int,
+  public pop: Int,
+  public a: Node,
+  public b: Node,
+  public c: Node,
+  public d: Node,
+  public hash: Int,
+) extends Node {
+  public hash0: Int = hash % 2147483647;
+  public succ: ListBuilder<Node> = new ListBuilder<Node>();
 
   public setSucc(j: Int, n: Node): Void {
     while (succ.length <= j) {
@@ -86,9 +75,9 @@ class RealNode extends Node {
       d.draw(config, new Rectangle(base.x + halfWidth, base.y + halfHeight, halfWidth, halfHeight));
     }
   }
-  
+
   public successor(j: Int): Node {
-    var mSucc = succ.getOr(j, fake); 
+    var mSucc = succ.getOr(j, fake);
     if (mSucc == fake) {
       var jthSucc = successorImpl(j);
       setSucc(j, jthSucc);
@@ -215,7 +204,7 @@ class RealNode extends Node {
       return this;
     }
     var bits = new ListBuilder<Boolean>();
-    var node = this.as<Node>();
+    var node: Node = this;
     while (n != 0) {
       bits.add(n % 2 != 0);
       n /= 2;
@@ -241,7 +230,7 @@ class RealNode extends Node {
       if (x >= high0 || x + size <= low0 || y >= high1 || y + size <= low1) {
         return grid;
       }
-      
+
       if (grid.level == 0) {
         if (data.getOr((x - low0) + (y - low1) * width, false)) {
           return on;
@@ -249,7 +238,7 @@ class RealNode extends Node {
           return off;
         }
       }
-      
+
       var halfSize = size / 2;
       var xh = x + halfSize;
       var yh = y + halfSize;
@@ -265,21 +254,17 @@ class RealNode extends Node {
   }
 }
 
-class FakeNode extends Node {
-  public level: Int;
-  public pop: Int;
-  public a: Node;
-  public b: Node;
-  public c: Node;
-  public d: Node;
-  public hash: Int;
-  public hash0: Int;
-  public succ: ListBuilder<Node>;
-
-  constructor(): Void {
-    level = -1;
-    hash0 = 0;
-  }
+class FakeNode(
+  public pop: Int,
+  public a: Node,
+  public b: Node,
+  public c: Node,
+  public d: Node,
+  public hash: Int,
+  public succ: ListBuilder<Node>,
+) extends Node {
+  public level: Int = -1;
+  public hash0: Int = 0;
 
   public setSucc(j: Int, n: Node): Void {}
   public draw(config: DrawConfig, bounds: Rectangle): Void {}
@@ -367,20 +352,20 @@ let nodeForBit(n: Boolean): Node {
     return off;
   }
 }
-class Game {
-  public grid: Node;
-  
-  constructor(args: Listed<String>) {
+class Game(
+  @noProperty args: Listed<String>,
+) {
+  public var grid: Node = do {
     if (args.length != 0 && args[0] == "--random") {
       var sizeLog2 = if (args.length < 2) { 8 } else { args[1].toInt() };
       var size = pow2[sizeLog2];
-      grid = random(sizeLog2);
+      random(sizeLog2)
     } else {
       var sizeLog2 = if (args.length < 1) { 16 } else { args[0].toInt() };
       var size = pow2[sizeLog2];
-      grid = zero(sizeLog2);
+      zero(sizeLog2)
     }
-  }
+  };
 
   public clear(): Void {
     grid = zero(grid.level);
@@ -406,28 +391,20 @@ class Game {
   }
 }
 
-class LifeBuilder {
-  public width: Int;
-  public height: Int;
+class LifeBuilder(
+  public width: Int,
+  public height: Int,
+) {
   // public doFlipX: Boolean;
   // public doFlipY: Boolean;
-  
-  public data: MapBuilder<Int, Boolean>;
-  
-  private node: Node;
-  private hasNode: Boolean;
 
-  private hasPointList: Boolean;
-  private pointListData: List<Int>;
+  public data: MapBuilder<Int, Boolean> = new MapBuilder<Int, Boolean>();
 
-  public constructor(w: Int, h: Int) {
-    width = w;
-    height = h;
-    // doFlipX = false;
-    // doFlipY = false;
-    data = new MapBuilder<Int, Boolean>();
-    clear();
-  }
+  private var node: Node | Null = null;
+  private var hasNode: Boolean = false;
+
+  private var hasPointList: Boolean = false;
+  private var pointListData: List<Int> = [];
 
   private clear(): Void {
     hasPointList = false;
@@ -466,7 +443,7 @@ class LifeBuilder {
       node = empty.copyWithRangeSet(start, stop, data);
       var endTime = GetTime();
     }
-    return node;
+    return node.as<Node>();
   }
 
   public pointList(): List<Int> {
@@ -482,42 +459,48 @@ class LifeBuilder {
 
 class Pattern {
   private lines: List<String>;
-  public name: String;
-  public rule: String;
+  public var name: String;
+  public var rule: String;
   public builder: LifeBuilder;
   private isParsed: Boolean;
   private hasTexture: Boolean;
   private texture: RenderTexture;
 
   public constructor(s: String) {
-    lines = s.split("\n");
     name = "???";
     rule = "???";
+    isParsed = false;
+    hasTexture = false;
+    lines = s.split("\n");
+
     for (var i = 0; i < lines.length; i++) {
-      var cur = lines[i].codePoints;
-      if (cur.hasAtLeast(1)) {
-        if (cur.read() == /* x */ 120) {
+      let line = lines[i];
+      var cur = String.begin;
+      if (line.hasIndex(cur)) {
+        if (line[cur] == char'x') {
           let number(): Int {
-            while (!(48 <= cur.read() && cur.read() <= 57)) {
-              cur = cur.advance(1);
+            while (line.hasIndex(cur) &&
+                   !(char'0' <= line[cur] && line[cur] <= char'9')) {
+              cur = line.next(cur);
             }
             var n = 0;
-            while (cur.hasAtLeast(1) && 48 <= cur.read() && cur.read() <= 57) {
+            while (line.hasIndex(cur) &&
+                   char'0' <= line[cur] && line[cur] <= char'9') {
               n *= 10;
-              n += cur.read() - 48;
-              cur = cur.advance(1);
+              n += line[cur] - char'0';
+              cur = line.next(cur);
             }
             return n;
           }
           builder = new LifeBuilder(number(), number());
-          var tmp = lines[i].split("rule = ");
+          var tmp = line.split("rule = ");
           rule = tmp[tmp.length - 1];
           break;
         }
-        if (cur.read() == /* # */ 35) {
-          var type = cur.advance(1).read();
-          if (type == /* N */ 78) {
-            var hack = lines[i].split("#N");
+        if (line.hasIndex(cur) && line[cur] == char'#') {
+          var type = line[line.next(cur)];
+          if (type == char'N') {
+            var hack = line.split("#N");
             name = hack[hack.length - 1];
           }
         }
@@ -646,24 +629,19 @@ class Pattern {
   }
 }
 
-class SimpleCamera {
-  public target: Vector2;
-  public zoom: Float64;
-  public cells: Int;
-  public screenSize: Vector2;
-
-  constructor(maxLevel: Int) {
-    zoom = 1.0;
-    target = new Vector2(0.0, 0.0);
-    cells = pow2[maxLevel];
-  }
+class SimpleCamera(@noProperty maxLevel: Int) {
+  public target: Vector2 = new Vector2(0.0, 0.0);
+  public zoom: Float64 = 1.0;
+  public cells: Int = pow2[maxLevel];
+  public var screenSize: Vector2 | Null = null;
 
   public update(): Void {
     screenSize = new Vector2(GetScreenWidth().toFloat64(), GetScreenHeight().toFloat64());
   }
 
   public get size(): Float64 {
-    return screenSize.x.max(screenSize.y);
+    var ss = screenSize.as<Vector2>();
+    return ss.x.max(ss.y);
   }
 
   public screenToLife(x: Float64, y: Float64): List<Int> {
